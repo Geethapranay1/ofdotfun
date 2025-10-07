@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono,Jost } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -10,6 +10,7 @@ const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
+
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -39,8 +40,13 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Navbar />
-            <main>{children}</main>
-            <Toaster position="top-center" />
+            <main className="pt-20 pb-20">{children}</main>
+            <Toaster position="top-center" toastOptions={{
+              style:{
+                borderRadius: '24px',
+                border:"0px"
+              }
+            }} />
           </ThemeProvider>
         </SolanaProvider>
       </body>
