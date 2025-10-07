@@ -9,6 +9,7 @@ import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { WalletError } from "@solana/wallet-adapter-base";
 import { toast } from "sonner";
 import WalletModal from "./wallet-modal";
+import Image from "next/image";
 
 export function Navbar() {
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -125,22 +126,28 @@ export function Navbar() {
 
   return (
     <>
-      <header className="">
-        <div className="container mx-auto px-4">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-card/45 backdrop-blur-md border- border-primary/20">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <Link href="/tokens" className="flex items-center gap-2">
-              <div className="text-2xl font-bold">TokunLunchpad</div>
+            <Link href="/tokens" className="flex items-center gap-2 group">
+              <Image
+                src="/image.png"
+                alt="Tokun.Lunchpad"
+                width={32}
+                height={32}
+                className="scale-145 group-hover:scale-150 transition-transform"
+              />
             </Link>
             <nav className="flex items-center gap-6">
               <Link
                 href="/tokens"
-                className="text-sm font-medium hover:text-primary transition-colors"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
               >
                 Tokens
               </Link>
               <Link
                 href="/create"
-                className="text-sm font-medium hover:text-primary transition-colors"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors"
               >
                 Create
               </Link>
