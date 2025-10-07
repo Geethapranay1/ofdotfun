@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { DynamicBondingCurveClient } from "@meteora-ag/dynamic-bonding-curve-sdk";
+import { DynamicBondingCurveClient, deriveDbcPoolAddress } from "@meteora-ag/dynamic-bonding-curve-sdk";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL as string;
 const POOL_CONFIG_KEY = process.env.POOL_CONFIG_KEY;
+const QUOTE_MINT = process.env.QUOTE_MINT || "So11111111111111111111111111111111111111112";
 
 const DO_SPACES_ACCESS_KEY_ID = process.env.DO_SPACES_ACCESS_KEY_ID as string;
 const DO_SPACES_SECRET_ACCESS_KEY = process.env
@@ -114,21 +115,13 @@ export async function POST(req: Request) {
 
     const tokenMint = mintPublicKey.toString();
 
-    let poolAddress = "";
-    try {
-      const accountKeys = poolTx.instructions.flatMap((ix) => ix.keys || []);
-      const newAccounts = accountKeys.filter((key: any) => {
-        return key && typeof key.pubkey === "object" && key.isSigner === false;
-      });
+    const poolAddress = deriveDbcPoolAddress(
+      mintPublicKey,
+      new PublicKey(QUOTE_MINT),
+      new PublicKey(POOL_CONFIG_KEY as string)
+    ).toString();
 
-      if (newAccounts.length >= 1) {
-        poolAddress = newAccounts[0]?.pubkey?.toString() || "TBD";
-      } else {
-        poolAddress = "TBD";
-      }
-    } catch (error) {
-      poolAddress = "TBD";
-    }
+    console.log("Derived pool address:", poolAddress);
 
     const response = {
       success: true,

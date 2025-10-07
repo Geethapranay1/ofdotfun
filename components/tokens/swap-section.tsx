@@ -34,10 +34,10 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
   // Hardcoded token and pool addresses
   const TOKEN_MINT = new PublicKey(
-    "BCTP9Zxawpz8UGGJ5iTTqBHR5LUZfxMo41RBYSWCNbX2"
+    "9rRUKEwp7GSZ5hwB9eZJHjJxgWAsCS6NhxJN6BKSupjs"
   );
   const POOL_ADDRESS = new PublicKey(
-    "BCTP9Zxawpz8UGGJ5iTTqBHR5LUZfxMo41RBYSWCNbX2"
+    "xT17qA8Dwnky6t2DyKCDAgX5phvM2v3WPtV5yWBiSB3"
   ); // Using token address as pool address
 
   const TOKEN_SYMBOL = "TOKEN";
@@ -55,6 +55,10 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   const getSwapQuote = async (amountInSol: number, isBuy: boolean) => {
     try {
       const client = new DynamicBondingCurveClient(connection, "confirmed");
+      const poolState = await client.state.getPool(POOL_ADDRESS);
+if (!poolState) {
+  console.error("Pool doesn't exist yet!");
+}
 
       const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
       if (!virtualPoolState) {
@@ -65,21 +69,14 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
         virtualPoolState.config
       );
 
-      if (!virtualPoolState.sqrtPrice || virtualPoolState.sqrtPrice.isZero()) {
-        throw new Error("Invalid pool state: sqrtPrice is zero or undefined");
-      }
-
-      if (!poolConfigState.curve || poolConfigState.curve.length === 0) {
-        throw new Error("Invalid config state: curve is empty");
-      }
-
       const currentPoint = new BN(0);
+
       const amountIn = new BN(Math.floor(amountInSol * 1e9)); 
 
       const quote = await client.pool.swapQuote({
         virtualPool: virtualPoolState,
         config: poolConfigState,
-        swapBaseForQuote: isBuy ? false : true,
+        swapBaseForQuote: true, // true for buy, false for sell
         amountIn,
         slippageBps: SLIPPAGE_BPS,
         hasReferral: false,
@@ -112,6 +109,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
       toast.loading("Getting swap quote...", { id: toastId });
       const quote = await getSwapQuote(parseFloat(buyAmount), true);
+      console.log("Swap quote:", quote);
       const swapParam = {
         amountIn: new BN(Math.floor(parseFloat(buyAmount) * 1e9)),
         minimumAmountOut: quote.minimumAmountOut,
@@ -123,6 +121,11 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
       toast.loading("Creating swap transaction...", { id: toastId });
       const swapTransaction = await client.pool.swap(swapParam);
+
+      // Set recent blockhash and fee payer before signing
+      const { blockhash } = await connection.getLatestBlockhash();
+      swapTransaction.recentBlockhash = blockhash;
+      swapTransaction.feePayer = wallet.publicKey;
 
       toast.loading("Awaiting confirmation...", { id: toastId });
 
@@ -199,6 +202,11 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
       toast.loading("Creating swap transaction...", { id: toastId });
       const swapTransaction = await client.pool.swap(swapParam);
+
+      // Set recent blockhash and fee payer before signing
+      const { blockhash } = await connection.getLatestBlockhash();
+      swapTransaction.recentBlockhash = blockhash;
+      swapTransaction.feePayer = wallet.publicKey;
 
       toast.loading("Awaiting confirmation...", { id: toastId });
 
