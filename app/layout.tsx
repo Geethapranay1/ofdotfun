@@ -40,7 +40,12 @@ export default function RootLayout({
           >
             <Navbar />
             <main>{children}</main>
-            <Toaster position="top-center" />
+            <Toaster position="top-center" toastOptions={{
+              style:{
+                borderRadius: '24px',
+                border: '0px',
+              }
+            }} richColors />
           </ThemeProvider>
         </SolanaProvider>
       </body>

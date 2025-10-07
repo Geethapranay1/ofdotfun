@@ -13,8 +13,13 @@ import {
   prepareSwapAmountParam,
 } from "@meteora-ag/dynamic-bonding-curve-sdk";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { Connection, PublicKey } from "@solana/web3.js";
-import BN from 'bn.js'
+import {
+  Connection,
+  PublicKey,
+  sendAndConfirmTransaction,
+} from "@solana/web3.js";
+import BN from "bn.js";
+import { toast } from "sonner";
 
 interface SwapSectionProps {
   tokenId: string;
@@ -23,59 +28,217 @@ interface SwapSectionProps {
 export function SwapSection({ tokenId }: SwapSectionProps) {
   const [buyAmount, setBuyAmount] = useState("");
   const [sellAmount, setSellAmount] = useState("");
-  const POOL_ADDRESS = new PublicKey(
-    "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+  const [isLoading, setIsLoading] = useState(false);
+  const [estimatedOutput, setEstimatedOutput] = useState("");
+  const [estimatedInput, setEstimatedInput] = useState("");
+
+  // Hardcoded token and pool addresses
+  const TOKEN_MINT = new PublicKey(
+    "BCTP9Zxawpz8UGGJ5iTTqBHR5LUZfxMo41RBYSWCNbX2"
   );
+  const POOL_ADDRESS = new PublicKey(
+    "BCTP9Zxawpz8UGGJ5iTTqBHR5LUZfxMo41RBYSWCNbX2"
+  ); // Using token address as pool address
+
+  const TOKEN_SYMBOL = "TOKEN";
+  const SOL_BALANCE = 10.5;
+  const TOKEN_BALANCE = 0;
+  const PRICE_PER_TOKEN = 0.0012;
+  const SLIPPAGE_BPS = 100; // 1%
+
   const wallet = useWallet();
   const connection = new Connection(
     process.env.NEXT_PUBLIC_RPC_URL!,
     "confirmed"
   );
 
-  const handleSwap = async () => {
-    const amountIn = await prepareSwapAmountParam(
-      1,
-      wallet.publicKey!,
-      connection
-    );
-    const client = new DynamicBondingCurveClient(connection, "confirmed");
-    const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
-    const poolConfigState = await client.state.getPoolConfig(
-      virtualPoolState.config
-    );
+  const getSwapQuote = async (amountInSol: number, isBuy: boolean) => {
+    try {
+      const client = new DynamicBondingCurveClient(connection, "confirmed");
 
-    const currentPoint = await getCurrentPoint(
-      connection,
-      poolConfigState.activationType
-    );
+      const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
+      if (!virtualPoolState) {
+        throw new Error("Pool not found");
+      }
 
-    const quote = await client.pool.swapQuote({
-      virtualPool: virtualPoolState,
-      config: poolConfigState,
-      swapBaseForQuote: false,
-      amountIn,
-      slippageBps: 50,
-      hasReferral: false,
-      currentPoint,
-    });
+      const poolConfigState = await client.state.getPoolConfig(
+        virtualPoolState.config
+      );
 
-    const transaction = await client.pool.swap({
-      owner: new PublicKey("boss1234567890abcdefghijklmnopqrstuvwxyz"),
-      amountIn: new BN(1000000000),
-      minimumAmountOut: new BN(0),
-      swapBaseForQuote: false,
-      pool: new PublicKey("abcdefghijklmnopqrstuvwxyz1234567890"),
-      referralTokenAccount: null,
-      payer: new PublicKey("boss1234567890abcdefghijklmnopqrstuvwxyz"),
-    });
+      if (!virtualPoolState.sqrtPrice || virtualPoolState.sqrtPrice.isZero()) {
+        throw new Error("Invalid pool state: sqrtPrice is zero or undefined");
+      }
+
+      if (!poolConfigState.curve || poolConfigState.curve.length === 0) {
+        throw new Error("Invalid config state: curve is empty");
+      }
+
+      const currentPoint = new BN(0);
+      const amountIn = new BN(Math.floor(amountInSol * 1e9)); 
+
+      const quote = await client.pool.swapQuote({
+        virtualPool: virtualPoolState,
+        config: poolConfigState,
+        swapBaseForQuote: isBuy ? false : true,
+        amountIn,
+        slippageBps: SLIPPAGE_BPS,
+        hasReferral: false,
+        currentPoint,
+      });
+
+      return quote;
+    } catch (error) {
+      console.error("Failed to get swap quote:", error);
+      throw error;
+    }
   };
 
-  const handleBuy = () => {
-    console.log("Buy:", buyAmount);
+  const handleBuy = async () => {
+    if (!wallet.connected || !wallet.publicKey) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+
+    if (!buyAmount || parseFloat(buyAmount) <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+
+    setIsLoading(true);
+    const toastId = toast.loading("Preparing swap transaction...");
+
+    try {
+      const client = new DynamicBondingCurveClient(connection, "confirmed");
+
+      toast.loading("Getting swap quote...", { id: toastId });
+      const quote = await getSwapQuote(parseFloat(buyAmount), true);
+      const swapParam = {
+        amountIn: new BN(Math.floor(parseFloat(buyAmount) * 1e9)),
+        minimumAmountOut: quote.minimumAmountOut,
+        swapBaseForQuote: false,
+        owner: wallet.publicKey,
+        pool: POOL_ADDRESS,
+        referralTokenAccount: null,
+      };
+
+      toast.loading("Creating swap transaction...", { id: toastId });
+      const swapTransaction = await client.pool.swap(swapParam);
+
+      toast.loading("Awaiting confirmation...", { id: toastId });
+
+      if (!wallet.signTransaction) {
+        throw new Error("Wallet does not support transaction signing");
+      }
+
+      const signedTx = await wallet.signTransaction(swapTransaction);
+      const signature = await connection.sendRawTransaction(
+        signedTx.serialize(),
+        {
+          skipPreflight: true,
+          maxRetries: 5,
+        }
+      );
+
+      await connection.confirmTransaction(signature, "confirmed");
+
+      toast.success(
+        <div className="flex flex-col gap-1">
+          <p>Swap successful!</p>
+          <a
+            href={`https://explorer.solana.com/address/${signature}?cluster=devnet`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs underline"
+          >
+            View on Solana Explorer
+          </a>
+        </div>,
+        { id: toastId, duration: 5000 }
+      );
+
+      setBuyAmount("");
+    } catch (error: any) {
+      console.error("Swap failed:", error);
+      toast.error(error?.message || "Failed to execute swap", { id: toastId });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleSell = () => {
-    console.log("Sell:", sellAmount);
+  const handleSell = async () => {
+    if (!wallet.connected || !wallet.publicKey) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+
+    if (!sellAmount || parseFloat(sellAmount) <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+
+    if (TOKEN_BALANCE <= 0) {
+      toast.error("Insufficient token balance");
+      return;
+    }
+
+    setIsLoading(true);
+    const toastId = toast.loading("Preparing swap transaction...");
+
+    try {
+      const client = new DynamicBondingCurveClient(connection, "confirmed");
+      toast.loading("Getting swap quote...", { id: toastId });
+      const quote = await getSwapQuote(parseFloat(sellAmount), false);
+      const swapParam = {
+        amountIn: new BN(Math.floor(parseFloat(sellAmount) * 1e9)),
+        minimumAmountOut: quote.minimumAmountOut,
+        swapBaseForQuote: true,
+        owner: wallet.publicKey,
+        pool: POOL_ADDRESS,
+        referralTokenAccount: null,
+      };
+
+      toast.loading("Creating swap transaction...", { id: toastId });
+      const swapTransaction = await client.pool.swap(swapParam);
+
+      toast.loading("Awaiting confirmation...", { id: toastId });
+
+      if (!wallet.signTransaction) {
+        throw new Error("Wallet does not support transaction signing");
+      }
+
+      const signedTx = await wallet.signTransaction(swapTransaction);
+      const signature = await connection.sendRawTransaction(
+        signedTx.serialize(),
+        {
+          skipPreflight: true,
+          maxRetries: 5,
+        }
+      );
+
+      await connection.confirmTransaction(signature, "confirmed");
+
+      toast.success(
+        <div className="flex flex-col gap-1">
+          <p>Swap successful!</p>
+          <a
+            href={`https://explorer.solana.com/address/${signature}?cluster=devnet`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs underline"
+          >
+            View on Solana Explorer
+          </a>
+        </div>,
+        { id: toastId, duration: 5000 }
+      );
+
+      setSellAmount("");
+    } catch (error: any) {
+      console.error("Swap failed:", error);
+      toast.error(error?.message || "Failed to execute swap", { id: toastId });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -103,7 +266,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                 <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
                   <span className="text-sm font-medium">SOL</span>
                   <span className="text-xs text-muted-foreground">
-                    Balance: 10.5
+                    Balance: {SOL_BALANCE}
                   </span>
                 </div>
               </div>
@@ -128,9 +291,9 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                   }
                 />
                 <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
-                  <span className="text-sm font-medium">DOGEM</span>
+                  <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
                   <span className="text-xs text-muted-foreground">
-                    Balance: 0
+                    Balance: {TOKEN_BALANCE}
                   </span>
                 </div>
               </div>
@@ -139,16 +302,30 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
             <div className="space-y-2 pt-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Price per token</span>
-                <span className="font-medium">$0.0012</span>
+                <span className="font-medium">${PRICE_PER_TOKEN}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Slippage</span>
-                <span className="font-medium">1%</span>
+                <span className="font-medium">{SLIPPAGE_BPS / 100}%</span>
               </div>
             </div>
 
-            <Button onClick={handleBuy} className="w-full" size="lg">
-              Buy Token
+            <Button
+              onClick={handleBuy}
+              className="w-full"
+              size="lg"
+              disabled={
+                !wallet.connected ||
+                isLoading ||
+                !buyAmount ||
+                parseFloat(buyAmount) <= 0
+              }
+            >
+              {!wallet.connected
+                ? "Connect Wallet"
+                : isLoading
+                ? "Processing..."
+                : "Buy Token"}
             </Button>
           </TabsContent>
           <TabsContent value="sell" className="space-y-4">
@@ -163,9 +340,9 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                   onChange={(e) => setSellAmount(e.target.value)}
                 />
                 <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
-                  <span className="text-sm font-medium">DOGEM</span>
+                  <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
                   <span className="text-xs text-muted-foreground">
-                    Balance: 0
+                    Balance: {TOKEN_BALANCE}
                   </span>
                 </div>
               </div>
@@ -194,7 +371,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                 <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
                   <span className="text-sm font-medium">SOL</span>
                   <span className="text-xs text-muted-foreground">
-                    Balance: 10.5
+                    Balance: {SOL_BALANCE}
                   </span>
                 </div>
               </div>
@@ -203,11 +380,11 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
             <div className="space-y-2 pt-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Price per token</span>
-                <span className="font-medium">$0.0012</span>
+                <span className="font-medium">${PRICE_PER_TOKEN}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Slippage</span>
-                <span className="font-medium">1%</span>
+                <span className="font-medium">{SLIPPAGE_BPS / 100}%</span>
               </div>
             </div>
 
@@ -216,8 +393,19 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               className="w-full"
               size="lg"
               variant="destructive"
+              disabled={
+                !wallet.connected ||
+                isLoading ||
+                !sellAmount ||
+                parseFloat(sellAmount) <= 0 ||
+                TOKEN_BALANCE <= 0
+              }
             >
-              Sell Token
+              {!wallet.connected
+                ? "Connect Wallet"
+                : isLoading
+                ? "Processing..."
+                : "Sell Token"}
             </Button>
           </TabsContent>
         </Tabs>
