@@ -29,6 +29,7 @@ import {
   deriveEscrow,
 } from "@meteora-ag/dynamic-bonding-curve-sdk";
 import { BN } from "bn.js";
+import { POOL_CONFIG_KEY, TOKEN_POOL_ADDRESS } from "@/app/constant";
 
 interface MigrationCardProps {
   tokenId: string;
@@ -70,8 +71,8 @@ export function MigrationCard({
       const connection = new Connection(RPC_URL, "confirmed");
       const client = new DynamicBondingCurveClient(connection, "confirmed");
 
-      const poolPubkey = new PublicKey(poolAddress);
-      const configPubkey = new PublicKey(configAddress);
+      const poolPubkey = TOKEN_POOL_ADDRESS;
+      const configPubkey = POOL_CONFIG_KEY;
 
       toast.info("Fetching pool state...", {
         description: "Loading pool information",
@@ -117,7 +118,12 @@ export function MigrationCard({
 
         const signedMetadataTx = await wallet.signTransaction(createMetadataTx);
         const metadataSignature = await connection.sendRawTransaction(
-          signedMetadataTx.serialize()
+          signedMetadataTx.serialize(),
+          {
+            maxRetries: 5,
+            skipPreflight: true,
+            preflightCommitment: "confirmed",
+          }
         );
 
         await connection.confirmTransaction(metadataSignature, "confirmed");
@@ -153,7 +159,12 @@ export function MigrationCard({
 
           const signedLockerTx = await wallet.signTransaction(createLockerTx);
           const lockerSignature = await connection.sendRawTransaction(
-            signedLockerTx.serialize()
+            signedLockerTx.serialize(),
+            {
+              maxRetries: 5,
+              skipPreflight: true,
+              preflightCommitment: "confirmed",
+            }
           );
 
           await connection.confirmTransaction(lockerSignature, "confirmed");
@@ -202,7 +213,8 @@ export function MigrationCard({
       const migrateSignature = await connection.sendRawTransaction(
         signedMigrateTx.serialize(),
         {
-          skipPreflight: false,
+          maxRetries: 5,
+          skipPreflight: true,
           preflightCommitment: "confirmed",
         }
       );

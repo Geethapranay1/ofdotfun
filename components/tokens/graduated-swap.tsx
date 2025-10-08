@@ -13,6 +13,7 @@ import {
   DynamicBondingCurveClient,
 } from "@meteora-ag/dynamic-bonding-curve-sdk";
 import { TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAccount } from "@solana/spl-token";
+import { TOKEN_GRADUATION_ADDRESS, TOKEN_MINT_ADDRESS, TOKEN_POOL_ADDRESS } from "@/app/constant";
 
 export default function GraduatedSwap() {
   const connection = new Connection(
@@ -20,13 +21,10 @@ export default function GraduatedSwap() {
     "confirmed"
   );
 
-  const NON_GRADUATED_POOL_ADDRESS = new PublicKey(
-    "4sShgjDkQT5zsakYHrFXCHoCs2fK3ERYwYnAaHcS8rDX" // token pool address
-  );
+  const POOL_ADDRESS = TOKEN_POOL_ADDRESS;
+  const TOKEN_MINT = TOKEN_MINT_ADDRESS
+  const GRADUATED_POOL_ADDRESS = TOKEN_GRADUATION_ADDRESS;
 
-  const POOL_ADDRESS = new PublicKey(
-    "3mxFgR7HypBMu83WVmKmZzhWF4XssTVfP6wAgyvancwj" // get from graduated pool state other button
-  );
   const cpAmm = new CpAmm(connection);
   const wallet = useWallet();
 
@@ -44,7 +42,7 @@ export default function GraduatedSwap() {
     try {
       toast.loading("Fetching pool state...");
 
-      const poolState = await cpAmm.fetchPoolState(POOL_ADDRESS);
+      const poolState = await cpAmm.fetchPoolState(GRADUATED_POOL_ADDRESS);
       console.log("Pool State:", poolState);
 
       if (!poolState) {
@@ -82,7 +80,7 @@ export default function GraduatedSwap() {
 
       const swapTx = await cpAmm.swap({
         payer: wallet.publicKey,
-        pool: POOL_ADDRESS,
+        pool: GRADUATED_POOL_ADDRESS,
         inputTokenMint: poolState.tokenAMint,
         outputTokenMint: poolState.tokenBMint,
         amountIn: new BN(100_000_000),
@@ -119,7 +117,8 @@ export default function GraduatedSwap() {
       const signature = await connection.sendRawTransaction(
         signedTx.serialize(),
         {
-          skipPreflight: false,
+          maxRetries: 5,
+          skipPreflight: true,
           preflightCommitment: "confirmed",
         }
       );
@@ -170,12 +169,12 @@ export default function GraduatedSwap() {
 
   async function handlePoolState() {
     try {
-      const poolState = await client.state.getPool(NON_GRADUATED_POOL_ADDRESS);
+      const poolState = await client.state.getPool(POOL_ADDRESS);
       if (!poolState) {
         console.error("Pool doesn't exist yet!");
       }
 
-      const virtualPoolState = await client.state.getPool(NON_GRADUATED_POOL_ADDRESS);
+      const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
       if (!virtualPoolState) {
         throw new Error("Pool not found");
       }
@@ -185,10 +184,12 @@ export default function GraduatedSwap() {
       );
       const dammV2PoolAddress = deriveDammV2PoolAddress(
         DAMM_V2_MIGRATION_FEE_ADDRESS[poolConfigState.migrationFeeOption],
-        new PublicKey("HW5grQGzm8ZuEUCjTPDoTPBHw69MxTVKUceWJfdQqu31"), // token mint
+        TOKEN_MINT,
         new PublicKey("So11111111111111111111111111111111111111112") // token program
       );
       console.log("Damm V2 Pool Address:", dammV2PoolAddress.toString());
+      toast.success("Pool state fetched! Check console for details.");
+      toast.success(`Damm V2 Pool Address: ${dammV2PoolAddress.toString()}`);
       const dammV2PoolState = await client.state.getPool(dammV2PoolAddress);
       if (!dammV2PoolState) {
         console.error("Damm V2 Pool doesn't exist yet!");
@@ -197,7 +198,7 @@ export default function GraduatedSwap() {
       }
     } catch (error) {
       console.error("Error occurred during swap:", error);
-      toast.error("Error occurred during swap");
+      // toast.error("Error occurred during swap");
     }
   }
   return (

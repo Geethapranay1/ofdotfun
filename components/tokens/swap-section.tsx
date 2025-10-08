@@ -15,11 +15,10 @@ import {
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
   Connection,
-  PublicKey,
-  sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import BN from "bn.js";
 import { toast } from "sonner";
+import { TOKEN_POOL_ADDRESS } from "@/app/constant";
 
 interface SwapSectionProps {
   tokenId: string;
@@ -30,9 +29,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   const [sellAmount, setSellAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const POOL_ADDRESS = new PublicKey(
-    "4sShgjDkQT5zsakYHrFXCHoCs2fK3ERYwYnAaHcS8rDX" // token pool address
-  ); 
+  const POOL_ADDRESS = TOKEN_POOL_ADDRESS; 
 
   const TOKEN_SYMBOL = "TOKEN";
   const SOL_BALANCE = 10.5;

@@ -32,9 +32,12 @@ export async function POST(req: Request) {
     );
 
     const raw = transaction.serialize();
-    const txSignature = await sendAndConfirmRawTransaction(connection, raw, {
-      commitment: "confirmed",
+    const txSignature = await connection.sendRawTransaction(raw, {
+      skipPreflight: true,
+      maxRetries: 5,
     });
+    
+    await connection.confirmTransaction(txSignature, "confirmed");
     
     let poolData: any = null;
     if (mint && userWallet) {
