@@ -7,18 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowDownUp } from "lucide-react";
-import {
-  DynamicBondingCurveClient,
-  getCurrentPoint,
-  prepareSwapAmountParam,
-} from "@meteora-ag/dynamic-bonding-curve-sdk";
+import { DynamicBondingCurveClient } from "@meteora-ag/dynamic-bonding-curve-sdk";
+import { CpAmm } from "@meteora-ag/cp-amm-sdk";
 import { useWallet } from "@solana/wallet-adapter-react";
-import {
-  Connection,
-} from "@solana/web3.js";
+import { Connection } from "@solana/web3.js";
 import BN from "bn.js";
 import { toast } from "sonner";
-import { TOKEN_POOL_ADDRESS } from "@/app/constant";
+import { TOKEN_GRADUATION_ADDRESS, TOKEN_POOL_ADDRESS } from "@/app/constant";
+import { getMigrateStatus } from "./migrateStatus";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 interface SwapSectionProps {
   tokenId: string;
@@ -29,7 +26,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   const [sellAmount, setSellAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const POOL_ADDRESS = TOKEN_POOL_ADDRESS; 
+  const POOL_ADDRESS = TOKEN_POOL_ADDRESS;
 
   const TOKEN_SYMBOL = "TOKEN";
   const SOL_BALANCE = 10.5;
@@ -43,43 +40,76 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
     "confirmed"
   );
 
-  const getSwapQuote = async (amountInSol: number, isBuy: boolean) => {
-    try {
-      const client = new DynamicBondingCurveClient(connection, "confirmed");
-      const poolState = await client.state.getPool(POOL_ADDRESS);
-      if (!poolState) {
-        console.error("Pool doesn't exist yet!");
+  const getSwapQuote = async (
+    amountInSol: number,
+    isBuy: boolean,
+    gPoolState?: any
+  ): Promise<any> => {
+    // Check if it's a graduated pool (CP-AMM)
+    if (gPoolState) {
+      try {
+        const cpAmm = new CpAmm(connection);
+        const currentSlot = await connection.getSlot();
+        const blockTime = await connection.getBlockTime(currentSlot);
+
+        if (blockTime === null) {
+          toast.error("Unable to fetch block time");
+          throw new Error("Unable to fetch block time");
+        }
+
+        toast.loading("Calculating quote...");
+
+        const quote = await cpAmm.getQuote({
+          inAmount: new BN(Math.floor(amountInSol * 1e9)),
+          inputTokenMint: gPoolState.tokenAMint,
+          slippage: 0.5,
+          poolState: gPoolState,
+          currentTime: blockTime,
+          currentSlot,
+          tokenADecimal: 9,
+          tokenBDecimal: 6,
+        });
+
+        console.log("Graduated Pool Quote:", quote);
+        toast.info(`Expected output: ${quote.minSwapOutAmount.toString()}`);
+        return quote;
+      } catch (error) {
+        console.error("Failed to get graduated pool quote:", error);
+        throw error;
       }
+    } else {
+      // Non-graduated pool (Dynamic Bonding Curve)
+      try {
+        const client = new DynamicBondingCurveClient(connection, "confirmed");
+        const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
+        if (!virtualPoolState) {
+          throw new Error("Pool not found");
+        }
 
-      const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
-      if (!virtualPoolState) {
-        throw new Error("Pool not found");
+        const poolConfigState = await client.state.getPoolConfig(
+          virtualPoolState.config
+        );
+
+        const currentPoint = new BN(0);
+        const amountIn = new BN(Math.floor(amountInSol * 1e9));
+
+        const quote = await client.pool.swapQuote({
+          virtualPool: virtualPoolState,
+          config: poolConfigState,
+          swapBaseForQuote: isBuy,
+          amountIn,
+          slippageBps: SLIPPAGE_BPS,
+          hasReferral: false,
+          currentPoint,
+        });
+
+        console.log("Regular Pool Quote:", quote);
+
+        return quote;
+      } catch (error) {
+        console.error("Failed to get swap quote:", error);
+        throw error;
       }
-
-      const poolConfigState = await client.state.getPoolConfig(
-        virtualPoolState.config
-      );
-
-
-
-      const currentPoint = new BN(0);
-
-      const amountIn = new BN(Math.floor(amountInSol * 1e9));
-
-      const quote = await client.pool.swapQuote({
-        virtualPool: virtualPoolState,
-        config: poolConfigState,
-        swapBaseForQuote: true, // true for buy, false for sell
-        amountIn,
-        slippageBps: SLIPPAGE_BPS,
-        hasReferral: false,
-        currentPoint,
-      });
-
-      return quote;
-    } catch (error) {
-      console.error("Failed to get swap quote:", error);
-      throw error;
     }
   };
 
@@ -98,26 +128,66 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
     const toastId = toast.loading("Preparing swap transaction...");
 
     try {
+      // Check if pool is graduated (CP-AMM)
+      const cpAmm = new CpAmm(connection);
+      let gPoolState = null;
+
+      try {
+        gPoolState = await cpAmm.fetchPoolState(TOKEN_GRADUATION_ADDRESS);
+      } catch (error) {
+        console.log("Graduated pool not found, using bonding curve pool");
+      }
+
+      // Check if pool is migrated
       const client = new DynamicBondingCurveClient(connection, "confirmed");
+      const nonGPoolState = await client.state.getPool(POOL_ADDRESS);
+      const migrationStatus = nonGPoolState ? nonGPoolState.isMigrated : false;
 
       toast.loading("Getting swap quote...", { id: toastId });
-      const quote = await getSwapQuote(parseFloat(buyAmount), true);
+      const quote = await getSwapQuote(parseFloat(buyAmount), true, gPoolState);
       console.log("Swap quote:", quote);
-      const swapParam = {
-        amountIn: new BN(Math.floor(parseFloat(buyAmount) * 1e9)),
-        minimumAmountOut: quote.minimumAmountOut,
-        swapBaseForQuote: false,
-        owner: wallet.publicKey,
-        pool: POOL_ADDRESS,
-        referralTokenAccount: null,
-      };
 
-      toast.loading("Creating swap transaction...", { id: toastId });
-      const swapTransaction = await client.pool.swap(swapParam);
+      let globalSwapTransaction: any;
 
-      const { blockhash } = await connection.getLatestBlockhash();
-      swapTransaction.recentBlockhash = blockhash;
-      swapTransaction.feePayer = wallet.publicKey;
+      if (migrationStatus && gPoolState) {
+        // Graduated pool - using CP-AMM
+        const swapTx = await cpAmm.swap({
+          payer: wallet.publicKey,
+          pool: TOKEN_GRADUATION_ADDRESS,
+          inputTokenMint: gPoolState.tokenAMint,
+          outputTokenMint: gPoolState.tokenBMint,
+          amountIn: new BN(Math.floor(parseFloat(buyAmount) * 1e9)),
+          minimumAmountOut: quote.minSwapOutAmount,
+          tokenAVault: gPoolState.tokenAVault,
+          tokenBVault: gPoolState.tokenBVault,
+          tokenAMint: gPoolState.tokenAMint,
+          tokenBMint: gPoolState.tokenBMint,
+          tokenAProgram: TOKEN_PROGRAM_ID,
+          tokenBProgram: TOKEN_PROGRAM_ID,
+          referralTokenAccount: null,
+        });
+        globalSwapTransaction = swapTx;
+      } else {
+        // Non-migrated pool - using Dynamic Bonding Curve
+        const swapParam = {
+          amountIn: new BN(Math.floor(parseFloat(buyAmount) * 1e9)),
+          minimumAmountOut: quote.minimumAmountOut,
+          swapBaseForQuote: true, // true when buying tokens with SOL
+          owner: wallet.publicKey,
+          pool: POOL_ADDRESS,
+          referralTokenAccount: null,
+        };
+
+        toast.loading("Creating swap transaction...", { id: toastId });
+        const swapTransaction = await client.pool.swap(swapParam);
+        globalSwapTransaction = swapTransaction;
+      }
+
+      const { blockhash, lastValidBlockHeight } =
+        await connection.getLatestBlockhash();
+      globalSwapTransaction.recentBlockhash = blockhash;
+      globalSwapTransaction.feePayer = wallet.publicKey;
+      globalSwapTransaction.lastValidBlockHeight = lastValidBlockHeight;
 
       toast.loading("Awaiting confirmation...", { id: toastId });
 
@@ -125,7 +195,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
         throw new Error("Wallet does not support transaction signing");
       }
 
-      const signedTx = await wallet.signTransaction(swapTransaction);
+      const signedTx = await wallet.signTransaction(globalSwapTransaction);
       const signature = await connection.sendRawTransaction(
         signedTx.serialize(),
         {
@@ -153,8 +223,10 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
       setBuyAmount("");
     } catch (error: any) {
-      console.error("Swap failed:", error);
-      toast.error(error?.message || "Failed to execute swap", { id: toastId });
+      console.error("Buy swap failed:", error);
+      toast.error(error?.message || "Failed to execute swap", {
+        id: toastId,
+      });
     } finally {
       setIsLoading(false);
     }
