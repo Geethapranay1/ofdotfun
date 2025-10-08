@@ -9,8 +9,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Copy, ExternalLink, LogOut } from "lucide-react";
+import { Copy, ExternalLink, LogOut, Wallet } from "lucide-react";
 import { toast } from "sonner";
+import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { useEffect, useState } from "react";
 
 interface WalletModalProps {
   open: boolean;
@@ -24,6 +26,31 @@ export default function WalletModal({
   disconnect,
 }: WalletModalProps) {
   const { publicKey, wallet } = useWallet();
+  const [balance, setBalance] = useState<number | null>(null);
+  const [isLoadingBalance, setIsLoadingBalance] = useState(false);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!publicKey || !open) return;
+
+      setIsLoadingBalance(true);
+      try {
+        const connection = new Connection(
+          process.env.NEXT_PUBLIC_RPC_URL || "https://api.devnet.solana.com",
+          "confirmed"
+        );
+        const balanceInLamports = await connection.getBalance(publicKey);
+        setBalance(balanceInLamports / LAMPORTS_PER_SOL);
+      } catch (error) {
+        console.error("Failed to fetch balance:", error);
+        setBalance(null);
+      } finally {
+        setIsLoadingBalance(false);
+      }
+    };
+
+    fetchBalance();
+  }, [publicKey, open]);
 
   const handleCopyAddress = () => {
     if (publicKey) {
@@ -70,12 +97,30 @@ export default function WalletModal({
           )}
 
           {publicKey && (
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Address</p>
-              <div className="flex items-center gap-2 p-3 bg-muted rounded-lg font-mono text-sm">
-                <span className="flex-1 truncate">{publicKey.toString()}</span>
+            <>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Balance</p>
+                <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                  <Wallet className="w-4 h-4 text-muted-foreground" />
+                  <span className="font-semibold text-lg">
+                    {isLoadingBalance
+                      ? "Loading..."
+                      : balance !== null
+                      ? `${balance.toFixed(4)} SOL`
+                      : "Unable to load"}
+                  </span>
+                </div>
               </div>
-            </div>
+
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Address</p>
+                <div className="flex items-center gap-2 p-3 bg-muted rounded-lg font-mono text-sm">
+                  <span className="flex-1 truncate">
+                    {publicKey.toString()}
+                  </span>
+                </div>
+              </div>
+            </>
           )}
 
           <div className="flex flex-col gap-2">
