@@ -64,7 +64,7 @@ export default function GraduatedSwap() {
       toast.loading("Calculating quote...");
 
       const quote = await cpAmm.getQuote({
-        inAmount: new BN(100_000_000),
+        inAmount: new BN(100_000_000_000_000),
         inputTokenMint: poolState.tokenAMint,
         slippage: 0.5,
         poolState,
@@ -83,7 +83,7 @@ export default function GraduatedSwap() {
         pool: GRADUATED_POOL_ADDRESS,
         inputTokenMint: poolState.tokenAMint,
         outputTokenMint: poolState.tokenBMint,
-        amountIn: new BN(100_000_000),
+        amountIn: new BN(100_000_000_000_000),
         minimumAmountOut: quote.minSwapOutAmount,
         tokenAVault: poolState.tokenAVault,
         tokenBVault: poolState.tokenBVault,
