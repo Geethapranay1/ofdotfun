@@ -17,9 +17,6 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { toast } from "sonner";
 import {
   Connection,
-  PublicKey,
-  sendAndConfirmTransaction,
-  Transaction,
 } from "@solana/web3.js";
 import {
   DynamicBondingCurveClient,
@@ -273,7 +270,7 @@ export function MigrationCard({
       <Card className="border-primary/50 bg-primary/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Rocket className="w-5 h-5 text-primary" />
+            <Rocket className="w-6 h-6 text-primary" />
             Ready for Migration
           </CardTitle>
         </CardHeader>
@@ -298,12 +295,12 @@ export function MigrationCard({
             {migrationComplete ? (
               <>
                 <CheckCircle2 className="w-4 h-4 mr-2" />
-                Migrated to Raydium
+                Migrated to Meteora V2
               </>
             ) : (
               <>
                 <Rocket className="w-4 h-4 mr-2" />
-                Migrate to Raydium
+                Migrate to Meteora V2
               </>
             )}
           </Button>
