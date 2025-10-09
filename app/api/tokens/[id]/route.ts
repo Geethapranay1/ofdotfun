@@ -5,22 +5,44 @@ import { DynamicBondingCurveClient } from "@meteora-ag/dynamic-bonding-curve-sdk
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL as string;
 const POOL_CONFIG_KEY = process.env.POOL_CONFIG_KEY as string;
 
-// Function to calculate market cap from pool data
-function calculateMarketData(poolState: any) {
+// Function to calculate market data from pool data
+function calculateMarketData(poolState: any, progress: number) {
   try {
-    const baseReserve = poolState.baseAmount || poolState.tokenAmount || 0;
-    const quoteReserve = poolState.quoteAmount || poolState.solAmount || 0;
+    console.log('Calculating market data with pool state:', poolState);
+    console.log('Progress:', progress);
     
-    if (baseReserve && quoteReserve) {
-      const price = Number(quoteReserve) / Number(baseReserve);
-      const marketCap = price * 1000000000; // Assuming 1B total supply
-      const volume = Number(quoteReserve) * 0.1; // Rough estimate
+    // Try different possible field names for the amounts
+    let baseAmount = poolState.baseAmount || poolState.baseReserve || poolState.base_amount || 0;
+    let quoteAmount = poolState.quoteAmount || poolState.quoteReserve || poolState.quote_amount || 0;
+    
+    // Convert BigInt to Number if needed
+    if (typeof baseAmount === 'bigint') {
+      baseAmount = Number(baseAmount);
+    }
+    if (typeof quoteAmount === 'bigint') {
+      quoteAmount = Number(quoteAmount);
+    }
+    
+    console.log('Base amount:', baseAmount);
+    console.log('Quote amount:', quoteAmount);
+    
+    if (baseAmount && quoteAmount && baseAmount > 0) {
+      const price = Number(quoteAmount) / Number(baseAmount);
+      const totalSupply = 1000000000; // 1B total supply
+      const marketCap = price * totalSupply;
+      
+      // Better volume estimate based on actual reserves
+      const volume = Number(quoteAmount) * 0.01; // Reduced multiplier for more realistic volume
+      
+      console.log('Calculated price:', price);
+      console.log('Calculated market cap:', marketCap);
+      console.log('Calculated volume:', volume);
       
       return {
         marketCap: marketCap > 1000000 ? `$${(marketCap / 1000000).toFixed(1)}M` : `$${(marketCap / 1000).toFixed(0)}K`,
         volume: volume > 1000 ? `$${(volume / 1000).toFixed(0)}K` : `$${volume.toFixed(0)}`,
-        progress: Math.min(95, Math.max(5, (marketCap / 10000000) * 100)), // Progress towards 10M cap
-        price: price.toFixed(6)
+        progress: Math.round(progress * 100), // Convert to percentage
+        price: price.toFixed(8) // More precision for small prices
       };
     }
   } catch (error) {
@@ -29,9 +51,9 @@ function calculateMarketData(poolState: any) {
   
   // Fallback values
   return {
-    marketCap: "$0.5M",
-    volume: "$50K",
-    progress: 50,
+    marketCap: "$0K",
+    volume: "$0",
+    progress: Math.round(progress * 100), // Still use the progress if available
     price: "0.000001"
   };
 }
@@ -65,15 +87,8 @@ export async function GET(
 
     console.log(`Fetching token details for mint: ${mintAddress}`);
 
-    // Get all pools and find the one with this mint address
-    const allPools = await client.state.getPools();
-    const tokenPool = allPools.find((pool: any) => {
-      const poolAccount = pool.account || pool;
-      const baseMint = poolAccount.baseMint?.toString();
-      const poolConfig = poolAccount.config?.toString();
-      
-      return baseMint === mintAddress && poolConfig === POOL_CONFIG_KEY;
-    });
+    // Get pool by base mint address
+    const tokenPool = await client.state.getPoolByBaseMint(mintAddress);
 
     if (!tokenPool) {
       return NextResponse.json(
@@ -93,28 +108,19 @@ export async function GET(
     }
 
     console.log(`Found pool for token: ${poolAddress}`);
+    console.log('Pool account data:', JSON.stringify(poolAccount, null, 2));
 
-    // Get detailed pool state
-    let poolState = null;
+    // Get curve progress
+    let progress = 0;
     try {
-      poolState = await client.state.getPool(new PublicKey(poolAddress));
+      progress = await client.state.getPoolCurveProgress(poolAddress);
+      console.log(`Pool progress: ${progress}`);
     } catch (error) {
-      console.warn(`Failed to get pool state for ${poolAddress}:`, error);
-      return NextResponse.json(
-        { error: "Failed to fetch pool state" },
-        { status: 500 }
-      );
+      console.warn(`Failed to get progress for pool ${poolAddress}:`, error);
     }
 
-    if (!poolState) {
-      return NextResponse.json(
-        { error: "Pool state not found" },
-        { status: 404 }
-      );
-    }
-
-    // Calculate market data
-    const marketData = calculateMarketData(poolState);
+    // Calculate market data using pool account data
+    const marketData = calculateMarketData(poolAccount, progress);
 
     // Generate token metadata (since we don't have metadata accounts yet)
     const mintHash = mintAddress.slice(-8);
@@ -129,7 +135,7 @@ export async function GET(
       progress: marketData.progress,
       price: `$${marketData.price}`,
       holders: "N/A", // Would need to calculate from token accounts
-      totalSupply: "1,000,000,000", // Standard DBC supply
+      totalSupply: "1,000,000,000", // Standard total supply
       contractAddress: mintAddress,
       creator: "Platform Creator", // Would need to get from pool creation transaction
       tokenMint: mintAddress,
