@@ -1,6 +1,6 @@
 "use client";
 
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Copy, ExternalLink, LogOut } from "lucide-react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { fetchSolBalance } from "@/lib/actions";
 
 interface WalletModalProps {
   open: boolean;
@@ -24,6 +26,18 @@ export default function WalletModal({
   disconnect,
 }: WalletModalProps) {
   const { publicKey, wallet } = useWallet();
+  const { connection } = useConnection();
+
+  const { data: solBalance, isLoading: balanceLoading } = useQuery({
+    enabled: !!publicKey,
+    queryKey: ["sol-balance", publicKey?.toString()],
+    queryFn: async () => {
+      if (!publicKey) return 0;
+      return await fetchSolBalance(connection, publicKey);
+    },
+    staleTime: 15_000,
+    refetchInterval: 30_000,
+  });
 
   const handleCopyAddress = () => {
     if (publicKey) {
@@ -57,12 +71,12 @@ export default function WalletModal({
         </DialogHeader>
         <div className="space-y-4">
           {wallet && (
-            <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+            <div className="flex items-center gap-3 p-3 bg-muted rounded-full">
               {wallet.adapter.icon && (
                 <img
                   src={wallet.adapter.icon}
                   alt={wallet.adapter.name}
-                  className="w-8 h-8"
+                  className="size-14 rounded-full"
                 />
               )}
               <span className="font-medium">{wallet.adapter.name}</span>
@@ -74,6 +88,19 @@ export default function WalletModal({
               <p className="text-sm text-muted-foreground">Address</p>
               <div className="flex items-center gap-2 p-3 bg-muted rounded-lg font-mono text-sm">
                 <span className="flex-1 truncate">{publicKey.toString()}</span>
+              </div>
+            </div>
+          )}
+
+          {publicKey && (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">Balance</p>
+              <div className="flex items-center gap-2 p-3 bg-muted rounded-lg text-sm">
+                {balanceLoading ? (
+                  <span className="text-muted-foreground">Loading...</span>
+                ) : (
+                  <span className="font-medium">{solBalance?.toFixed(4)} SOL</span>
+                )}
               </div>
             </div>
           )}
