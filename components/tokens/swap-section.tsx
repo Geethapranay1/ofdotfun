@@ -9,8 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowDownUp } from "lucide-react";
 import {
   DynamicBondingCurveClient,
-  getCurrentPoint,
-  prepareSwapAmountParam,
 } from "@meteora-ag/dynamic-bonding-curve-sdk";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
@@ -25,6 +23,7 @@ interface SwapSectionProps {
 }
 
 export function SwapSection({ tokenId }: SwapSectionProps) {
+  console.log("SwapSection");
   const [buyAmount, setBuyAmount] = useState("");
   const [sellAmount, setSellAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);

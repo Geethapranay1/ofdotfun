@@ -29,7 +29,7 @@ export function TokenCard({ token }: TokenCardProps) {
           <div className="flex items-start gap-4">
             <div className="relative w-16 h-16 flex-shrink-0">
               <Image
-                src={token.image || "/globe.svg"}
+                src={token.image || "https://i.pinimg.com/1200x/b7/8f/02/b78f023aa1bca7bdada28db1c30d1fe5.jpg"}
                 alt={token.name || "Token"}
                 fill
                 className="rounded-full object-cover"

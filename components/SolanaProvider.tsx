@@ -9,6 +9,7 @@ import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
 import "@solana/wallet-adapter-react-ui/styles.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface SolanaProviderProps {
   children: ReactNode;
@@ -17,12 +18,15 @@ interface SolanaProviderProps {
 export const SolanaProvider: FC<SolanaProviderProps> = ({ children }) => {
   const network = WalletAdapterNetwork.Devnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  const queryClient = useMemo(() => new QueryClient(), []);
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={[]} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
+    <QueryClientProvider client={queryClient}>
+      <ConnectionProvider endpoint={endpoint}>
+        <WalletProvider wallets={[]} autoConnect>
+          <WalletModalProvider>{children}</WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
+    </QueryClientProvider>
   );
 };

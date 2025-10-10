@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +30,7 @@ import {
 } from "@meteora-ag/dynamic-bonding-curve-sdk";
 import { BN } from "bn.js";
 import { POOL_CONFIG_KEY, TOKEN_POOL_ADDRESS } from "@/app/constant";
+import PoolState from "./pool-state";
 
 interface MigrationCardProps {
   tokenId: string;
@@ -54,6 +55,27 @@ export function MigrationCard({
 
   const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL!;
 
+  const connection = new Connection(RPC_URL, "confirmed");
+  const client = new DynamicBondingCurveClient(connection, "confirmed");
+
+  React.useEffect(() => {
+    let isMounted = true;
+    const checkIsMigrated = async () => {
+      try {
+        const vps = await client.state.getPool(TOKEN_POOL_ADDRESS);
+        if (isMounted && vps?.isMigrated) {
+          setMigrationComplete(true);
+        }
+      } catch (err) {
+        console.error("Failed to load pool state:", err);
+      }
+    };
+    checkIsMigrated();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleMigrate = async () => {
     if (!wallet.connected || !wallet.publicKey) {
       toast.error("Please connect your wallet");
@@ -68,19 +90,15 @@ export function MigrationCard({
     setIsMigrating(true);
 
     try {
-      const connection = new Connection(RPC_URL, "confirmed");
-      const client = new DynamicBondingCurveClient(connection, "confirmed");
-
       const poolPubkey = TOKEN_POOL_ADDRESS;
       const configPubkey = POOL_CONFIG_KEY;
+      const virtualPoolState = await client.state.getPool(poolPubkey);
+      const poolConfigState = await client.state.getPoolConfig(configPubkey);
 
       toast.info("Fetching pool state...", {
         description: "Loading pool information",
       });
       setMigrationStep("Fetching pool state...");
-
-      const virtualPoolState = await client.state.getPool(poolPubkey);
-      const poolConfigState = await client.state.getPoolConfig(configPubkey);
 
       if (!virtualPoolState) {
         throw new Error("Pool not found");
@@ -246,7 +264,10 @@ export function MigrationCard({
         action: {
           label: "View on Explorer",
           onClick: () =>
-            window.open(`https://explorer.solana.com/tx/${migrateSignature}?cluster=devnet`, "_blank"),
+            window.open(
+              `https://explorer.solana.com/tx/${migrateSignature}?cluster=devnet`,
+              "_blank"
+            ),
         },
       });
     } catch (error) {
@@ -260,6 +281,12 @@ export function MigrationCard({
       setMigrationStep("");
     }
   };
+
+  React.useEffect(() => {
+    if (migrationComplete) {
+      setMigrationComplete(true);
+    }
+  }, [migrationComplete]);
 
   const handleCloseDialog = () => {
     setShowDialog(false);
@@ -289,24 +316,32 @@ export function MigrationCard({
               irreversible and requires multiple transaction approvals.
             </AlertDescription>
           </Alert>
-          <Button
-            onClick={() => setShowDialog(true)}
-            className="w-full"
-            size="lg"
-            disabled={migrationComplete}
-          >
-            {migrationComplete ? (
-              <>
-                <CheckCircle2 className="w-4 h-4 mr-2" />
-                Migrated to Raydium
-              </>
-            ) : (
-              <>
-                <Rocket className="w-4 h-4 mr-2" />
-                Migrate to Raydium
-              </>
-            )}
-          </Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              onClick={() => setShowDialog(true)}
+              className="w-full"
+              size="lg"
+              disabled={migrationComplete}
+            >
+              {migrationComplete ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                  Migration Complete
+                </>
+              ) : (
+                <>
+                  <Rocket className="w-4 h-4 mr-2" />
+                  Migrate to DAMM V2
+                </>
+              )}
+            </Button>
+            {
+
+              migrationComplete && (
+                <PoolState />
+              )
+            }
+          </div>
         </CardContent>
       </Card>
 

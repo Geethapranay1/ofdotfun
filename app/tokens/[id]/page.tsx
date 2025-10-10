@@ -1,6 +1,6 @@
 import { TokenDetails } from "@/components/tokens/token-details";
 import { SwapSection } from "@/components/tokens/swap-section";
-import GraduatedSwap from "@/components/tokens/graduated-swap";
+import SwapContainer from "@/components/tokens/swap-container";
 import axios from "axios";
 
 export default async function TokenDetailPage({
@@ -14,11 +14,10 @@ export default async function TokenDetailPage({
     <div className="max-w-7xl px-6 mx-auto py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <GraduatedSwap />
           <TokenDetails tokenId={poolKey} />
         </div>
         <div className="lg:col-span-1">
-          <SwapSection tokenId={poolKey} />
+          <SwapContainer poolKey={poolKey} />
         </div>
       </div>
     </div>

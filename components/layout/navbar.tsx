@@ -19,7 +19,6 @@ export function Navbar() {
   const { connected, publicKey, connect, disconnect, connecting, wallet } =
     useWallet();
   const { setVisible } = useWalletModal();
-
   useEffect(() => {
     const fetchWalletAddress = async () => {
       let addressStr: string | undefined;
@@ -129,7 +128,7 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link href="/tokens" className="flex items-center gap-2">
-              <div className="text-sm font-medium">Tokun.Lunchpad</div>
+              <div className="text-sm font-medium text-red-500"><span className="text-primary">Tokun</span>.<span className="text-primary">Lunchpad</span></div>
             </Link>
             <nav className="flex items-center gap-6">
               <Link
@@ -137,6 +136,12 @@ export function Navbar() {
                 className="text-sm font-medium hover:text-primary transition-colors"
               >
                 Tokens
+              </Link>
+              <Link
+                href="/profile"
+                className="text-sm font-medium hover:text-primary transition-colors"
+              >
+                Profile
               </Link>
               <Link
                 href="/create"
