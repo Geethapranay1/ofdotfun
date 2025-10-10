@@ -297,7 +297,7 @@ export function MigrationCard({
 
   return (
     <>
-      <Card className="border-primary/50 bg-primary/5">
+      <Card className="border-0 rounded-none bg-primary/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Rocket className="w-5 h-5 text-primary" />
@@ -346,7 +346,7 @@ export function MigrationCard({
       </Card>
 
       <Dialog open={showDialog} onOpenChange={handleCloseDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md border-0 rounded-none">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Rocket className="w-5 h-5" />

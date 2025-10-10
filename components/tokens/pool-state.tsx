@@ -49,6 +49,6 @@ const POOL_ADDRESS = TOKEN_POOL_ADDRESS;
     }
   }
   return (
-    <Button onClick={() => handlePoolState()} className='w-full'>Get Pool State</Button>
+    <Button onClick={() => handlePoolState()} className='w-full rounded-none'>Get Pool State</Button>
   )
 }

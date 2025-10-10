@@ -70,39 +70,39 @@
 
 :root {
   --radius: 1.5rem;
-  /* Black/neutral base with vibrant green accents */
-  --background: oklch(0.16 0 0);
-  --foreground: oklch(0.92 0 0);
-  --card: oklch(0.19 0 0);
-  --card-foreground: oklch(0.94 0 0);
-  --popover: oklch(0.17 0 0);
-  --popover-foreground: oklch(0.94 0 0);
-  --primary: #b9ff00; /* neon lime */
-  --primary-foreground: oklch(0.14 0 0);
-  --secondary: oklch(0.32 0 0);
-  --secondary-foreground: oklch(0.94 0 0);
-  --muted: oklch(0.24 0 0);
-  --muted-foreground: oklch(0.72 0 0);
-  --accent: oklch(0.22 0 0);
-  --accent-foreground: oklch(0.94 0 0);
-  --destructive: oklch(0.55 0.12 30);
-  --border: oklch(0.26 0 0);
-  --input: oklch(0.26 0 0);
-  --ring: #b9ff00;
+  /* Light mode with clean, modern colors */
+  --background: oklch(0.98 0 0); /* Very light gray/white */
+  --foreground: oklch(0.15 0 0); /* Dark text */
+  --card: oklch(1.0 0 0); /* Pure white cards */
+  --card-foreground: oklch(0.15 0 0); /* Dark text on cards */
+  --popover: oklch(1.0 0 0); /* White popovers */
+  --popover-foreground: oklch(0.15 0 0); /* Dark text on popovers */
+  --primary: #2563eb; /* Blue primary for light mode */
+  --primary-foreground: oklch(0.98 0 0); /* Light text on primary */
+  --secondary: oklch(0.96 0 0); /* Light gray secondary */
+  --secondary-foreground: oklch(0.15 0 0); /* Dark text on secondary */
+  --muted: oklch(0.96 0 0); /* Light muted background */
+  --muted-foreground: oklch(0.45 0 0); /* Medium gray text */
+  --accent: oklch(0.96 0 0); /* Light accent */
+  --accent-foreground: oklch(0.15 0 0); /* Dark text on accent */
+  --destructive: oklch(0.55 0.12 30); /* Red for destructive actions */
+  --border: oklch(0.90 0 0); /* Light borders */
+  --input: oklch(0.96 0 0); /* Light input backgrounds */
+  --ring: #2563eb; /* Blue focus ring */
   --chart-1: #22c55e;
-  --chart-2: #b9ff00;
+  --chart-2: #2563eb;
   --chart-3: #a3a3a3;
   --chart-4: #0ea5e9;
   --chart-5: #f59e0b;
-  --sidebar: oklch(0.19 0 0);
-  --sidebar-foreground: oklch(0.94 0 0);
-  --sidebar-primary: #b9ff00;
-  --sidebar-primary-foreground: oklch(0.14 0 0);
-  --sidebar-accent: oklch(0.22 0 0);
-  --sidebar-accent-foreground: oklch(0.94 0 0);
-  --sidebar-border: oklch(0.26 0 0);
-  --sidebar-ring: #b9ff00;
-  --destructive-foreground: oklch(0.98 0 0);
+  --sidebar: oklch(0.98 0 0); /* Light sidebar */
+  --sidebar-foreground: oklch(0.15 0 0); /* Dark text on sidebar */
+  --sidebar-primary: #2563eb; /* Blue sidebar primary */
+  --sidebar-primary-foreground: oklch(0.98 0 0); /* Light text on sidebar primary */
+  --sidebar-accent: oklch(0.96 0 0); /* Light sidebar accent */
+  --sidebar-accent-foreground: oklch(0.15 0 0); /* Dark text on sidebar accent */
+  --sidebar-border: oklch(0.90 0 0); /* Light sidebar borders */
+  --sidebar-ring: #2563eb; /* Blue sidebar ring */
+  --destructive-foreground: oklch(0.98 0 0); /* Light text on destructive */
   --font-sans: Geist Mono, ui-monospace, monospace;
   --font-serif: serif;
   --font-mono: JetBrains Mono, monospace;
@@ -126,39 +126,39 @@
 }
 
 .dark {
-  /* Dark mode keeps same palette for consistency */
-  --background: oklch(0.15 0 0);
-  --foreground: oklch(0.92 0 0);
-  --card: oklch(0.18 0 0);
-  --card-foreground: oklch(0.94 0 0);
-  --popover: oklch(0.16 0 0);
-  --popover-foreground: oklch(0.94 0 0);
-  --primary: #b9ff00;
-  --primary-foreground: oklch(0.14 0 0);
-  --secondary: oklch(0.30 0 0);
-  --secondary-foreground: oklch(0.94 0 0);
-  --muted: oklch(0.24 0 0);
-  --muted-foreground: oklch(0.72 0 0);
-  --accent: oklch(0.22 0 0);
-  --accent-foreground: oklch(0.94 0 0);
-  --destructive: oklch(0.55 0.12 30);
-  --border: oklch(0.26 0 0);
-  --input: oklch(0.26 0 0);
-  --ring: #b9ff00;
+  /* Dark mode with neon green accents */
+  --background: oklch(0.15 0 0); /* Dark background */
+  --foreground: oklch(0.92 0 0); /* Light text */
+  --card: oklch(0.18 0 0); /* Slightly lighter dark cards */
+  --card-foreground: oklch(0.94 0 0); /* Light text on cards */
+  --popover: oklch(0.16 0 0); /* Dark popovers */
+  --popover-foreground: oklch(0.94 0 0); /* Light text on popovers */
+  --primary: #b9ff00; /* Neon lime green */
+  --primary-foreground: oklch(0.14 0 0); /* Dark text on primary */
+  --secondary: oklch(0.30 0 0); /* Medium dark secondary */
+  --secondary-foreground: oklch(0.94 0 0); /* Light text on secondary */
+  --muted: oklch(0.24 0 0); /* Dark muted background */
+  --muted-foreground: oklch(0.72 0 0); /* Medium light text */
+  --accent: oklch(0.22 0 0); /* Dark accent */
+  --accent-foreground: oklch(0.94 0 0); /* Light text on accent */
+  --destructive: oklch(0.55 0.12 30); /* Red for destructive actions */
+  --border: oklch(0.26 0 0); /* Dark borders */
+  --input: oklch(0.26 0 0); /* Dark input backgrounds */
+  --ring: #b9ff00; /* Neon green focus ring */
   --chart-1: #22c55e;
   --chart-2: #b9ff00;
   --chart-3: #a3a3a3;
   --chart-4: #0ea5e9;
   --chart-5: #f59e0b;
-  --sidebar: oklch(0.18 0 0);
-  --sidebar-foreground: oklch(0.94 0 0);
-  --sidebar-primary: #b9ff00;
-  --sidebar-primary-foreground: oklch(0.14 0 0);
-  --sidebar-accent: oklch(0.22 0 0);
-  --sidebar-accent-foreground: oklch(0.94 0 0);
-  --sidebar-border: oklch(0.26 0 0);
-  --sidebar-ring: #b9ff00;
-  --destructive-foreground: oklch(0.14 0 0);
+  --sidebar: oklch(0.18 0 0); /* Dark sidebar */
+  --sidebar-foreground: oklch(0.94 0 0); /* Light text on sidebar */
+  --sidebar-primary: #b9ff00; /* Neon green sidebar primary */
+  --sidebar-primary-foreground: oklch(0.14 0 0); /* Dark text on sidebar primary */
+  --sidebar-accent: oklch(0.22 0 0); /* Dark sidebar accent */
+  --sidebar-accent-foreground: oklch(0.94 0 0); /* Light text on sidebar accent */
+  --sidebar-border: oklch(0.26 0 0); /* Dark sidebar borders */
+  --sidebar-ring: #b9ff00; /* Neon green sidebar ring */
+  --destructive-foreground: oklch(0.98 0 0); /* Light text on destructive */
   --radius: 1.5rem;
   --font-sans: Geist Mono, ui-monospace, monospace;
   --font-serif: serif;

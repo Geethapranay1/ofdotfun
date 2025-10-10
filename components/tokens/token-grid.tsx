@@ -72,18 +72,18 @@ export function TokenGrid() {
   }, [tokens, search, sortBy]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+    <div className="flex flex-col">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between border-b">
         <Input
           placeholder="Search by name, symbol, description, or mint..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="sm:max-w-md"
+          className="sm:max-w-md border-0 rounded-none focus-visible:outline-0 dark:bg-background focus-visible:ring-0 py-8 sm:text-lg"
         />
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Sort by</span>
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="min-w-[180px]">
+            <SelectTrigger className="border-0 rounded-none py-8">
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
             <SelectContent>
@@ -98,11 +98,11 @@ export function TokenGrid() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 divide-y divide-x sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
         {isLoading && (
           <>
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="border rounded-xl p-4 bg-card animate-pulse h-40" />
+              <div key={i} className="border-0 rounded-none p-4 bg-card animate-pulse h-40" />
             ))}
           </>
         )}

@@ -196,7 +196,7 @@ export function TokenCreationForm({
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <Card>
+        <Card className="border-0 rounded-none">
           <CardContent className="pt-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -283,7 +283,7 @@ export function TokenCreationForm({
       </form>
 
       <Dialog open={showSuccessDialog} onOpenChange={closeSuccessDialog}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg border-0 rounded-none">
           <DialogHeader>
             <div className="flex items-center justify-center mb-4">
               <div className="rounded-full bg-green-100 dark:bg-green-900 p-3">
@@ -299,7 +299,7 @@ export function TokenCreationForm({
           </DialogHeader>
           {successData && (
             <div className="space-y-4 mt-4">
-              <div className="bg-muted p-4 rounded-lg space-y-3">
+              <div className="bg-muted p-4 rounded-none space-y-3">
                 <div>
                   <p className="text-sm font-medium mb-1">Token Name</p>
                   <p className="text-lg font-bold">

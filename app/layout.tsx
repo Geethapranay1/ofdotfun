@@ -34,12 +34,12 @@ export default function RootLayout({
         <SolanaProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >
             <Navbar />
-            <main>{children}</main>
+            <main className="mt-20">{children}</main>
             <Toaster position="top-left" toastOptions={{
               style:{
                 borderRadius: '24px',

@@ -124,11 +124,11 @@ export function Navbar() {
 
   return (
     <>
-      <header className="">
+      <header className="w-full border-b py-2 fixed top-0 left-0 right-0 z-50 bg-background">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link href="/tokens" className="flex items-center gap-2">
-              <div className="text-sm font-medium text-red-500"><span className="text-primary">Tokun</span>.<span className="text-primary">Lunchpad</span></div>
+              <div className="text-base font-medium text-red-500"><span className="text-primary">Tokun</span>.<span className="text-primary">Lunchpad</span></div>
             </Link>
             <nav className="flex items-center gap-6">
               <Link

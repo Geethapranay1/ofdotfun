@@ -240,7 +240,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   };
 
   return (
-    <Card className="sticky top-8">
+    <Card className="sticky top-8 border-0 rounded-none">
       <CardHeader>
         <CardTitle>Trade</CardTitle>
       </CardHeader>

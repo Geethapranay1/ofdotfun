@@ -46,20 +46,20 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
             src={preview}
             alt="Token preview"
             fill
-            className="rounded-full object-cover border-4 border-muted"
+            className="rounded-none object-cover border-4 border-muted"
           />
           <Button
             type="button"
             variant="destructive"
             size="icon"
-            className="absolute -top-2 -right-2 rounded-full"
+            className="absolute -top-2 -right-2 rounded-none"
             onClick={handleRemove}
           >
             <X className="w-4 h-4" />
           </Button>
         </div>
       ) : (
-        <div className="w-48 h-48 mx-auto border-2 border-dashed border-muted rounded-full flex items-center justify-center">
+        <div className="w-48 h-48 mx-auto border-2 border-dashed border-muted rounded-none flex items-center justify-center">
           <Upload className="w-12 h-12 text-muted-foreground" />
         </div>
       )}

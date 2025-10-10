@@ -24,18 +24,18 @@ export function TokenCard({ token }: TokenCardProps) {
 
   return (
     <Link href={`/tokens/${poolKey}`}>
-      <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-        <CardHeader className="pb-4">
+      <Card className="hover:shadow-lg transition-shadow gap-0 cursor-pointer h-full rounded-none border-0 p-0">
+        <CardHeader className="pb-4 px-0">
           <div className="flex items-start gap-4">
-            <div className="relative w-16 h-16 flex-shrink-0">
+            <div className="relative w-26 h-26 flex-shrink-0">
               <Image
                 src={token.image || "https://i.pinimg.com/1200x/b7/8f/02/b78f023aa1bca7bdada28db1c30d1fe5.jpg"}
                 alt={token.name || "Token"}
                 fill
-                className="rounded-full object-cover"
+                className="object-cover"
               />
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 py-4">
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-bold text-lg truncate">
                   {token.name || formatAddress(tokenMint)}
@@ -50,8 +50,8 @@ export function TokenCard({ token }: TokenCardProps) {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <CardContent className="space-y-4 px-0">
+          <div className="grid grid-cols-2 gap-4 px-4">
             <div>
               <p className="text-xs text-muted-foreground mb-1">Token Mint</p>
               <p className="font-semibold text-xs font-mono">
@@ -65,7 +65,7 @@ export function TokenCard({ token }: TokenCardProps) {
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 px-4">
             <div>
               <p className="text-xs text-muted-foreground mb-1">
                 Token Reserve
@@ -83,12 +83,12 @@ export function TokenCard({ token }: TokenCardProps) {
               </p>
             </div>
           </div>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
+          <div className="space-y-2 relative">
+            <div className="flex justify-between text-sm absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-8 w-full">
               <span className="text-muted-foreground">Progress</span>
               <span className="font-medium">{progress}%</span>
             </div>
-            <Progress value={progress} className="h-2" />
+            <Progress value={progress} className="h-10" />
           </div>
         </CardContent>
       </Card>

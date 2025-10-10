@@ -20,7 +20,10 @@ interface GraduatedSwapSectionProps {
   onTabChange?: (tab: "buy" | "sell") => void;
 }
 
-export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: GraduatedSwapSectionProps) {
+export function GraduatedSwapSection({
+  activeTab = "buy",
+  onTabChange,
+}: GraduatedSwapSectionProps) {
   const [buyAmount, setBuyAmount] = useState("");
   const [sellAmount, setSellAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -108,15 +111,20 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
     swapTx.lastValidBlockHeight = lastValidBlockHeight;
     swapTx.feePayer = wallet.publicKey;
 
-    toast.loading("Please approve the transaction in your wallet", { id: toastId });
+    toast.loading("Please approve the transaction in your wallet", {
+      id: toastId,
+    });
 
     const signedTx = await wallet.signTransaction(swapTx);
     toast.loading("Sending transaction...", { id: toastId });
-    const signature = await connection.sendRawTransaction(signedTx.serialize(), {
-      maxRetries: 5,
-      skipPreflight: true,
-      preflightCommitment: "confirmed",
-    });
+    const signature = await connection.sendRawTransaction(
+      signedTx.serialize(),
+      {
+        maxRetries: 5,
+        skipPreflight: true,
+        preflightCommitment: "confirmed",
+      }
+    );
 
     toast.loading("Confirming transaction...", { id: toastId });
     const confirmation = await connection.confirmTransaction(
@@ -178,19 +186,19 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
   };
 
   return (
-    <Card className="sticky top-8">
-      <CardHeader>
-        <CardTitle>Trade</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Tabs value={activeTab} onValueChange={(v) => onTabChange?.(v as "buy" | "sell")} className="w-full">
+    <Card className="sticky top-8 border-0 rounded-none p-0">
+      <CardContent className="p-0">
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => onTabChange?.(v as "buy" | "sell")}
+          className="w-full"
+        >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="buy">Buy</TabsTrigger>
             <TabsTrigger value="sell">Sell</TabsTrigger>
           </TabsList>
           <TabsContent value="buy" className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="buy-from">From</Label>
               <div className="space-y-2">
                 <Input
                   id="buy-from"
@@ -201,7 +209,9 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
                 />
                 <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
                   <span className="text-sm font-medium">SOL</span>
-                  <span className="text-xs text-muted-foreground">Balance: {SOL_BALANCE}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Balance: {SOL_BALANCE}
+                  </span>
                 </div>
               </div>
             </div>
@@ -213,12 +223,19 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="buy-to">To (estimated)</Label>
               <div className="space-y-2">
-                <Input id="buy-to" type="number" placeholder="0.0" readOnly value={""} />
+                <Input
+                  id="buy-to"
+                  type="number"
+                  placeholder="0.0"
+                  readOnly
+                  value={""}
+                />
                 <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
                   <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
-                  <span className="text-xs text-muted-foreground">Balance: {TOKEN_BALANCE}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Balance: {TOKEN_BALANCE}
+                  </span>
                 </div>
               </div>
             </div>
@@ -227,16 +244,24 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
               onClick={handleBuy}
               className="w-full"
               size="lg"
-              disabled={!wallet.connected || isLoading || !buyAmount || parseFloat(buyAmount) <= 0}
+              disabled={
+                !wallet.connected ||
+                isLoading ||
+                !buyAmount ||
+                parseFloat(buyAmount) <= 0
+              }
             >
-              {!wallet.connected ? "Connect Wallet" : isLoading ? "Processing..." : "Buy Token"}
+              {!wallet.connected
+                ? "Connect Wallet"
+                : isLoading
+                ? "Processing..."
+                : "Buy Token"}
             </Button>
           </TabsContent>
 
           <TabsContent value="sell" className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="sell-from">From</Label>
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Input
                   id="sell-from"
                   type="number"
@@ -244,10 +269,12 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
                   value={sellAmount}
                   onChange={(e) => setSellAmount(e.target.value)}
                 />
-                <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
+                <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md absolute top-0 right-0">
                   <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
-                  <span className="text-xs text-muted-foreground">Balance: {TOKEN_BALANCE}</span>
                 </div>
+                <span className="text-xs text-muted-foreground text-right">
+                  Balance: {TOKEN_BALANCE}
+                </span>
               </div>
             </div>
 
@@ -258,12 +285,19 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sell-to">To (estimated)</Label>
               <div className="space-y-2">
-                <Input id="sell-to" type="number" placeholder="0.0" readOnly value={""} />
+                <Input
+                  id="sell-to"
+                  type="number"
+                  placeholder="0.0"
+                  readOnly
+                  value={""}
+                />
                 <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
                   <span className="text-sm font-medium">SOL</span>
-                  <span className="text-xs text-muted-foreground">Balance: {SOL_BALANCE}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Balance: {SOL_BALANCE}
+                  </span>
                 </div>
               </div>
             </div>
@@ -273,9 +307,18 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
               className="w-full"
               size="lg"
               variant="destructive"
-              disabled={!wallet.connected || isLoading || !sellAmount || parseFloat(sellAmount) <= 0}
+              disabled={
+                !wallet.connected ||
+                isLoading ||
+                !sellAmount ||
+                parseFloat(sellAmount) <= 0
+              }
             >
-              {!wallet.connected ? "Connect Wallet" : isLoading ? "Processing..." : "Sell Token"}
+              {!wallet.connected
+                ? "Connect Wallet"
+                : isLoading
+                ? "Processing..."
+                : "Sell Token"}
             </Button>
           </TabsContent>
         </Tabs>
@@ -285,5 +328,3 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
 }
 
 export default GraduatedSwapSection;
-
-
