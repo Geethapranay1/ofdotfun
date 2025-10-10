@@ -287,18 +287,18 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 p-0">
           <div className="space-y-2">
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-sm px-6">
               <span className="text-muted-foreground">
                 Bonding Curve Progress
               </span>
               <span className="font-medium">{token.progress}%</span>
             </div>
-            <Progress value={token.progress} className="h-3" />
+            <Progress value={token.progress} className="h-14" />
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6">
             <div>
               <p className="text-sm text-muted-foreground mb-1">Price</p>
               <p className="font-semibold text-lg">{token.price}</p>
@@ -319,7 +319,7 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
 
           <Separator />
 
-          <div className="space-y-3">
+          <div className="space-y-3 px-6">
             <h3 className="font-semibold">Token Information</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -341,7 +341,7 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
 
           <Separator />
 
-          <div className="space-y-3">
+          <div className="space-y-3 px-6">
             <h3 className="font-semibold">Social Links</h3>
             <div className="flex gap-3">
               {token.socialLinks.twitter && (
