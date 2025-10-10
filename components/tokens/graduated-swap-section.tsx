@@ -21,7 +21,6 @@ interface GraduatedSwapSectionProps {
 }
 
 export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: GraduatedSwapSectionProps) {
-    console.log("GraduatedSwapSection");
   const [buyAmount, setBuyAmount] = useState("");
   const [sellAmount, setSellAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +30,7 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
   const TOKEN_SYMBOL = "TOKEN";
   const SOL_BALANCE = 10.5;
   const TOKEN_BALANCE = 0;
-  const SLIPPAGE = 0.5; // percent
+  const SLIPPAGE = 0.5;
 
   const wallet = useWallet();
   const connection = new Connection(
@@ -41,7 +40,7 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
 
   const cpAmm = new CpAmm(connection);
 
-  async function performCpAmmSwap(amountInLamports: BN, swapAToB: boolean) {
+  async function performCpAmmSwap(amountIn: BN, swapAToB: boolean) {
     if (!wallet.connected || !wallet.publicKey) {
       toast.error("Please connect your wallet first");
       return;
@@ -71,11 +70,11 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
 
     const inputMint = swapAToB ? poolState.tokenAMint : poolState.tokenBMint;
     const outputMint = swapAToB ? poolState.tokenBMint : poolState.tokenAMint;
-    const tokenADecimal = 9; // SOL-like
-    const tokenBDecimal = 6; // token-like
+    const tokenADecimal = 9;
+    const tokenBDecimal = 6;
 
     const quote = await cpAmm.getQuote({
-      inAmount: amountInLamports,
+      inAmount: amountIn,
       inputTokenMint: inputMint,
       slippage: SLIPPAGE,
       poolState,
@@ -92,7 +91,7 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
       pool: GRADUATED_POOL_ADDRESS,
       inputTokenMint: inputMint,
       outputTokenMint: outputMint,
-      amountIn: amountInLamports,
+      amountIn: amountIn,
       minimumAmountOut: quote.minSwapOutAmount,
       tokenAVault: poolState.tokenAVault,
       tokenBVault: poolState.tokenBVault,
@@ -152,8 +151,7 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
     try {
       setIsLoading(true);
       const lamports = new BN(Math.floor(parseFloat(buyAmount) * 1e9));
-      // Buy: assume paying A (SOL) to receive token B
-      await performCpAmmSwap(lamports, true);
+      await performCpAmmSwap(lamports, false);
       setBuyAmount("");
     } catch (e: any) {
       toast.error(e?.message || "Swap failed");
@@ -170,8 +168,7 @@ export function GraduatedSwapSection({ activeTab = "buy", onTabChange }: Graduat
     try {
       setIsLoading(true);
       const baseUnits = new BN(Math.floor(parseFloat(sellAmount) * 1e6));
-      // Sell: assume paying B (token) to receive A (SOL)
-      await performCpAmmSwap(baseUnits, false);
+      await performCpAmmSwap(baseUnits, true);
       setSellAmount("");
     } catch (e: any) {
       toast.error(e?.message || "Swap failed");
