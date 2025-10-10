@@ -1,7 +1,5 @@
 import { TokenDetails } from "@/components/tokens/token-details";
-import { SwapSection } from "@/components/tokens/swap-section";
 import SwapContainer from "@/components/tokens/swap-container";
-import axios from "axios";
 
 export default async function TokenDetailPage({
   params,
