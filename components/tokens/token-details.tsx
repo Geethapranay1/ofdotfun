@@ -22,14 +22,15 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
         name: "Solana Cat",
         symbol: "SOLCAT",
         description: "The cutest cat on Solana blockchain. Meow! 🐱",
-        image: "https://i.pinimg.com/736x/78/63/e7/7863e7b608fd2bdff73e52b8ff5ca8d1.jpg",
+        image:
+          "https://i.pinimg.com/736x/78/63/e7/7863e7b608fd2bdff73e52b8ff5ca8d1.jpg",
         marketCap: "$2.5M",
         volume: "$450K",
         progress: 85,
         price: "$0.0025",
         holders: "2,456",
         totalSupply: "1,000,000,000",
-        contractAddress: "9Qw1xTokenMintExampleCat111111111111111111111111",
+        mint: "9Qw1xTokenMintExampleCat111111111111111111111111",
         creator: "PoolKey1ExampleCat111111111111111111111111111",
         poolAddress: "PoolKey1ExampleCat111111111111111111111111111",
         configAddress: "CUdxMBkGwYVJHmxBHpJcv2PLoYEULcVKFQGbiS8fahew",
@@ -45,14 +46,15 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
         name: "Doge Killer",
         symbol: "DOGEK",
         description: "The ultimate meme token that will moon to Mars! 🚀",
-        image: "https://i.pinimg.com/736x/85/75/5f/85755fa2666278cc3765c2308891b410.jpg",
+        image:
+          "https://i.pinimg.com/736x/85/75/5f/85755fa2666278cc3765c2308891b410.jpg",
         marketCap: "$1.8M",
         volume: "$320K",
         progress: 67,
         price: "$0.0018",
         holders: "1,789",
         totalSupply: "1,000,000,000",
-        contractAddress: "3Zp2yTokenMintExampleDoge22222222222222222222222",
+        mint: "3Zp2yTokenMintExampleDoge22222222222222222222222",
         creator: "PoolKey2ExampleDoge222222222222222222222222222",
         poolAddress: "PoolKey2ExampleDoge222222222222222222222222222",
         configAddress: "CUdxMBkGwYVJHmxBHpJcv2PLoYEULcVKFQGbiS8fahew",
@@ -68,14 +70,15 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
         name: "Pepe Coin",
         symbol: "PEPE",
         description: "Ribbit ribbit! The most legendary frog in crypto! 🐸",
-        image: "https://i.pinimg.com/736x/86/a5/8b/86a58b9342e9fc3414e5ce8db6fa5d87.jpg",
+        image:
+          "https://i.pinimg.com/736x/86/a5/8b/86a58b9342e9fc3414e5ce8db6fa5d87.jpg",
         marketCap: "$3.2M",
         volume: "$680K",
         progress: 92,
         price: "$0.0032",
         holders: "3,234",
         totalSupply: "1,000,000,000",
-        contractAddress: "7Kp3zTokenMintExamplePepe33333333333333333333333",
+        mint: "7Kp3zTokenMintExamplePepe33333333333333333333333",
         creator: "PoolKey3ExamplePepe333333333333333333333333333",
         poolAddress: "PoolKey3ExamplePepe333333333333333333333333333",
         configAddress: "CUdxMBkGwYVJHmxBHpJcv2PLoYEULcVKFQGbiS8fahew",
@@ -91,14 +94,15 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
         name: "Safe Moon",
         symbol: "SAFEM",
         description: "To the moon and beyond! Safe journey guaranteed! 🌙",
-        image: "https://i.pinimg.com/736x/8b/ce/29/8bce29d76ea2f9d6f1366a38a626a618.jpg",
+        image:
+          "https://i.pinimg.com/736x/8b/ce/29/8bce29d76ea2f9d6f1366a38a626a618.jpg",
         marketCap: "$950K",
         volume: "$180K",
         progress: 45,
         price: "$0.00095",
         holders: "1,123",
         totalSupply: "1,000,000,000",
-        contractAddress: "4Lm9nTokenMintExampleSafe44444444444444444444444",
+        mint: "4Lm9nTokenMintExampleSafe44444444444444444444444",
         creator: "PoolKey4ExampleSafe444444444444444444444444444",
         poolAddress: "PoolKey4ExampleSafe444444444444444444444444444",
         configAddress: "CUdxMBkGwYVJHmxBHpJcv2PLoYEULcVKFQGbiS8fahew",
@@ -114,14 +118,15 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
         name: "Diamond Hands",
         symbol: "DIAMOND",
         description: "💎🙌 HODL strong! Diamond hands never fold!",
-        image: "https://i.pinimg.com/1200x/47/58/e1/4758e16f6ee5601e1393f66fb7247755.jpg",
+        image:
+          "https://i.pinimg.com/1200x/47/58/e1/4758e16f6ee5601e1393f66fb7247755.jpg",
         marketCap: "$1.4M",
         volume: "$290K",
         progress: 78,
         price: "$0.0014",
         holders: "1,567",
         totalSupply: "1,000,000,000",
-        contractAddress: "8Qr5sTokenMintExampleDiamond555555555555555555555",
+        mint: "8Qr5sTokenMintExampleDiamond555555555555555555555",
         creator: "PoolKey5ExampleDiamond555555555555555555555555",
         poolAddress: "PoolKey5ExampleDiamond555555555555555555555555",
         configAddress: "CUdxMBkGwYVJHmxBHpJcv2PLoYEULcVKFQGbiS8fahew",
@@ -137,14 +142,15 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
         name: "Rocket Fuel",
         symbol: "ROCKET",
         description: "Fuel for your rocket to the moon! 🚀⛽",
-        image: "https://i.pinimg.com/1200x/89/a1/c3/89a1c3821cb35f271d18a97031f1dad1.jpg",
+        image:
+          "https://i.pinimg.com/1200x/89/a1/c3/89a1c3821cb35f271d18a97031f1dad1.jpg",
         marketCap: "$2.1M",
         volume: "$410K",
         progress: 88,
         price: "$0.0021",
         holders: "2,345",
         totalSupply: "1,000,000,000",
-        contractAddress: "2Np6tTokenMintExampleRocket66666666666666666666666",
+        mint: "2Np6tTokenMintExampleRocket66666666666666666666666",
         creator: "PoolKey6ExampleRocket666666666666666666666666666",
         poolAddress: "PoolKey6ExampleRocket666666666666666666666666666",
         configAddress: "CUdxMBkGwYVJHmxBHpJcv2PLoYEULcVKFQGbiS8fahew",
@@ -160,14 +166,15 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
         name: "Moon Doge",
         symbol: "MOONDOGE",
         description: "The original doge that's going to the moon! 🌙🐕",
-        image: "https://i.pinimg.com/736x/66/19/b7/6619b7de537178946949a0930a76408e.jpg",
+        image:
+          "https://i.pinimg.com/736x/66/19/b7/6619b7de537178946949a0930a76408e.jpg",
         marketCap: "$4.2M",
         volume: "$890K",
         progress: 95,
         price: "$0.0042",
         holders: "4,567",
         totalSupply: "1,000,000,000",
-        contractAddress: "5Xm7uTokenMintExampleMoonDoge77777777777777777777777",
+        mint: "5Xm7uTokenMintExampleMoonDoge77777777777777777777777",
         creator: "PoolKey7ExampleMoonDoge777777777777777777777777777",
         poolAddress: "PoolKey7ExampleMoonDoge777777777777777777777777777",
         configAddress: "CUdxMBkGwYVJHmxBHpJcv2PLoYEULcVKFQGbiS8fahew",
@@ -183,14 +190,15 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
         name: "Crypto King",
         symbol: "KING",
         description: "Bow down to the king of all crypto! 👑💰",
-        image: "https://i.pinimg.com/736x/79/34/d0/7934d03ebd8be3380a8a654c91b42f24.jpg",
+        image:
+          "https://i.pinimg.com/736x/79/34/d0/7934d03ebd8be3380a8a654c91b42f24.jpg",
         marketCap: "$1.7M",
         volume: "$380K",
         progress: 72,
         price: "$0.0017",
         holders: "2,123",
         totalSupply: "1,000,000,000",
-        contractAddress: "6Yn8vTokenMintExampleKing88888888888888888888888",
+        mint: "6Yn8vTokenMintExampleKing88888888888888888888888",
         creator: "PoolKey8ExampleKing888888888888888888888888888",
         poolAddress: "PoolKey8ExampleKing888888888888888888888888888",
         configAddress: "CUdxMBkGwYVJHmxBHpJcv2PLoYEULcVKFQGbiS8fahew",
@@ -206,14 +214,15 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
         name: "Space Cat",
         symbol: "SPACECAT",
         description: "A cat that's been to space and back! 🚀🐱",
-        image: "https://i.pinimg.com/1200x/05/21/ec/0521ec5ff74825698ad5273d37e45c18.jpg",
+        image:
+          "https://i.pinimg.com/1200x/05/21/ec/0521ec5ff74825698ad5273d37e45c18.jpg",
         marketCap: "$2.8M",
         volume: "$520K",
         progress: 89,
         price: "$0.0028",
         holders: "3,456",
         totalSupply: "1,000,000,000",
-        contractAddress: "7Zo9wTokenMintExampleSpaceCat99999999999999999999999",
+        mint: "7Zo9wTokenMintExampleSpaceCat99999999999999999999999",
         creator: "PoolKey9ExampleSpaceCat999999999999999999999999999",
         poolAddress: "PoolKey9ExampleSpaceCat999999999999999999999999999",
         configAddress: "CUdxMBkGwYVJHmxBHpJcv2PLoYEULcVKFQGbiS8fahew",
@@ -229,14 +238,15 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
         name: "Diamond Moon",
         symbol: "DIAMOON",
         description: "Diamonds in the sky, moon in our eyes! 💎🌙",
-        image: "https://i.pinimg.com/1200x/81/41/fc/8141fcbdda3a1663e368e33e6a9ffca9.jpg",
+        image:
+          "https://i.pinimg.com/1200x/81/41/fc/8141fcbdda3a1663e368e33e6a9ffca9.jpg",
         marketCap: "$3.5M",
         volume: "$720K",
         progress: 91,
         price: "$0.0035",
         holders: "3,789",
         totalSupply: "1,000,000,000",
-        contractAddress: "8Ap0xTokenMintExampleDiamoon000000000000000000000000",
+        mint: "8Ap0xTokenMintExampleDiamoon000000000000000000000000",
         creator: "PoolKey0ExampleDiamoon000000000000000000000000000",
         poolAddress: "PoolKey0ExampleDiamoon000000000000000000000000000",
         configAddress: "CUdxMBkGwYVJHmxBHpJcv2PLoYEULcVKFQGbiS8fahew",
@@ -248,23 +258,21 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
         },
       },
     };
-    
+
     return tokens[id as keyof typeof tokens] || tokens["1"];
   };
 
   const token = getTokenData(tokenId);
 
   return (
-    <div className="space-y-6">
-      {token.progress === 100 && (
-        <MigrationCard
-          tokenId={token.id}
-          tokenName={token.name}
-          tokenSymbol={token.symbol}
-          poolAddress={token.poolAddress}
-          configAddress={token.configAddress}
-        />
-      )}{" "}
+    <div className="">
+      <MigrationCard
+        tokenId={token.id}
+        tokenName={token.name}
+        tokenSymbol={token.symbol}
+        poolAddress={token.poolAddress}
+        configAddress={token.configAddress}
+      />
       <Card className="border-0 rounded-none">
         <CardHeader>
           <div className="flex items-start gap-6">
@@ -287,18 +295,18 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 p-0">
           <div className="space-y-2">
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-sm px-6">
               <span className="text-muted-foreground">
                 Bonding Curve Progress
               </span>
               <span className="font-medium">{token.progress}%</span>
             </div>
-            <Progress value={token.progress} className="h-3" />
+            <Progress value={token.progress} className="h-14" />
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6">
             <div>
               <p className="text-sm text-muted-foreground mb-1">Price</p>
               <p className="font-semibold text-lg">{token.price}</p>
@@ -319,7 +327,7 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
 
           <Separator />
 
-          <div className="space-y-3">
+          <div className="space-y-3 px-6">
             <h3 className="font-semibold">Token Information</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -327,10 +335,8 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
                 <span className="font-medium">{token.totalSupply}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Contract Address</span>
-                <span className="font-medium font-mono">
-                  {token.contractAddress}
-                </span>
+                <span className="text-muted-foreground">Mint Address</span>
+                <span className="font-medium font-mono">{token.mint}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Creator</span>
@@ -341,7 +347,7 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
 
           <Separator />
 
-          <div className="space-y-3">
+          <div className="space-y-3 px-6">
             <h3 className="font-semibold">Social Links</h3>
             <div className="flex gap-3">
               {token.socialLinks.twitter && (

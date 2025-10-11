@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Upload, X } from "lucide-react";
 
 interface ImageUploadProps {
@@ -13,6 +12,7 @@ interface ImageUploadProps {
 
 export function ImageUpload({ value, onChange }: ImageUploadProps) {
   const [preview, setPreview] = useState<string>(value);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (value && value !== preview) {
@@ -36,17 +36,32 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
   const handleRemove = () => {
     setPreview("");
     onChange("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleBoxClick = () => {
+    fileInputRef.current?.click();
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-full">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+        required={!preview}
+      />
       {preview ? (
-        <div className="relative w-48 h-48 mx-auto">
+        <div className="relative w-68 h-full mx-auto">
           <Image
             src={preview}
             alt="Token preview"
             fill
-            className="rounded-none object-cover border-4 border-muted"
+            className="rounded-none object-cover border-r"
           />
           <Button
             type="button"
@@ -59,19 +74,13 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
           </Button>
         </div>
       ) : (
-        <div className="w-48 h-48 mx-auto border-2 border-dashed border-muted rounded-none flex items-center justify-center">
+        <div
+          onClick={handleBoxClick}
+          className="w-68 h-full mx-auto border-2 border-dashed border-muted rounded-none flex items-center justify-center cursor-pointer hover:border-primary transition-colors"
+        >
           <Upload className="w-12 h-12 text-muted-foreground" />
         </div>
       )}
-      <div className="flex justify-center">
-        <Input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="max-w-xs"
-          required={!preview}
-        />
-      </div>
     </div>
   );
 }

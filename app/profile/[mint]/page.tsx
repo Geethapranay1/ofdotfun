@@ -3,12 +3,13 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import BackButton from "@/components/BackButton";
 
-// Mock fetch by mint
 function useMockToken(mint: string) {
   const token = useMemo(
     () => ({
@@ -45,84 +46,110 @@ export default function TokenManagePage() {
   const [website, setWebsite] = useState(token.socials.website);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col gap-8">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            <div className="relative w-14 h-14 overflow-hidden rounded-lg border">
-              <Image
-                src={token.image}
-                alt={token.name}
-                fill
-                className="object-cover"
-                sizes="56px"
-              />
+    <div className="max-w-7xl border-x mx-auto">
+      <BackButton />
+      <div className="border-b p-8">
+        <div className="flex items-start gap-6">
+          <div className="relative w-24 h-24 flex-shrink-0">
+            <Image
+              src={token.image}
+              alt={token.name}
+              fill
+              className="rounded-full object-cover"
+            />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-3xl font-bold">{token.name}</h1>
+              <Badge variant="secondary" className="text-sm">
+                {token.symbol}
+              </Badge>
             </div>
-            <div className="flex flex-col">
-              <span className="text-xl">{token.name} · {token.symbol}</span>
-              <span className="text-muted-foreground text-xs break-all">{token.mint}</span>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="md:col-span-1">
-              <CardHeader>
-                <CardTitle>Fees</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-4">
-                <div className="text-sm text-muted-foreground">Claimable</div>
-                <div className="text-2xl font-semibold">
-                  {token.fees.claimable} {token.fees.currency}
-                </div>
-                <Button>Claim Fees</Button>
-              </CardContent>
-            </Card>
+            <p className="text-muted-foreground font-mono text-sm">
+              {token.mint}
+            </p>
+          </div>
+        </div>
+      </div>
 
-            <Card className="md:col-span-2">
-              <CardHeader>
-                <CardTitle>Edit Description</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-4">
-                <Textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe your token..."
-                  rows={6}
-                />
-                <div className="flex justify-end">
-                  <Button>Save</Button>
-                </div>
-              </CardContent>
-            </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x">
+        <div className="p-8">
+          <h2 className="text-xl font-bold mb-6">Fees</h2>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Claimable</p>
+              <p className="text-3xl font-bold">
+                {token.fees.claimable} {token.fees.currency}
+              </p>
+            </div>
+            <Button className="w-full rounded-none">Claim Fees</Button>
+          </div>
+        </div>
+
+        <div className="lg:col-span-2 p-8 space-y-8">
+          <div>
+            <h2 className="text-xl font-bold mb-6">Edit Description</h2>
+            <div className="space-y-4">
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe your token..."
+                rows={6}
+                className="rounded-none"
+              />
+              <div className="flex justify-end">
+                <Button className="rounded-none">Save Description</Button>
+              </div>
+            </div>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Social Links</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex flex-col gap-2">
-                <label className="text-sm text-muted-foreground">Twitter</label>
-                <Input value={twitter} onChange={(e) => setTwitter(e.target.value)} placeholder="https://x.com/..." />
+          <Separator />
+
+          <div>
+            <h2 className="text-xl font-bold mb-6">Social Links</h2>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Twitter
+                  </label>
+                  <Input
+                    value={twitter}
+                    onChange={(e) => setTwitter(e.target.value)}
+                    placeholder="https://x.com/..."
+                    className="rounded-none"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Telegram
+                  </label>
+                  <Input
+                    value={telegram}
+                    onChange={(e) => setTelegram(e.target.value)}
+                    placeholder="https://t.me/..."
+                    className="rounded-none"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Website
+                  </label>
+                  <Input
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    placeholder="https://..."
+                    className="rounded-none"
+                  />
+                </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm text-muted-foreground">Telegram</label>
-                <Input value={telegram} onChange={(e) => setTelegram(e.target.value)} placeholder="https://t.me/..." />
+              <div className="flex justify-end">
+                <Button className="rounded-none">Save Social Links</Button>
               </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-sm text-muted-foreground">Website</label>
-                <Input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://..." />
-              </div>
-              <div className="md:col-span-3 flex justify-end">
-                <Button>Save</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </CardContent>
-      </Card>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
-
-

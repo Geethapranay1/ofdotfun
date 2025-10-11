@@ -20,9 +20,8 @@ export function SocialLinksInput({ value, onChange }: SocialLinksInputProps) {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="twitter">Twitter / X</Label>
+    <div className="grid grid-cols-3 divide-x">
+      <div>
         <Input
           id="twitter"
           type="url"
@@ -31,8 +30,7 @@ export function SocialLinksInput({ value, onChange }: SocialLinksInputProps) {
           onChange={(e) => handleChange("twitter", e.target.value)}
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="telegram">Telegram</Label>
+      <div>
         <Input
           id="telegram"
           type="url"
@@ -41,8 +39,7 @@ export function SocialLinksInput({ value, onChange }: SocialLinksInputProps) {
           onChange={(e) => handleChange("telegram", e.target.value)}
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="website">Website</Label>
+      <div>
         <Input
           id="website"
           type="url"

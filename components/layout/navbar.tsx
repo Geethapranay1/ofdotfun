@@ -122,35 +122,38 @@ export function Navbar() {
     return "Connect Wallet";
   };
 
+  const navLinks = [
+    { href: "/tokens", label: "Tokens" },
+    { href: "/profile", label: "Profile" },
+    { href: "/create", label: "Create" },
+  ];
+
   return (
     <>
-      <header className="w-full border-b py-2 fixed top-0 left-0 right-0 z-50 bg-background">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/tokens" className="flex items-center gap-2">
-              <div className="text-base font-medium text-red-500"><span className="text-primary">Tokun</span>.<span className="text-primary">Lunchpad</span></div>
+      <header className="w-full border-b fixed top-0 left-0 right-0 z-50 bg-background">
+        <div className="max-w-7xl mx-auto border-x">
+          <div className="flex items-center justify-between">
+            <Link href="/tokens" className="flex items-center gap-2 pl-8">
+              <div className="text-base font-medium text-red-500">
+                <span className="text-primary">Tokun</span>.
+                <span className="text-primary">Lunchpad</span>
+              </div>
             </Link>
-            <nav className="flex items-center gap-6">
-              <Link
-                href="/tokens"
-                className="text-sm font-medium hover:text-primary transition-colors"
-              >
-                Tokens
-              </Link>
-              <Link
-                href="/profile"
-                className="text-sm font-medium hover:text-primary transition-colors"
-              >
-                Profile
-              </Link>
-              <Link
-                href="/create"
-                className="text-sm font-medium hover:text-primary transition-colors"
-              >
-                Create
-              </Link>
-              <ThemeToggle />
+            <nav className="flex items-center divide-x h-full">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="flex items-center justify-center px-6 text-sm py-7.5 font-medium text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <div className="flex items-center h-full px-4">
+                <ThemeToggle />
+              </div>
               <Button
+                className="bg-primary rounded-none py-10"
                 onClick={connecting ? undefined : handleWalletClick}
                 disabled={connecting}
               >

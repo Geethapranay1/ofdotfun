@@ -52,7 +52,7 @@ export default function CreateTokenPage() {
 
   return (
     <div
-      className="container mx-auto py-8 max-w-3xl relative min-h-screen"
+      className="max-w-6xl mx-auto py-8"
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -76,8 +76,8 @@ export default function CreateTokenPage() {
       )}
 
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-bold">Create Token</h1>
+        <div className="flex flex-col">
+          <h1 className="text-3xl font-semibold">Create Token</h1>
           <p className="text-muted-foreground">
             Launch your own meme token on TokunLunchpad. Drag and drop an image anywhere on this page!
           </p>

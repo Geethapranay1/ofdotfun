@@ -30,7 +30,7 @@ export function GraduatedSwapSection({
 
   const GRADUATED_POOL_ADDRESS = TOKEN_GRADUATION_ADDRESS;
 
-  const TOKEN_SYMBOL = "TOKEN";
+  const TOKEN_SYMBOL = "TKN";
   const SOL_BALANCE = 10.5;
   const TOKEN_BALANCE = 0;
   const SLIPPAGE = 0.5;
@@ -186,63 +186,52 @@ export function GraduatedSwapSection({
   };
 
   return (
-    <Card className="sticky top-8 border-0 rounded-none p-0">
-      <CardContent className="p-0">
+    <Card className="sticky top-8 border-0 rounded-none p-0 gap-0">
+      <CardContent className="p-0 gap-0">
         <Tabs
           value={activeTab}
           onValueChange={(v) => onTabChange?.(v as "buy" | "sell")}
-          className="w-full"
+          className="w-full "
         >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="buy">Buy</TabsTrigger>
             <TabsTrigger value="sell">Sell</TabsTrigger>
           </TabsList>
-          <TabsContent value="buy" className="space-y-4">
-            <div className="space-y-2">
-              <div className="space-y-2">
-                <Input
-                  id="buy-from"
-                  type="number"
-                  placeholder="0.0"
-                  value={buyAmount}
-                  onChange={(e) => setBuyAmount(e.target.value)}
-                />
-                <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
-                  <span className="text-sm font-medium">SOL</span>
-                  <span className="text-xs text-muted-foreground">
-                    Balance: {SOL_BALANCE}
-                  </span>
-                </div>
+          <TabsContent value="buy" className="">
+            <div className="relative">
+              <Input
+                className="sm:max-w-md border-0 rounded-none focus-visible:outline-0 focus-visible:ring-0 py-8 sm:text-lg"
+                id="buy-from"
+                type="number"
+                placeholder="0.0"
+                value={buyAmount}
+                onChange={(e) => setBuyAmount(e.target.value)}
+              />
+              <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 h-full px-8 absolute">
+                <span className="text-sm font-medium">SOL</span>
               </div>
             </div>
+            <span className="text-xs text-muted-foreground text-right w-full">
+              Balance: {SOL_BALANCE}
+            </span>
 
-            <div className="flex justify-center">
-              <div className="rounded-full bg-muted p-2">
-                <ArrowDownUp className="w-4 h-4" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="space-y-2">
-                <Input
-                  id="buy-to"
-                  type="number"
-                  placeholder="0.0"
-                  readOnly
-                  value={""}
-                />
-                <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
-                  <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
-                  <span className="text-xs text-muted-foreground">
-                    Balance: {TOKEN_BALANCE}
-                  </span>
-                </div>
+            <div className="relative">
+              <Input
+                id="buy-to"
+                type="number"
+                placeholder="0.0"
+                className="sm:max-w-md border-0 rounded-none focus-visible:outline-0 focus-visible:ring-0 py-8 sm:text-lg"
+                readOnly
+                value={""}
+              />
+              <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 h-full px-8 absolute">
+                <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
               </div>
             </div>
 
             <Button
               onClick={handleBuy}
-              className="w-full"
+              className="w-full border-0 rounded-none py-8"
               size="lg"
               disabled={
                 !wallet.connected ||
@@ -259,52 +248,46 @@ export function GraduatedSwapSection({
             </Button>
           </TabsContent>
 
-          <TabsContent value="sell" className="space-y-4">
-            <div className="space-y-2">
-              <div className="space-y-2 relative">
-                <Input
-                  id="sell-from"
-                  type="number"
-                  placeholder="0.0"
-                  value={sellAmount}
-                  onChange={(e) => setSellAmount(e.target.value)}
-                />
-                <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md absolute top-0 right-0">
-                  <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
-                </div>
-                <span className="text-xs text-muted-foreground text-right">
-                  Balance: {TOKEN_BALANCE}
-                </span>
+          <TabsContent value="sell" className="">
+            <div className="relative">
+              <Input
+                className="sm:max-w-md border-0 rounded-none focus-visible:outline-0 focus-visible:ring-0 py-8 sm:text-lg"
+                id="sell-from"
+                type="number"
+                placeholder="0.0"
+                value={sellAmount}
+                onChange={(e) => setSellAmount(e.target.value)}
+              />
+              <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 py-6 px-8 absolute">
+                <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
               </div>
+              <span className="text-xs text-muted-foreground text-right w-full">
+                Balance: {TOKEN_BALANCE}
+              </span>
             </div>
 
-            <div className="flex justify-center">
-              <div className="rounded-full bg-muted p-2">
-                <ArrowDownUp className="w-4 h-4" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <div className="space-y-2">
                 <Input
                   id="sell-to"
                   type="number"
                   placeholder="0.0"
+                  className="sm:max-w-md border-0 rounded-none focus-visible:outline-0 focus-visible:ring-0 py-8 sm:text-lg"
                   readOnly
                   value={""}
                 />
-                <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
+                <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 py-6 px-8 absolute">
                   <span className="text-sm font-medium">SOL</span>
-                  <span className="text-xs text-muted-foreground">
-                    Balance: {SOL_BALANCE}
-                  </span>
                 </div>
+                <span className="text-xs text-muted-foreground text-right w-full">
+                  Balance: {SOL_BALANCE}
+                </span>
               </div>
             </div>
 
             <Button
               onClick={handleSell}
-              className="w-full"
+              className="w-full border-0 rounded-none py-8"
               size="lg"
               variant="destructive"
               disabled={

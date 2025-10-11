@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,23 +20,15 @@ import {
 } from "@/components/ui/dialog";
 import { CheckCircle2, Copy, ExternalLink } from "lucide-react";
 import Link from "next/link";
-
 interface TokenCreationFormProps {
   draggedImage?: string | null;
   onImageUsed?: () => void;
 }
-
 export function TokenCreationForm({
   draggedImage,
   onImageUsed,
 }: TokenCreationFormProps) {
   const wallet = useWallet();
-
-  if (!wallet || !wallet.connected) {
-    toast.error("Please connect your wallet to create a token");
-    return null;
-  }
-
   const initialFormData = {
     name: "",
     symbol: "",
@@ -49,7 +40,6 @@ export function TokenCreationForm({
       website: "",
     },
   };
-
   const [formData, setFormData] = useState(initialFormData);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [successData, setSuccessData] = useState<{
@@ -60,10 +50,8 @@ export function TokenCreationForm({
     tokenMint: string;
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL!;
   const connection = new Connection(RPC_URL, "confirmed");
-
   useEffect(() => {
     if (draggedImage && !formData.image) {
       setFormData({ ...formData, image: draggedImage });
@@ -72,27 +60,21 @@ export function TokenCreationForm({
       }
     }
   }, [draggedImage]);
-
   const resetForm = () => {
     setFormData(initialFormData);
   };
-
   const closeSuccessDialog = () => {
     setShowSuccessDialog(false);
     setSuccessData(null);
   };
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     toast.loading("Creating token...", { duration: 2000 });
-
     try {
       const response = await axios.post("/api/upload", {
         tokenName: formData.name,
@@ -105,7 +87,6 @@ export function TokenCreationForm({
         website: formData.socialLinks.website || "",
         telegram: formData.socialLinks.telegram || "",
       });
-
       if (response.status !== 200) {
         toast.error(response.data.error || "Error creating token");
         console.error("Error creating token:", response.data);
@@ -117,22 +98,19 @@ export function TokenCreationForm({
         poolAddress: responsePoolAddress,
       } = response.data;
       const transaction = Transaction.from(Buffer.from(poolTx, "base64"));
-
       if (!transaction.feePayer) {
         transaction.feePayer = wallet.publicKey!;
       }
-
       if (!transaction.recentBlockhash) {
         const { blockhash } = await connection.getLatestBlockhash("confirmed");
         transaction.recentBlockhash = blockhash;
       }
-      
+
       toast.info("Please approve the transaction in your wallet", {
         description:
           "You will be prompted to sign the transaction for creating the DBC pool",
         duration: 5000,
       });
-
       if (!wallet.signTransaction) {
         toast.error("Wallet does not support transaction signing");
         return;
@@ -141,13 +119,11 @@ export function TokenCreationForm({
       const signedBase64 = signedTransaction
         .serialize({ requireAllSignatures: false, verifySignatures: false })
         .toString("base64");
-
       const finalResponse = await axios.post("/api/launch", {
         signedTransaction: signedBase64,
         mint: tokenMint,
         userWallet: wallet.publicKey?.toString(),
       });
-
       const { signature, poolAddress } = finalResponse.data;
       const confirmation = await connection.confirmTransaction(
         signature,
@@ -157,7 +133,6 @@ export function TokenCreationForm({
         toast.error("Transaction failed");
         return;
       }
-
       const tokenData = {
         signature,
         poolAddress,
@@ -165,10 +140,8 @@ export function TokenCreationForm({
         tokenName: formData.name,
         tokenSymbol: formData.symbol,
       };
-
       toast.success("Transaction confirmed", { duration: 5000 });
       toast.success("Woohu! Token created successfully");
-
       setSuccessData(tokenData);
       setShowSuccessDialog(true);
       setFormData(initialFormData);
@@ -182,106 +155,103 @@ export function TokenCreationForm({
       setIsSubmitting(false);
     }
   };
-
   const handleImageChange = (image: string) => {
     setFormData({ ...formData, image });
   };
-
   const handleSocialLinksChange = (
     socialLinks: typeof formData.socialLinks
   ) => {
     setFormData({ ...formData, socialLinks });
   };
-
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <Card className="border-0 rounded-none">
-          <CardContent className="pt-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Token Name</Label>
-                <Input
-                  id="name"
-                  placeholder="Doge Moon"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  required
-                  disabled={isSubmitting}
+        <Card className="border-0 rounded-none p-0 bg-background">
+          <CardContent className="pt-6 p-0 divide-y">
+            <div className="flex">
+              <div>
+                <ImageUpload
+                  value={formData.image}
+                  onChange={handleImageChange}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="symbol">Token Symbol</Label>
-                <Input
-                  id="symbol"
-                  placeholder="DOGEM"
-                  value={formData.symbol}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      symbol: e.target.value.toUpperCase(),
-                    })
-                  }
-                  required
-                  disabled={isSubmitting}
-                />
+              <div className="flex-1 divide-y border-y">
+                <div className="grid grid-cols-1 md:grid-cols-2">
+                  <div>
+                    <Input
+                      id="name"
+                      autoFocus
+                      placeholder="Doge Moon"
+                      value={formData.name}
+                      className="border-r"
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      required
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      id="symbol"
+                      placeholder="DOGEM"
+                      value={formData.symbol}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          symbol: e.target.value.toUpperCase(),
+                        })
+                      }
+                      required
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Textarea
+                    id="description"
+                    placeholder="Describe your token..."
+                    className="min-h-60 border-0 rounded-none resize-none"
+                    rows={4}
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <SocialLinksInput
+                    value={formData.socialLinks}
+                    onChange={handleSocialLinksChange}
+                  />
+                </div>
+                <div className="flex">
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="flex-1 border-none rounded-none py-12"
+                    disabled={isSubmitting || !wallet.connected}
+                  >
+                    {!wallet.connected ? "Connect Wallet" : isSubmitting ? "Creating Token..." : "Create Token"}
+                  </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-none px-12 rounded-none py-12"
+                      size="lg"
+                      onClick={resetForm}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Cancel" : "Reset"}
+                    </Button>
+                </div>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea
-                id="description"
-                placeholder="Describe your token..."
-                rows={4}
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                disabled={isSubmitting}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Token Image</Label>
-              <ImageUpload
-                value={formData.image}
-                onChange={handleImageChange}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <SocialLinksInput
-                value={formData.socialLinks}
-                onChange={handleSocialLinksChange}
-              />
-            </div>
-
-            <div className="flex gap-4 pt-4">
-              <Button
-                type="submit"
-                size="lg"
-                className="flex-1"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Creating Token..." : "Create Token"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="lg"
-                onClick={resetForm}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
             </div>
           </CardContent>
         </Card>
       </form>
-
       <Dialog open={showSuccessDialog} onOpenChange={closeSuccessDialog}>
         <DialogContent className="sm:max-w-lg border-0 rounded-none">
           <DialogHeader>
@@ -291,7 +261,7 @@ export function TokenCreationForm({
               </div>
             </div>
             <DialogTitle className="text-center text-2xl">
-              Token Created Successfully! 🎉
+              Token Created Successfully! :tada:
             </DialogTitle>
             <DialogDescription className="text-center">
               Your token has been launched on TokunLunchpad
@@ -306,7 +276,6 @@ export function TokenCreationForm({
                     {successData.tokenName} ({successData.tokenSymbol})
                   </p>
                 </div>
-
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-sm font-medium">Transaction</p>
@@ -322,7 +291,6 @@ export function TokenCreationForm({
                     {successData.signature}
                   </p>
                 </div>
-
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-sm font-medium">Pool Address</p>
@@ -339,7 +307,6 @@ export function TokenCreationForm({
                   </p>
                 </div>
               </div>
-
               <div className="flex gap-3">
                 <Button
                   variant="outline"
@@ -358,7 +325,6 @@ export function TokenCreationForm({
                   <Button className="w-full">View All Tokens</Button>
                 </Link>
               </div>
-
               <Button
                 variant="secondary"
                 className="w-full"
