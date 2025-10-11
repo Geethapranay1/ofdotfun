@@ -32,7 +32,6 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
   const TOKEN_SYMBOL = "TOKEN";
   const SOL_BALANCE = 10.5;
-  const TOKEN_BALANCE = 0;
   const PRICE_PER_TOKEN = 0.0012;
   const SLIPPAGE_BPS = 100; // 1%
 
@@ -42,45 +41,40 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
     "confirmed"
   );
 
-  const getSwapQuote = async (amountInSol: number, isBuy: boolean) => {
-    try {
-      const client = new DynamicBondingCurveClient(connection, "confirmed");
-      const poolState = await client.state.getPool(POOL_ADDRESS);
-      if (!poolState) {
-        console.error("Pool doesn't exist yet!");
-      }
-
-      const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
-      if (!virtualPoolState) {
-        throw new Error("Pool not found");
-      }
-
-      const poolConfigState = await client.state.getPoolConfig(
-        virtualPoolState.config
-      );
-
-
-
-      const currentPoint = new BN(0);
-
-      const amountIn = new BN(Math.floor(amountInSol * 1e9));
-
-      const quote = await client.pool.swapQuote({
-        virtualPool: virtualPoolState,
-        config: poolConfigState,
-        swapBaseForQuote: true, // true for buy, false for sell
-        amountIn,
-        slippageBps: SLIPPAGE_BPS,
-        hasReferral: false,
-        currentPoint,
-      });
-
-      return quote;
-    } catch (error) {
-      console.error("Failed to get swap quote:", error);
-      throw error;
+  const getSwapQuote = async (amount: number, isBuy: boolean) => {
+  try {
+    const client = new DynamicBondingCurveClient(connection, "confirmed");
+    const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
+    if (!virtualPoolState) {
+      throw new Error("Pool not found");
     }
-  };
+
+    const poolConfigState = await client.state.getPoolConfig(
+      virtualPoolState.config
+    );
+
+    const currentPoint = new BN(0);
+    
+
+    const decimals = isBuy ? 9 : 6; 
+    const amountIn = new BN(Math.floor(amount * Math.pow(10, decimals)));
+
+    const quote = await client.pool.swapQuote({
+      virtualPool: virtualPoolState,
+      config: poolConfigState,
+      swapBaseForQuote: isBuy ? false : true,
+      amountIn,
+      slippageBps: SLIPPAGE_BPS,
+      hasReferral: false,
+      currentPoint,
+    });
+
+    return quote;
+  } catch (error) {
+    console.error("Failed to get swap quote:", error);
+    throw error;
+  }
+};
 
   const handleBuy = async () => {
     if (!wallet.connected || !wallet.publicKey) {
@@ -170,10 +164,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
       return;
     }
 
-    if (TOKEN_BALANCE <= 0) {
-      toast.error("Insufficient token balance");
-      return;
-    }
+    
 
     setIsLoading(true);
     const toastId = toast.loading("Preparing swap transaction...");
@@ -183,7 +174,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
       toast.loading("Getting swap quote...", { id: toastId });
       const quote = await getSwapQuote(parseFloat(sellAmount), false);
       const swapParam = {
-        amountIn: new BN(Math.floor(parseFloat(sellAmount) * 1e9)),
+        amountIn: new BN(parseFloat(sellAmount) * 1e6),
         minimumAmountOut: quote.minimumAmountOut,
         swapBaseForQuote: true,
         owner: wallet.publicKey,
@@ -290,9 +281,6 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                 />
                 <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
                   <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
-                  <span className="text-xs text-muted-foreground">
-                    Balance: {TOKEN_BALANCE}
-                  </span>
                 </div>
               </div>
             </div>
@@ -339,9 +327,6 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                 />
                 <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-md">
                   <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
-                  <span className="text-xs text-muted-foreground">
-                    Balance: {TOKEN_BALANCE}
-                  </span>
                 </div>
               </div>
             </div>
@@ -395,8 +380,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                 !wallet.connected ||
                 isLoading ||
                 !sellAmount ||
-                parseFloat(sellAmount) <= 0 ||
-                TOKEN_BALANCE <= 0
+                parseFloat(sellAmount) <= 0
               }
             >
               {!wallet.connected
