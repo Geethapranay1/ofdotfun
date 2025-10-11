@@ -180,6 +180,7 @@ export function TokenCreationForm({
                   <div>
                     <Input
                       id="name"
+                      autoFocus
                       placeholder="Doge Moon"
                       value={formData.name}
                       className="border-r"

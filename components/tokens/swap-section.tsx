@@ -7,13 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowDownUp } from "lucide-react";
-import {
-  DynamicBondingCurveClient,
-} from "@meteora-ag/dynamic-bonding-curve-sdk";
+import { DynamicBondingCurveClient } from "@meteora-ag/dynamic-bonding-curve-sdk";
 import { useWallet } from "@solana/wallet-adapter-react";
-import {
-  Connection,
-} from "@solana/web3.js";
+import { Connection } from "@solana/web3.js";
 import BN from "bn.js";
 import { toast } from "sonner";
 import { TOKEN_POOL_ADDRESS } from "@/app/constant";
@@ -28,11 +24,10 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   const [sellAmount, setSellAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const POOL_ADDRESS = TOKEN_POOL_ADDRESS; 
+  const POOL_ADDRESS = TOKEN_POOL_ADDRESS;
 
   const TOKEN_SYMBOL = "TOKEN";
   const SOL_BALANCE = 10.5;
-  const TOKEN_BALANCE = 0;
   const PRICE_PER_TOKEN = 0.0012;
   const SLIPPAGE_BPS = 100; // 1%
 
@@ -42,14 +37,9 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
     "confirmed"
   );
 
-  const getSwapQuote = async (amountInSol: number, isBuy: boolean) => {
+  const getSwapQuote = async (amount: number, isBuy: boolean) => {
     try {
       const client = new DynamicBondingCurveClient(connection, "confirmed");
-      const poolState = await client.state.getPool(POOL_ADDRESS);
-      if (!poolState) {
-        console.error("Pool doesn't exist yet!");
-      }
-
       const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
       if (!virtualPoolState) {
         throw new Error("Pool not found");
@@ -59,16 +49,15 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
         virtualPoolState.config
       );
 
-
-
       const currentPoint = new BN(0);
 
-      const amountIn = new BN(Math.floor(amountInSol * 1e9));
+      const decimals = isBuy ? 9 : 6;
+      const amountIn = new BN(Math.floor(amount * Math.pow(10, decimals)));
 
       const quote = await client.pool.swapQuote({
         virtualPool: virtualPoolState,
         config: poolConfigState,
-        swapBaseForQuote: true, // true for buy, false for sell
+        swapBaseForQuote: isBuy ? false : true,
         amountIn,
         slippageBps: SLIPPAGE_BPS,
         hasReferral: false,
@@ -170,11 +159,6 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
       return;
     }
 
-    if (TOKEN_BALANCE <= 0) {
-      toast.error("Insufficient token balance");
-      return;
-    }
-
     setIsLoading(true);
     const toastId = toast.loading("Preparing swap transaction...");
 
@@ -183,7 +167,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
       toast.loading("Getting swap quote...", { id: toastId });
       const quote = await getSwapQuote(parseFloat(sellAmount), false);
       const swapParam = {
-        amountIn: new BN(Math.floor(parseFloat(sellAmount) * 1e9)),
+        amountIn: new BN(parseFloat(sellAmount) * 1e6),
         minimumAmountOut: quote.minimumAmountOut,
         swapBaseForQuote: true,
         owner: wallet.publicKey,
@@ -277,14 +261,9 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                     buyAmount ? (parseFloat(buyAmount) * 833.33).toFixed(2) : ""
                   }
                 />
-               <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 py-6 px-8 absolute">
-                <span className="text-sm font-medium">
-                  {TOKEN_SYMBOL}
-                </span>
-              </div>
-              <span className="text-xs text-muted-foreground text-right w-full">
-                Balance: {TOKEN_BALANCE}
-              </span>
+                <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 py-6 px-8 absolute">
+                  <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
+                </div>
               </div>
             </div>
 
@@ -319,9 +298,6 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 py-6 px-8 absolute">
                 <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
               </div>
-              <span className="text-xs text-muted-foreground text-right w-full">
-                Balance: {TOKEN_BALANCE}
-              </span>
             </div>
 
             <div className="space-y-2 relative">
@@ -338,12 +314,12 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                       : ""
                   }
                 />
-               <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 py-6 px-8 absolute">
-                <span className="text-sm font-medium">SOL</span>
-              </div>
-              <span className="text-xs text-muted-foreground text-right w-full">
-                Balance: {SOL_BALANCE}
-              </span>
+                <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 py-6 px-8 absolute">
+                  <span className="text-sm font-medium">SOL</span>
+                </div>
+                <span className="text-xs text-muted-foreground text-right w-full">
+                  Balance: {SOL_BALANCE}
+                </span>
               </div>
             </div>
 
@@ -352,13 +328,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               className="w-full border-0 rounded-none py-8"
               size="lg"
               variant="destructive"
-              disabled={
-                !wallet.connected ||
-                isLoading ||
-                !sellAmount ||
-                parseFloat(sellAmount) <= 0 ||
-                TOKEN_BALANCE <= 0
-              }
+              disabled={!wallet.connected || isLoading || !sellAmount}
             >
               {!wallet.connected
                 ? "Connect Wallet"
