@@ -8,7 +8,7 @@ export const TOKEN_POOL_ADDRESS = new PublicKey(
   "9Snnjek9GJbFwSV71MaMpWtmtnY5tgZxAYF4RSMZNALp"
 );
 export const TOKEN_GRADUATION_ADDRESS = new PublicKey(
-  "6HwW8kdbkmGmEU33wJ4qrswxMpj9nwhzQAXoWtLisvgk"
+  "F9EMfGcs3aKN5h66QBdcQhe55BcLYSHrGYvLzb93SEcB"
 );
 
 export const POOL_CONFIG_KEY = new PublicKey(
