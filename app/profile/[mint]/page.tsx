@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import BackButton from "@/components/BackButton";
 
 function useMockToken(mint: string) {
   const token = useMemo(
@@ -46,6 +47,7 @@ export default function TokenManagePage() {
 
   return (
     <div className="max-w-7xl border-x mx-auto">
+      <BackButton />
       <div className="border-b p-8">
         <div className="flex items-start gap-6">
           <div className="relative w-24 h-24 flex-shrink-0">
@@ -63,7 +65,9 @@ export default function TokenManagePage() {
                 {token.symbol}
               </Badge>
             </div>
-            <p className="text-muted-foreground font-mono text-sm">{token.mint}</p>
+            <p className="text-muted-foreground font-mono text-sm">
+              {token.mint}
+            </p>
           </div>
         </div>
       </div>
@@ -106,29 +110,35 @@ export default function TokenManagePage() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-muted-foreground">Twitter</label>
-                  <Input 
-                    value={twitter} 
-                    onChange={(e) => setTwitter(e.target.value)} 
-                    placeholder="https://x.com/..." 
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Twitter
+                  </label>
+                  <Input
+                    value={twitter}
+                    onChange={(e) => setTwitter(e.target.value)}
+                    placeholder="https://x.com/..."
                     className="rounded-none"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-muted-foreground">Telegram</label>
-                  <Input 
-                    value={telegram} 
-                    onChange={(e) => setTelegram(e.target.value)} 
-                    placeholder="https://t.me/..." 
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Telegram
+                  </label>
+                  <Input
+                    value={telegram}
+                    onChange={(e) => setTelegram(e.target.value)}
+                    placeholder="https://t.me/..."
                     className="rounded-none"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-muted-foreground">Website</label>
-                  <Input 
-                    value={website} 
-                    onChange={(e) => setWebsite(e.target.value)} 
-                    placeholder="https://..." 
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Website
+                  </label>
+                  <Input
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    placeholder="https://..."
                     className="rounded-none"
                   />
                 </div>
@@ -143,5 +153,3 @@ export default function TokenManagePage() {
     </div>
   );
 }
-
-

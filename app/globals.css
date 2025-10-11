@@ -190,3 +190,59 @@
     letter-spacing: var(--tracking-normal);
   }
 }
+
+@keyframes progress-stripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 0;
+  }
+}
+
+.animate-progress-stripes {
+  animation: progress-stripes 1s linear infinite;
+}
+
+.wallet-adapter-modal-wrapper{
+  background-color: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-2xl);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  border: 1px solid var(--border);
+}
+
+.wallet-adapter-modal-button-close{
+  background-color: var(--muted);
+}
+
+.wallet-adapter-modal-title{
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.65rem;
+}
+
+.wallet-adapter-modal-list{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.wallet-adapter-button{
+  background-color: var(--muted);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.wallet-adapter-button:hover{
+  color: var(var(--primary));
+}

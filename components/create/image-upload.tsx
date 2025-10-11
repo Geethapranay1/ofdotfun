@@ -61,7 +61,7 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
             src={preview}
             alt="Token preview"
             fill
-            className="rounded-none object-cover border-4 border-muted"
+            className="rounded-none object-cover border-r"
           />
           <Button
             type="button"

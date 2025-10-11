@@ -99,7 +99,9 @@ export default function WalletModal({
                 {balanceLoading ? (
                   <span className="text-muted-foreground">Loading...</span>
                 ) : (
-                  <span className="font-medium">{solBalance?.toFixed(4)} SOL</span>
+                  <span className="font-medium">
+                    {solBalance?.toFixed(4)} SOL
+                  </span>
                 )}
               </div>
             </div>

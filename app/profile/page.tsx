@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchUserTokens } from "@/lib/actions";
 import { TokenCard } from "@/components/tokens/token-card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import BackButton from "@/components/BackButton";
 
 export default function ProfilePage() {
   const { publicKey } = useWallet();
@@ -28,6 +29,7 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-7xl border-x mx-auto">
+      <BackButton href="/tokens" />
       <div className="border-b">
         <div className="flex items-center gap-4">
           <Avatar className="size-48 rounded-none border-r">

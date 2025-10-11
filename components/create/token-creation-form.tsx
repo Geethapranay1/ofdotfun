@@ -29,10 +29,6 @@ export function TokenCreationForm({
   onImageUsed,
 }: TokenCreationFormProps) {
   const wallet = useWallet();
-  if (!wallet || !wallet.connected) {
-    toast.error("Please connect your wallet to create a token");
-    return null;
-  }
   const initialFormData = {
     name: "",
     symbol: "",
@@ -170,7 +166,7 @@ export function TokenCreationForm({
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <Card className="border-0 rounded-none bg-background">
+        <Card className="border-0 rounded-none p-0 bg-background">
           <CardContent className="pt-6 p-0 divide-y">
             <div className="flex">
               <div>
@@ -230,24 +226,25 @@ export function TokenCreationForm({
                   />
                 </div>
                 <div className="flex">
+
                   <Button
                     type="submit"
                     size="lg"
                     className="flex-1 border-none rounded-none py-12"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !wallet.connected}
                   >
-                    {isSubmitting ? "Creating Token..." : "Create Token"}
+                    {!wallet.connected ? "Connect Wallet" : isSubmitting ? "Creating Token..." : "Create Token"}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="border-none px-12 rounded-none py-12"
-                    size="lg"
-                    onClick={resetForm}
-                    disabled={isSubmitting}
-                  >
-                    Cancel
-                  </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-none px-12 rounded-none py-12"
+                      size="lg"
+                      onClick={resetForm}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Cancel" : "Reset"}
+                    </Button>
                 </div>
               </div>
             </div>
