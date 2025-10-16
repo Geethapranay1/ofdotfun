@@ -42,39 +42,38 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   );
 
   const getSwapQuote = async (amount: number, isBuy: boolean) => {
-  try {
-    const client = new DynamicBondingCurveClient(connection, "confirmed");
-    const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
-    if (!virtualPoolState) {
-      throw new Error("Pool not found");
+    try {
+      const client = new DynamicBondingCurveClient(connection, "confirmed");
+      const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
+      if (!virtualPoolState) {
+        throw new Error("Pool not found");
+      }
+
+      const poolConfigState = await client.state.getPoolConfig(
+        virtualPoolState.config
+      );
+
+      const currentPoint = new BN(0);
+      
+      const decimals = isBuy ? 9 : 6; 
+      const amountIn = new BN(Math.floor(amount * Math.pow(10, decimals)));
+
+      const quote = await client.pool.swapQuote({
+        virtualPool: virtualPoolState,
+        config: poolConfigState,
+        swapBaseForQuote: isBuy ? false : true,
+        amountIn,
+        slippageBps: SLIPPAGE_BPS,
+        hasReferral: false,
+        currentPoint,
+      });
+      console.log("Swap quote:", quote.outputAmount);
+      return { quote, amountIn };
+    } catch (error) {
+      console.error("Failed to get swap quote:", error);
+      throw error;
     }
-
-    const poolConfigState = await client.state.getPoolConfig(
-      virtualPoolState.config
-    );
-
-    const currentPoint = new BN(0);
-    
-
-    const decimals = isBuy ? 9 : 6; 
-    const amountIn = new BN(Math.floor(amount * Math.pow(10, decimals)));
-
-    const quote = await client.pool.swapQuote({
-      virtualPool: virtualPoolState,
-      config: poolConfigState,
-      swapBaseForQuote: isBuy ? false : true,
-      amountIn,
-      slippageBps: SLIPPAGE_BPS,
-      hasReferral: false,
-      currentPoint,
-    });
-
-    return quote;
-  } catch (error) {
-    console.error("Failed to get swap quote:", error);
-    throw error;
-  }
-};
+  };
 
   const handleBuy = async () => {
     if (!wallet.connected || !wallet.publicKey) {
@@ -87,6 +86,21 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
       return;
     }
 
+    try {
+      const balance = await connection.getBalance(wallet.publicKey);
+      const solBalance = balance / 1e9;
+      const requiredAmount = parseFloat(buyAmount) + 0.01;
+      
+      if (solBalance < requiredAmount) {
+        toast.error(`Insufficient SOL balance. You have ${solBalance.toFixed(4)} SOL but need ${requiredAmount.toFixed(4)} SOL (including fees)`);
+        return;
+      }
+    } catch (error) {
+      console.error("Failed to check balance:", error);
+      toast.error("Failed to check wallet balance");
+      return;
+    }
+
     setIsLoading(true);
     const toastId = toast.loading("Preparing swap transaction...");
 
@@ -94,11 +108,12 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
       const client = new DynamicBondingCurveClient(connection, "confirmed");
 
       toast.loading("Getting swap quote...", { id: toastId });
-      const quote = await getSwapQuote(parseFloat(buyAmount), true);
-      console.log("Swap quote:", quote);
+      const result = await getSwapQuote(parseFloat(buyAmount), true);
+      console.log("Swap quote:", result);
+      
       const swapParam = {
-        amountIn: new BN(Math.floor(parseFloat(buyAmount) * 1e9)),
-        minimumAmountOut: quote.minimumAmountOut,
+        amountIn: result.amountIn,
+        minimumAmountOut: result.quote.minimumAmountOut,
         swapBaseForQuote: false,
         owner: wallet.publicKey,
         pool: POOL_ADDRESS,
@@ -164,18 +179,16 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
       return;
     }
 
-    
-
     setIsLoading(true);
     const toastId = toast.loading("Preparing swap transaction...");
 
     try {
       const client = new DynamicBondingCurveClient(connection, "confirmed");
       toast.loading("Getting swap quote...", { id: toastId });
-      const quote = await getSwapQuote(parseFloat(sellAmount), false);
+      const result = await getSwapQuote(parseFloat(sellAmount), false);
       const swapParam = {
-        amountIn: new BN(parseFloat(sellAmount) * 1e6),
-        minimumAmountOut: quote.minimumAmountOut,
+        amountIn: result.amountIn,
+        minimumAmountOut: result.quote.minimumAmountOut,
         swapBaseForQuote: true,
         owner: wallet.publicKey,
         pool: POOL_ADDRESS,
