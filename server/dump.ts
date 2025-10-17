@@ -1511,7 +1511,7 @@ const migrateTokenRes = {
   type: "UNKNOWN",
 };
 
-export const getMigratedPoolAddressRes = {
+const getMigratedPoolAddressRes = {
   accountData: [
     {
       account: "5awoNsCULYySQaxHsGYxd9Xm7cr3GjyTZj8FmU4zsVEf",

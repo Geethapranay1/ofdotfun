@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TradeType {
+  BUY
+  SELL
+}
+
+model Token{
+  id        Int      @id @default(autoincrement())
+  name     String
+  description String?
+  ticker   String   
+  imageUrl String?
+  
+  mcap Float?
+  totalSupply Float?
+  bondingCurveProgress Float?
+  mint String   @unique
+  poolAddress String @unique
+  creatorAddress String
+  
+  website String?
+  twitter String?
+  telegram String?
+
+  trades   Trades[]
+  holders  Holders[]
+  kLines   KLines[]
+  createdAt DateTime @default(now())
+}
+
+model Trades {
+  id        Int      @id @default(autoincrement())
+  tokenId   Int
+  token     Token    @relation(fields: [tokenId], references: [id])
+  amount    Float
+  price     Float
+  tradeType   TradeType
+  signature String   @unique
+  traderAddress String
+}
+
+model Holders {
+  id        Int      @id @default(autoincrement())
+  tokenId   Int
+  token     Token    @relation(fields: [tokenId], references: [id])
+  amount    Float
+  holderAddress String
+  percentage Float
+  updatedAt DateTime @updatedAt
+}
+
+model KLines {
+  id        Int      @id @default(autoincrement())
+  tokenId   Int
+  token     Token    @relation(fields: [tokenId], references: [id])
+  open      Float
+  close     Float
+  high      Float
+  low       Float
+  volume    Float
+  timestamp DateTime
+}

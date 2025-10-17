@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@elysiajs/openapi": "^1.4.11",
-    "elysia": "^1.4.12"
+    "elysia": "^1.4.12",
+    "prisma": "^6.17.1"
   }
 }
