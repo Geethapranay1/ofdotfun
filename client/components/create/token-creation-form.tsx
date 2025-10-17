@@ -95,7 +95,7 @@ export function TokenCreationForm({
         poolTx,
         tokenMint,
         poolAddress: responsePoolAddress,
-        vid,
+        // vid,
       } = response.data;
       const transaction = Transaction.from(Buffer.from(poolTx, "base64"));
       if (!transaction.feePayer) {
@@ -122,7 +122,7 @@ export function TokenCreationForm({
       const finalResponse = await axios.post("/api/launch", {
         signedTransaction: signedBase64,
         mint: tokenMint,
-        vid,
+        // vid,
         userWallet: wallet.publicKey?.toString(),
       });
       const { signature, poolAddress } = finalResponse.data;
@@ -257,7 +257,7 @@ export function TokenCreationForm({
         </Card>
       </form>
       <Dialog open={showSuccessDialog} onOpenChange={closeSuccessDialog}>
-        <DialogContent className="sm:max-w-lg bg-transparent rounded-[32px] backdrop-blur-sm border border-primary/10 p-2">
+        <DialogContent className="sm:max-w-2xl bg-transparent rounded-[32px] backdrop-blur-sm border border-primary/10 p-2">
           <div className="p-6 rounded-3xl border bg-card">
             <DialogHeader>
               <div className="flex items-center justify-center mb-4">
@@ -273,8 +273,8 @@ export function TokenCreationForm({
               </DialogDescription>
             </DialogHeader>
             {successData && (
-              <div className="space-y-4 mt-4">
-                <div className="bg-muted p-4 rounded-none space-y-3">
+              <div className="space-y-4 mt-4 ">
+                <div className="bg-muted p-4 rounded-2xl space-y-3">
                   <div>
                     <p className="text-sm font-medium mb-1">Token Name</p>
                     <p className="text-lg font-bold">

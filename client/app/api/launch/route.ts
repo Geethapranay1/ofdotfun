@@ -158,10 +158,12 @@ export async function POST(req: Request) {
       }
     }
 
-    if (vid) {
-      await markVanityPairAsUsed(vid);
-      console.log("Marked vanity pair as used for vid:", vid);
-    }
+    // Mark vanity keypair as used
+    
+    // if (vid) {
+    //   await markVanityPairAsUsed(vid);
+    //   console.log("Marked vanity pair as used for vid:", vid);
+    // }
 
     return NextResponse.json({
       success: true,
