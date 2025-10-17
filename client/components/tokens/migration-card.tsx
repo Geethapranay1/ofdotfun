@@ -268,10 +268,10 @@ export function MigrationCard({
         description: `Your token has been migrated to DAMM V2`,
         duration: 10000,
         action: {
-          label: "View on Explorer",
+          label: "View on Solscan",
           onClick: () =>
             window.open(
-              `https://explorer.solana.com/tx/${migrateSignature}?cluster=devnet`,
+              `https://solscan.io/tx/${migrateSignature}?cluster=devnet`,
               "_blank"
             ),
         },

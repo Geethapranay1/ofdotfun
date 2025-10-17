@@ -139,10 +139,10 @@ export function GraduatedSwapSection({
       description: `Transaction: ${signature.slice(0, 8)}...`,
       duration: 10000,
       action: {
-        label: "View on Solana Explorer",
+        label: "View on Solscan",
         onClick: () =>
           window.open(
-            `https://explorer.solana.com/tx/${signature}?cluster=devnet`,
+            `https://solscan.io/tx/${signature}?cluster=devnet`,
             "_blank"
           ),
       },

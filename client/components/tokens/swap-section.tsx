@@ -264,12 +264,12 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
         <div className="flex flex-col gap-1">
           <p>Swap successful!</p>
           <a
-            href={`https://explorer.solana.com/tx/${signature}?cluster=devnet`}
+            href={`https://solscan.io/tx/${signature}?cluster=devnet`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs underline"
           >
-            View on Solana Explorer
+            View on Solscan
           </a>
         </div>,
         { id: toastId, duration: 5000 }
@@ -339,12 +339,12 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
         <div className="flex flex-col gap-1">
           <p>Swap successful!</p>
           <a
-            href={`https://explorer.solana.com/address/${signature}?cluster=devnet`}
+            href={`https://solscan.io/tx/${signature}?cluster=devnet`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs underline"
           >
-            View on Solana Explorer
+            View on Solscan
           </a>
         </div>,
         { id: toastId, duration: 5000 }

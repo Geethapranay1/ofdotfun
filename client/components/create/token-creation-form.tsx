@@ -318,7 +318,7 @@ export function TokenCreationForm({
                     className="flex-1"
                     onClick={() =>
                       window.open(
-                        `https://explorer.solana.com/address/${successData.tokenMint}?cluster=devnet`,
+                        `https://solscan.io/token/${successData.tokenMint}?cluster=devnet`,
                         "_blank"
                       )
                     }
