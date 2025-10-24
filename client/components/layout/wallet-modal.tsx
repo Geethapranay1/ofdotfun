@@ -88,8 +88,8 @@ export default function WalletModal({
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Address</p>
                 <div className="flex items-center gap-2 p-3 bg-muted rounded-lg font-mono text-sm">
-                  <span className="flex-1 truncate">
-                    {publicKey.toString()}
+                  <span className="flex-1 truncate text-center">
+                    {publicKey.toString().slice(0, 12) + "..." + publicKey.toString().slice(-12)}
                   </span>
                 </div>
               </div>

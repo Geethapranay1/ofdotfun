@@ -52,16 +52,16 @@ export default function CreateTokenPage() {
 
   return (
     <div
-      className="max-w-6xl mx-auto py-8"
+      className="max-w-6xl mx-auto py-8 uppercase"
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       {isDragging && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm pointer-events-none"
-          style={{ pointerEvents: 'none' }}
+          style={{ pointerEvents: "none" }}
         >
           <div className="border-4 border-dashed border-primary rounded-lg p-12 bg-background/50">
             <div className="flex flex-col items-center gap-4">
@@ -75,14 +75,18 @@ export default function CreateTokenPage() {
         </div>
       )}
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 md:px-0 px-4">
         <div className="flex flex-col">
-          <h1 className="text-3xl font-semibold">Create Token</h1>
-          <p className="text-muted-foreground">
-            Launch your own meme token on TokunLunchpad. Drag and drop an image anywhere on this page!
+          <h1 className="md:text-3xl font-semibold">Create Token</h1>
+          <p className="text-muted-foreground md:text-base text-xs">
+            Launch your own meme token on TokunLunchpad. Drag and drop an image
+            anywhere on this page!
           </p>
         </div>
-        <TokenCreationForm draggedImage={draggedImage} onImageUsed={() => setDraggedImage(null)} />
+        <TokenCreationForm
+          draggedImage={draggedImage}
+          onImageUsed={() => setDraggedImage(null)}
+        />
       </div>
     </div>
   );

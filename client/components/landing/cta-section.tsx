@@ -26,7 +26,7 @@ export function CTASection() {
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Join thousands of creators who have already launched their tokens
-              on Tokun.Lunchpad
+              on Onlyfounders
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

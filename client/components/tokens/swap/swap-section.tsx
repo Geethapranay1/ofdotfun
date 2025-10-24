@@ -346,7 +346,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   };
 
   return (
-    <Card className="sticky top-20 border-0 rounded-none p-0 gap-0">
+    <Card className="border-0 rounded-none p-0 gap-0">
       <CardContent className="p-0 gap-0">
         <Tabs defaultValue="buy" className="w-full">
           <TabsList className="grid w-full grid-cols-2">

@@ -9,12 +9,19 @@ import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { WalletError } from "@solana/wallet-adapter-base";
 import { toast } from "sonner";
 import WalletModal from "./wallet-modal";
+import Image from "next/image";
+import { HowItWorksModal } from "../landing/how-it-works-modal";
+import { motion, AnimatePresence } from "motion/react";
+import { IconMenu2, IconX } from "@tabler/icons-react";
 
 export function Navbar() {
-  const [showWalletModal, setShowWalletModal] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState<boolean>(false);
   const [walletAddress, setWalletAddress] = useState<string>("");
-  const [hasShownInitialModal, setHasShownInitialModal] = useState(false);
-  const [isManualConnection, setIsManualConnection] = useState(false);
+  const [hasShownInitialModal, setHasShownInitialModal] =
+    useState<boolean>(false);
+  const [isManualConnection, setIsManualConnection] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   const { connected, publicKey, connect, disconnect, connecting, wallet } =
     useWallet();
@@ -128,18 +135,47 @@ export function Navbar() {
     { href: "/create", label: "Create" },
   ];
 
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMobileMenuOpen]);
+
+  const handleMobileMenuClose = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <>
-      <header className="w-full border-b fixed top-0 left-0 right-0 z-50 bg-background">
-        <div className="max-w-7xl mx-auto border-x">
+      <header className="w-full border-b fixed top-0 left-0 right-0 z-50 bg-background uppercase">
+        <div className="md:max-w-7xl mx-auto md:border-x">
           <div className="flex items-center justify-between">
-            <Link href="/tokens" className="flex items-center gap-2 pl-8">
-              <div className="text-base font-medium text-red-500">
-                <span className="text-primary">Tokun</span>.
-                <span className="text-primary">Lunchpad</span>
-              </div>
+            <Link href="/" className="w-30 md:ml-10 md:scale-150">
+              <Image src="/logogreen.png" alt="Logo" width={500} height={500} />
             </Link>
-            <nav className="flex items-center divide-x h-full">
+
+            <nav className="hidden md:flex items-center divide-x h-full">
+              <div>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="flex items-center justify-center px-6 text-sm py-7.5 font-medium text-muted-foreground hover:text-primary hover:bg-accent transition-colors cursor-pointer uppercase"
+                >
+                  How?
+                </button>
+              </div>
+              <div>
+                <Link
+                  href={"/migrate"}
+                  className="flex items-center justify-center px-6 text-sm py-7.5 font-medium text-muted-foreground hover:text-primary hover:bg-accent transition-colors cursor-pointer uppercase"
+                >
+                  Dev
+                </Link>
+              </div>
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -160,8 +196,107 @@ export function Navbar() {
                 {getButtonText()}
               </Button>
             </nav>
+
+            <div className="flex md:hidden items-center gap-2 mr-4">
+              <ThemeToggle />
+              <motion.button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 hover:bg-accent transition-colors z-50"
+                aria-label="Toggle menu"
+              >
+                <div className="flex flex-col gap-2 z-50">
+                  <motion.span
+                    className={`w-6 h-0.5 bg-primary transition-transform duration-200 ${
+                      isMobileMenuOpen ? "rotate-45 translate-y-1.5" : ""
+                    }`}
+                  />
+                  <motion.span
+                    className={`w-6 h-0.5 bg-primary transition-transform duration-200 ${
+                      isMobileMenuOpen ? "rotate-135 -translate-y-1" : ""
+                    }`}
+                  />
+                </div>
+              </motion.button>
+            </div>
           </div>
         </div>
+
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
+                onClick={handleMobileMenuClose}
+              />
+
+              <motion.div
+                initial={{ y: "-100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "-100%" }}
+                transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                className="fixed top-[73px] left-0 right-0 bg-background border-b z-50 md:hidden overflow-y-auto max-h-[calc(100vh-73px)]"
+              >
+                <nav className="flex flex-col">
+                  <div className="flex flex-col divide-y">
+                    <motion.button
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                      onClick={() => {
+                        setIsModalOpen(true);
+                        handleMobileMenuClose();
+                      }}
+                      className="flex items-center px-6 py-5 text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent transition-colors text-left"
+                    >
+                      How?
+                    </motion.button>
+
+                    {navLinks.map((link, index) => (
+                      <motion.div
+                        key={link.href}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 + index * 0.05 }}
+                      >
+                        <Link
+                          href={link.href}
+                          onClick={handleMobileMenuClose}
+                          className="flex items-center px-6 py-5 text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+                        >
+                          {link.label}
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="mt-auto p-6 border-t"
+                  >
+                    <Button
+                      className="w-full bg-primary border-none rounded-none py-6 text-base"
+                      onClick={() => {
+                        if (!connecting) {
+                          handleWalletClick();
+                        }
+                        handleMobileMenuClose();
+                      }}
+                      disabled={connecting}
+                    >
+                      {getButtonText()}
+                    </Button>
+                  </motion.div>
+                </nav>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </header>
 
       <WalletModal
@@ -169,6 +304,7 @@ export function Navbar() {
         onClose={() => setShowWalletModal(false)}
         disconnect={handleDisconnect}
       />
+      <HowItWorksModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </>
   );
 }

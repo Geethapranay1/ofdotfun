@@ -128,7 +128,7 @@
 
 .dark {
   /* Dark mode with neon green accents */
-  --background: oklch(0.15 0 0); /* Dark background */
+  --background: oklch(0% 0 0); /* Dark background */
   --foreground: oklch(0.92 0 0); /* Light text */
   --card: oklch(0.18 0 0); /* Slightly lighter dark cards */
   --card-foreground: oklch(0.94 0 0); /* Light text on cards */

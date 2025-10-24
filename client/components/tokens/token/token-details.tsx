@@ -1,13 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
-import { MigrationCard } from "./migration-card";
 import React from "react";
 
 interface TokenDetailsProps {
@@ -265,128 +262,104 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
   const token = getTokenData(tokenId);
 
   return (
-    <div className="">
-      <MigrationCard
-        tokenId={token.id}
-        tokenName={token.name}
-        tokenSymbol={token.symbol}
-        poolAddress={token.poolAddress}
-        configAddress={token.configAddress}
-      />
-      <Card className="border-0 rounded-none">
-        <CardHeader>
-          <div className="flex items-start gap-6">
-            <div className="relative w-24 h-24 flex-shrink-0">
-              <Image
-                src={token.image}
-                alt={token.name}
-                fill
-                className="rounded-full object-cover"
-              />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold">{token.name}</h1>
-                <Badge variant="secondary" className="text-sm">
-                  {token.symbol}
-                </Badge>
-              </div>
-              <p className="text-muted-foreground">{token.description}</p>
-            </div>
+    <div className="border-b uppercase">
+      <div className="p-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-start gap-4">
+          <div className="relative w-20 h-20 flex-shrink-0">
+            <Image
+              src={token.image}
+              alt={token.name}
+              fill
+              className="rounded-full object-cover"
+            />
           </div>
-        </CardHeader>
-        <CardContent className="space-y-6 p-0">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm px-6">
-              <span className="text-muted-foreground">
-                Bonding Curve Progress
-              </span>
-              <span className="font-medium">{token.progress}%</span>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <h1 className="text-2xl font-bold">{token.name}</h1>
+              <Badge variant="secondary" className="rounded-none">
+                {token.symbol}
+              </Badge>
             </div>
-            <Progress value={token.progress} className="h-14" />
+            <p className="text-sm text-muted-foreground">{token.description}</p>
           </div>
+        </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Price</p>
-              <p className="font-semibold text-lg">{token.price}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Market Cap</p>
-              <p className="font-semibold text-lg">{token.marketCap}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Volume 24h</p>
-              <p className="font-semibold text-lg">{token.volume}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Holders</p>
-              <p className="font-semibold text-lg">{token.holders}</p>
-            </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Price</p>
+            <p className="font-bold text-lg">{token.price}</p>
           </div>
-
-          <Separator />
-
-          <div className="space-y-3 px-6">
-            <h3 className="font-semibold">Token Information</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Total Supply</span>
-                <span className="font-medium">{token.totalSupply}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Mint Address</span>
-                <span className="font-medium font-mono">{token.mint}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Creator</span>
-                <span className="font-medium font-mono">{token.creator}</span>
-              </div>
-            </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Market Cap</p>
+            <p className="font-bold text-lg">{token.marketCap}</p>
           </div>
-
-          <Separator />
-
-          <div className="space-y-3 px-6">
-            <h3 className="font-semibold">Social Links</h3>
-            <div className="flex gap-3">
-              {token.socialLinks.twitter && (
-                <Link
-                  href={token.socialLinks.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <span>Twitter</span>
-                  <ExternalLink className="w-4 h-4" />
-                </Link>
-              )}
-              {token.socialLinks.telegram && (
-                <Link
-                  href={token.socialLinks.telegram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <span>Telegram</span>
-                  <ExternalLink className="w-4 h-4" />
-                </Link>
-              )}
-              {token.socialLinks.website && (
-                <Link
-                  href={token.socialLinks.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <span>Website</span>
-                  <ExternalLink className="w-4 h-4" />
-                </Link>
-              )}
-            </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Volume 24h</p>
+            <p className="font-bold text-lg">{token.volume}</p>
           </div>
-        </CardContent>
-      </Card>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Holders</p>
+            <p className="font-bold text-lg">{token.holders}</p>
+          </div>
+        </div>
+
+        {/* Progress */}
+        <div className="space-y-2">
+          <div className="flex justify-between text-xs">
+            <span className="text-muted-foreground">Bonding Curve Progress</span>
+            <span className="font-medium">{token.progress}%</span>
+          </div>
+          <Progress value={token.progress} className="h-2" />
+        </div>
+
+        {/* Social Links */}
+        <div className="flex flex-wrap gap-4">
+          {token.socialLinks.twitter && (
+            <Link
+              href={token.socialLinks.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+            >
+              <span>Twitter</span>
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+          )}
+          {token.socialLinks.telegram && (
+            <Link
+              href={token.socialLinks.telegram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+            >
+              <span>Telegram</span>
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+          )}
+          {token.socialLinks.website && (
+            <Link
+              href={token.socialLinks.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+            >
+              <span>Website</span>
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+          )}
+          <Link
+            href={`https://solscan.io/token/${token.mint}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+          >
+            <span>Contract</span>
+            <ExternalLink className="w-3 h-3" />
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

@@ -166,25 +166,25 @@ export function TokenCreationForm({
   };
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <Card className="border-0 rounded-none p-0 bg-background">
+      <form onSubmit={handleSubmit} className="uppercase">
+        <Card className="border rounded-none p-0 bg-background">
           <CardContent className="pt-6 p-0 divide-y">
-            <div className="flex">
+            <div className="flex md:flex-row flex-col">
               <div>
                 <ImageUpload
                   value={formData.image}
                   onChange={handleImageChange}
                 />
               </div>
-              <div className="flex-1 divide-y border-y">
-                <div className="grid grid-cols-1 md:grid-cols-2">
+              <div className="flex-1 divide-y">
+                <div className="grid grid-cols-1 md:grid-cols-2 md:border-0 border-y md:divide-y-0 divide-y">
                   <div>
                     <Input
                       id="name"
                       autoFocus
                       placeholder="Doge Moon"
                       value={formData.name}
-                      className="border-r"
+                      className="md:border-r"
                       onChange={(e) =>
                         setFormData({ ...formData, name: e.target.value })
                       }
@@ -231,7 +231,7 @@ export function TokenCreationForm({
                   <Button
                     type="submit"
                     size="lg"
-                    className="flex-1 border-none rounded-none py-12"
+                    className="flex-1 border-none rounded-none py-8 md:py-12"
                     disabled={isSubmitting || !wallet.connected}
                   >
                     {!wallet.connected
@@ -243,7 +243,7 @@ export function TokenCreationForm({
                   <Button
                     type="button"
                     variant="outline"
-                    className="border-none px-12 rounded-none py-12"
+                    className="border-none px-12 rounded-none py-8 md:py-12"
                     size="lg"
                     onClick={resetForm}
                     disabled={isSubmitting}
@@ -257,7 +257,7 @@ export function TokenCreationForm({
         </Card>
       </form>
       <Dialog open={showSuccessDialog} onOpenChange={closeSuccessDialog}>
-        <DialogContent className="sm:max-w-2xl bg-transparent rounded-[32px] backdrop-blur-sm border border-primary/10 p-2">
+        <DialogContent className="sm:max-w-xl bg-transparent rounded-[32px] backdrop-blur-sm border border-primary/10 p-2">
           <div className="p-6 rounded-3xl border bg-card">
             <DialogHeader>
               <div className="flex items-center justify-center mb-4">

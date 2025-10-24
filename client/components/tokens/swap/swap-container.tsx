@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { GraduatedSwapSection } from "@/components/tokens/graduated-swap-section";
-import { SwapSection } from "@/components/tokens/swap-section";
+import { GraduatedSwapSection } from "@/components/tokens/swap/graduated-swap-section";
+import { SwapSection } from "@/components/tokens/swap/swap-section";
 import { Connection } from "@solana/web3.js";
 import { CpAmm } from "@meteora-ag/cp-amm-sdk";
 import { TOKEN_POOL_ADDRESS } from "@/app/constant";
