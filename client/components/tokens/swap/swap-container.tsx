@@ -45,7 +45,6 @@ export function SwapContainer({ poolKey }: SwapContainerProps) {
         const dbcClient = new DynamicBondingCurveClient(connection, "confirmed");
         const state = await dbcClient.state.getPool(TOKEN_POOL_ADDRESS);
         const poolStatus = (state as any)?.isMigrated;
-        toast.success(`Pool Status: ${poolStatus}`);
         if (!cancelled) {
           setIsGraduated(!!poolStatus);
         }

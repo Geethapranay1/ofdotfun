@@ -26,6 +26,7 @@ export default async function TokenDetailPage({
           <HoldersTradesTable tokenId={poolKey} />
         </div>
         <div className="lg:col-span-1 sticky top-20 self-start border">
+          <div className="absolute top-0 -left-4 w-4 h-full pointer-events-none bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)] border-b" />
           <SwapContainer poolKey={poolKey} />
           <div className="w-full h-4 pointer-events-none bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)]" />
           <TokenInfoCard tokenId={poolKey} />

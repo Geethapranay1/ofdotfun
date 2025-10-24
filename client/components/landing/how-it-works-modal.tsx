@@ -69,7 +69,7 @@ export function HowItWorksModal({ open, onOpenChange }: HowItWorksModalProps) {
               ))}
             </div>
 
-            <div className="p-8 pt-0">
+            <div className="py-8 px-4 pt-0">
               <Link
                 onClick={() => {
                   onOpenChange(false);
@@ -77,7 +77,7 @@ export function HowItWorksModal({ open, onOpenChange }: HowItWorksModalProps) {
                 href="/create"
               >
                 <Button
-                  className="w-full border-0 rounded-none py-6 text-base"
+                  className="w-full border-0 rounded-2xl py-6 text-base"
                   size="lg"
                 >
                   Got it

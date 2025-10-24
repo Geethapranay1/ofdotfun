@@ -16,6 +16,9 @@ import { Connection } from "@solana/web3.js";
 import BN from "bn.js";
 import { toast } from "sonner";
 import { TOKEN_POOL_ADDRESS } from "@/app/constant";
+import { useQuery } from "@tanstack/react-query";
+import { fetchSolBalance } from "@/lib/actions";
+import Image from "next/image";
 
 interface SwapSectionProps {
   tokenId: string;
@@ -77,7 +80,6 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   }, [fetchPrices]);
 
   const TOKEN_SYMBOL = "TOKEN";
-  const SOL_BALANCE = 10.5;
   const SLIPPAGE_BPS = 100;
 
   const wallet = useWallet();
@@ -86,16 +88,31 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
     "confirmed"
   );
 
+  const { data: solBalance, isLoading: balanceLoading } = useQuery({
+    enabled: !!wallet.publicKey,
+    queryKey: ["sol-balance", wallet.publicKey?.toString()],
+    queryFn: async () => {
+      if (!wallet.publicKey) return 0;
+      return await fetchSolBalance(connection, wallet.publicKey);
+    },
+    staleTime: 15_000,
+    refetchInterval: 30_000,
+  });
+
   const getSwapQuote = async (amount: number, isBuy: boolean) => {
     const client = new DynamicBondingCurveClient(connection, "confirmed");
     const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
-    const poolConfigState = await client.state.getPoolConfig(virtualPoolState.config);
-    
-    const currentPoint = await getCurrentPoint(connection, poolConfigState.activationType);
-    
+    const poolConfigState = await client.state.getPoolConfig(
+      virtualPoolState.config
+    );
+    const currentPoint = await getCurrentPoint(
+      connection,
+      poolConfigState.activationType
+    );
+
     const decimals = isBuy ? 9 : 6; // SOL:9, Token:6
     const amountIn = new BN(Math.floor(amount * Math.pow(10, decimals)));
-  
+
     const quote = await client.pool.swapQuote({
       virtualPool: virtualPoolState,
       config: poolConfigState,
@@ -105,8 +122,12 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
       hasReferral: false,
       currentPoint,
     });
-  
-    return { quote, outputAmount: parseFloat(quote.outputAmount.toString()) / Math.pow(10, isBuy ? 6 : 9) };
+
+    return {
+      quote,
+      outputAmount:
+        parseFloat(quote.outputAmount.toString()) / Math.pow(10, isBuy ? 6 : 9),
+    };
   };
 
   const fetchBuyQuote = useCallback(
@@ -346,68 +367,105 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   };
 
   return (
-    <Card className="border-0 rounded-none p-0 gap-0">
+    <Card className="border-b border-x-0 border-t-0 bg-background rounded-none p-0 gap-0">
       <CardContent className="p-0 gap-0">
         <Tabs defaultValue="buy" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="buy">Buy</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 h-20">
+            <TabsTrigger className="" value="buy">
+              Buy
+            </TabsTrigger>
             <TabsTrigger value="sell">Sell</TabsTrigger>
           </TabsList>
-          <TabsContent value="buy" className="">
+          <TabsContent value="buy" className="space-y-4 p-6">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">balance:</span>
+              <span className="text-sm">
+                {balanceLoading
+                  ? "Loading..."
+                  : `${solBalance?.toFixed(6) || "0"} SOL`}
+              </span>
+            </div>
+
             <div className="relative">
               <Input
-                className="sm:max-w-md border-0 rounded-none focus-visible:outline-0 focus-visible:ring-0 py-8 sm:text-lg"
+                className="w-full border rounded-lg pr-20 py-6 text-xl"
                 id="buy-from"
                 type="number"
                 placeholder="0.0"
                 value={buyAmount}
                 onChange={(e) => handleBuyAmountChange(e.target.value)}
               />
-              <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 py-6 px-8 absolute">
-                <span className="text-sm font-medium">SOL</span>
-              </div>
-              <div className="flex justify-between items-center px-2 mt-1">
-                <span className="text-xs text-muted-foreground">
-                  Balance: {SOL_BALANCE}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {isFetchingPrice
-                    ? "Loading..."
-                    : tokenPriceUSD
-                    ? `$${tokenPriceUSD}`
-                    : "Price: N/A"}
-                </span>
+              <div className="flex items-center gap-2 absolute top-1/2 right-3 -translate-y-1/2">
+                <div className="flex items-center justify-center">
+                  <Image
+                    src={"/solana.svg"}
+                    alt="Solana"
+                    width={40}
+                    height={40}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="space-y-2 relative">
-              <div className="space-y-2">
-                <Input
-                  id="buy-to"
-                  type="text"
-                  placeholder="0.0"
-                  className="sm:max-w-md border-0 rounded-none focus-visible:outline-0 focus-visible:ring-0 py-8 sm:text-lg"
-                  readOnly
-                  value={isFetchingQuote ? "Loading..." : buyOutputAmount}
-                />
-                <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 py-6 px-8 absolute">
-                  <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
-                </div>
-                {buyOutputAmount && tokenPriceUSD && (
-                  <span className="text-xs text-muted-foreground px-2">
-                    ≈ $
-                    {(
-                      parseFloat(buyOutputAmount) * parseFloat(tokenPriceUSD)
-                    ).toFixed(2)}{" "}
-                    USD
-                  </span>
-                )}
-              </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 rounded-lg"
+                onClick={() => {
+                  const amount = (solBalance || 0) * 0.25;
+                  handleBuyAmountChange(amount.toString());
+                }}
+              >
+                25%
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 rounded-lg"
+                onClick={() => {
+                  const amount = (solBalance || 0) * 0.5;
+                  handleBuyAmountChange(amount.toString());
+                }}
+              >
+                50%
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 rounded-lg"
+                onClick={() => {
+                  const amount = (solBalance || 0) * 0.75;
+                  handleBuyAmountChange(amount.toString());
+                }}
+              >
+                75%
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 rounded-lg"
+                onClick={() => {
+                  const amount = solBalance || 0;
+                  handleBuyAmountChange(amount.toString());
+                }}
+              >
+                100%
+              </Button>
             </div>
+
+            {buyOutputAmount && (
+              <div className="text-center py-4">
+                <span className="text-muted-foreground">you receive </span>
+                <span className="font-medium">
+                  {buyOutputAmount} {TOKEN_SYMBOL}
+                </span>
+              </div>
+            )}
 
             <Button
               onClick={handleBuy}
-              className="w-full border-0 rounded-none py-8"
+              className="w-full rounded-lg py-6 text-lg"
               size="lg"
               disabled={
                 !wallet.connected ||
@@ -420,63 +478,87 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                 ? "Connect Wallet"
                 : isLoading
                 ? "Processing..."
-                : "Buy Token"}
+                : `Buy ${TOKEN_SYMBOL}`}
             </Button>
           </TabsContent>
-          <TabsContent value="sell" className="">
+          <TabsContent value="sell" className="space-y-4 p-6">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">
+                {TOKEN_SYMBOL} balance:
+              </span>
+              <span className="text-sm">0</span>
+            </div>
+
             <div className="relative">
               <Input
-                className="sm:max-w-md border-0 rounded-none focus-visible:outline-0 focus-visible:ring-0 py-8 sm:text-lg"
+                className="w-full border rounded-lg pr-20 py-6 text-lg"
                 id="sell-from"
                 type="number"
                 placeholder="0.0"
                 value={sellAmount}
                 onChange={(e) => handleSellAmountChange(e.target.value)}
               />
-              <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 py-6 px-8 absolute">
+              <div className="flex items-center gap-2 absolute top-1/2 right-3 -translate-y-1/2">
                 <span className="text-sm font-medium">{TOKEN_SYMBOL}</span>
-              </div>
-              <div className="flex justify-end items-center px-2 mt-1">
-                <span className="text-xs text-muted-foreground">
-                  {isFetchingPrice
-                    ? "Loading..."
-                    : tokenPriceUSD
-                    ? `$${tokenPriceUSD}`
-                    : "Price: N/A"}
-                </span>
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-xs">P</span>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-2 relative">
-              <div className="space-y-2">
-                <Input
-                  id="sell-to"
-                  type="text"
-                  placeholder="0.0"
-                  className="sm:max-w-md border-0 rounded-none focus-visible:outline-0 focus-visible:ring-0 py-8 sm:text-lg"
-                  readOnly
-                  value={isFetchingQuote ? "Loading..." : sellOutputAmount}
-                />
-                <div className="flex items-center justify-between bg-muted rounded-none top-0 right-0 py-6 px-8 absolute">
-                  <span className="text-sm font-medium">SOL</span>
-                </div>
-                <div className="flex justify-between items-center px-2 mt-1">
-                  <span className="text-xs text-muted-foreground">
-                    Balance: {SOL_BALANCE}
-                  </span>
-                  {sellOutputAmount && SOLPrice && (
-                    <span className="text-xs text-muted-foreground">
-                      ≈ ${(parseFloat(sellOutputAmount) * SOLPrice).toFixed(2)}{" "}
-                      USD
-                    </span>
-                  )}
-                </div>
-              </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 rounded-lg"
+                onClick={() => handleSellAmountChange("0")}
+              >
+                Reset
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 rounded-lg"
+                onClick={() => handleSellAmountChange("0")}
+              >
+                25%
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 rounded-lg"
+                onClick={() => handleSellAmountChange("0")}
+              >
+                50%
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 rounded-lg"
+                onClick={() => handleSellAmountChange("0")}
+              >
+                75%
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 rounded-lg"
+                onClick={() => handleSellAmountChange("0")}
+              >
+                100%
+              </Button>
             </div>
+
+            {sellOutputAmount && (
+              <div className="text-center py-4">
+                <span className="text-muted-foreground">you receive </span>
+                <span className="font-medium">{sellOutputAmount} SOL</span>
+              </div>
+            )}
 
             <Button
               onClick={handleSell}
-              className="w-full border-0 rounded-none py-8"
+              className="w-full rounded-lg py-6 text-lg"
               size="lg"
               variant="destructive"
               disabled={!wallet.connected || isLoading || !sellAmount}
@@ -485,7 +567,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                 ? "Connect Wallet"
                 : isLoading
                 ? "Processing..."
-                : "Sell Token"}
+                : `Sell ${TOKEN_SYMBOL}`}
             </Button>
           </TabsContent>
         </Tabs>
