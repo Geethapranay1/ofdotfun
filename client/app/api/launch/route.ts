@@ -142,9 +142,9 @@ export async function POST(req: Request) {
             totalSupply: poolState.totalSupply?.toString(),
             virtualQuoteReserve: poolState.virtualQuoteReserve?.toString(),
             virtualTokenReserve: poolState.virtualTokenReserve?.toString(),
-            activationTime: poolState.activationTime?.toNumber
+            activationTime: poolState.activationTime?.toString
               ? new Date(
-                  poolState.activationTime.toNumber() * 1000
+                  parseInt(poolState.activationTime.toString()) * 1000
                 ).toISOString()
               : null,
             migrationQuoteThreshold:

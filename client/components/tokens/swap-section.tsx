@@ -7,7 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowDownUp } from "lucide-react";
-import { DynamicBondingCurveClient } from "@meteora-ag/dynamic-bonding-curve-sdk";
+import {
+  DynamicBondingCurveClient,
+  getCurrentPoint,
+} from "@meteora-ag/dynamic-bonding-curve-sdk";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Connection } from "@solana/web3.js";
 import BN from "bn.js";
@@ -19,7 +22,6 @@ interface SwapSectionProps {
 }
 
 export function SwapSection({ tokenId }: SwapSectionProps) {
-  console.log("SwapSection");
   const [buyAmount, setBuyAmount] = useState("");
   const [sellAmount, setSellAmount] = useState("");
   const [buyOutputAmount, setBuyOutputAmount] = useState("");
@@ -85,42 +87,26 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   );
 
   const getSwapQuote = async (amount: number, isBuy: boolean) => {
-    try {
-      const client = new DynamicBondingCurveClient(connection, "confirmed");
-      const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
-      if (!virtualPoolState) {
-        throw new Error("Pool not found");
-      }
-
-      const poolConfigState = await client.state.getPoolConfig(
-        virtualPoolState.config
-      );
-
-      const currentPoint = new BN(0);
-
-      const decimals = isBuy ? 9 : 6;
-      const amountIn = new BN(Math.floor(amount * Math.pow(10, decimals)));
-
-      const quote = await client.pool.swapQuote({
-        virtualPool: virtualPoolState,
-        config: poolConfigState,
-        swapBaseForQuote: isBuy ? false : true,
-        amountIn,
-        slippageBps: SLIPPAGE_BPS,
-        hasReferral: false,
-        currentPoint,
-      });
-
-      console.log("Swap quote:", quote);
-      const outputAmount =
-        new BN(quote.outputAmount).toNumber() / Math.pow(10, isBuy ? 6 : 9);
-      console.log("Out :", outputAmount);
-
-      return { quote, outputAmount };
-    } catch (error) {
-      console.error("Failed to get swap quote:", error);
-      throw error;
-    }
+    const client = new DynamicBondingCurveClient(connection, "confirmed");
+    const virtualPoolState = await client.state.getPool(POOL_ADDRESS);
+    const poolConfigState = await client.state.getPoolConfig(virtualPoolState.config);
+    
+    const currentPoint = await getCurrentPoint(connection, poolConfigState.activationType);
+    
+    const decimals = isBuy ? 9 : 6; // SOL:9, Token:6
+    const amountIn = new BN(Math.floor(amount * Math.pow(10, decimals)));
+  
+    const quote = await client.pool.swapQuote({
+      virtualPool: virtualPoolState,
+      config: poolConfigState,
+      swapBaseForQuote: !isBuy,
+      amountIn,
+      slippageBps: SLIPPAGE_BPS,
+      hasReferral: false,
+      currentPoint,
+    });
+  
+    return { quote, outputAmount: parseFloat(quote.outputAmount.toString()) / Math.pow(10, isBuy ? 6 : 9) };
   };
 
   const fetchBuyQuote = useCallback(
@@ -132,7 +118,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
       setIsFetchingQuote(true);
       try {
         const { outputAmount } = await getSwapQuote(parseFloat(amount), true);
-        setBuyOutputAmount(outputAmount.toFixed(6));
+        setBuyOutputAmount(outputAmount.toFixed(9));
       } catch (error) {
         console.error("Failed to fetch buy quote:", error);
         setBuyOutputAmount("");

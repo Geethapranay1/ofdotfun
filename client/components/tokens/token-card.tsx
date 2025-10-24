@@ -76,7 +76,7 @@ export function TokenCard({ token }: TokenCardProps) {
                 Token Reserve
               </p>
               <p className="font-semibold text-xs">
-                {(Number(tokenReserve) / 1e9).toFixed(2)}
+                {(parseFloat(tokenReserve) / 1e9).toFixed(2)}
               </p>
             </div>
             <div>
@@ -84,7 +84,7 @@ export function TokenCard({ token }: TokenCardProps) {
                 Quote Reserve
               </p>
               <p className="font-semibold text-xs">
-                {(Number(quoteReserve) / 1e9).toFixed(2)}
+                {(parseFloat(quoteReserve) / 1e9).toFixed(2)}
               </p>
             </div>
           </div>
