@@ -20,11 +20,12 @@ export function SocialLinksInput({ value, onChange }: SocialLinksInputProps) {
   };
 
   return (
-    <div className="grid grid-cols-3 divide-x">
+    <div className="grid md:grid-cols-3 grid-cols-1 md:divide-x divide-y">
       <div>
         <Input
           id="twitter"
           type="url"
+          className="lowercase"
           placeholder="https://twitter.com/yourtoken"
           value={value.twitter}
           onChange={(e) => handleChange("twitter", e.target.value)}
@@ -32,6 +33,7 @@ export function SocialLinksInput({ value, onChange }: SocialLinksInputProps) {
       </div>
       <div>
         <Input
+          className="lowercase"
           id="telegram"
           type="url"
           placeholder="https://t.me/yourtoken"
@@ -41,6 +43,7 @@ export function SocialLinksInput({ value, onChange }: SocialLinksInputProps) {
       </div>
       <div>
         <Input
+          className="lowercase"
           id="website"
           type="url"
           placeholder="https://yourtoken.com"

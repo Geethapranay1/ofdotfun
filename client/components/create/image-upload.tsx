@@ -46,7 +46,7 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
   };
 
   return (
-    <div className="space-y-4 h-full">
+    <div className="space-y-4 w-full h-full">
       <input
         ref={fileInputRef}
         type="file"
@@ -56,7 +56,7 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
         required={!preview}
       />
       {preview ? (
-        <div className="relative w-68 h-full mx-auto">
+        <div className="relative w-full h-full min-h-[300px] md:min-h-[400px]">
           <Image
             src={preview}
             alt="Token preview"
@@ -67,7 +67,7 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
             type="button"
             variant="destructive"
             size="icon"
-            className="absolute -top-2 -right-2 rounded-none"
+            className="absolute top-2 right-2 md:-top-2 md:-right-2 rounded-none z-10"
             onClick={handleRemove}
           >
             <X className="w-4 h-4" />
@@ -76,7 +76,7 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
       ) : (
         <div
           onClick={handleBoxClick}
-          className="w-68 h-full mx-auto border-2 border-dashed border-muted rounded-none flex items-center justify-center cursor-pointer hover:border-primary transition-colors"
+          className="w-full h-full min-h-[300px] md:min-h-[400px] border-2 border-dashed border-muted rounded-none flex items-center justify-center cursor-pointer hover:border-primary transition-colors"
         >
           <Upload className="w-12 h-12 text-muted-foreground" />
         </div>

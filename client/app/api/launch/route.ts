@@ -1,179 +1,93 @@
-import { NextResponse } from "next/server";
-import {
-  Connection,
-  PublicKey,
-  sendAndConfirmRawTransaction,
-  Transaction,
-} from "@solana/web3.js";
-import { DynamicBondingCurveClient } from "@meteora-ag/dynamic-bonding-curve-sdk";
-import { markVanityPairAsUsed } from "@/lib/db";
+import { NextResponse } from 'next/server';
+import { markVanityPairAsUsed } from '@/lib/db';
+import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { DynamicBondingCurveClient } from '@meteora-ag/dynamic-bonding-curve-sdk';
+
+type SendTransactionRequest = {
+  signedTransaction: string;
+  mint?: string;
+  userWallet?: string;
+  tokenName?: string;
+  tokenTicker?: string;
+  vid?: string;
+};
 
 export async function POST(req: Request) {
   try {
-    const { signedTransaction, mint, userWallet, vid } = await req.json();
+    const { signedTransaction, mint, userWallet, vid } =
+      (await req.json()) as SendTransactionRequest;
 
     if (!signedTransaction) {
       return NextResponse.json(
-        { error: "Missing signed transaction" },
+        { error: 'Missing signed transaction' },
         { status: 400 }
       );
     }
 
-    const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL as string;
-    if (!RPC_URL) {
-      return NextResponse.json(
-        { error: "RPC_URL is not defined in environment variables" },
-        { status: 500 }
-      );
-    }
-
-    const connection = new Connection(RPC_URL, "confirmed");
+    const connection = new Connection(
+      process.env.NEXT_PUBLIC_RPC_URL!,
+      'confirmed'
+    );
     const transaction = Transaction.from(
-      Buffer.from(signedTransaction, "base64")
+      Buffer.from(signedTransaction, 'base64')
     );
 
-    const raw = transaction.serialize();
-    const txSignature = await connection.sendRawTransaction(raw, {
-      skipPreflight: true,
-      maxRetries: 5,
-    });
+    const txSignature = await connection.sendRawTransaction(
+      transaction.serialize(),
+      { skipPreflight: true, maxRetries: 3 }
+    );
 
-    await connection.confirmTransaction(txSignature, "confirmed");
-
+    await connection.confirmTransaction(txSignature, 'confirmed');
+    console.log('✅ Tx confirmed:', txSignature);
     let poolData: any = null;
     if (mint && userWallet) {
-      try {
-        console.log("🔍 Immediately fetching DBC pool data for mint:", mint);
-        const dbc = new DynamicBondingCurveClient(
-          new Connection(RPC_URL, "confirmed"),
-          "confirmed"
+      const dbc = new DynamicBondingCurveClient(connection, 'confirmed');
+      const baseMint = new PublicKey(mint);
+      const foundPool = await dbc.state.getPoolByBaseMint(baseMint);
+      if (foundPool) {
+        console.log(
+          'Found pool in background:',
+          foundPool.publicKey.toString()
         );
 
-        let poolAddress: string | null = null;
-        let poolState: any = null;
+        if (foundPool) {
+          const poolAddressStr = (foundPool as any).publicKey.toString();
+          const poolState = await dbc.state.getPool(
+            new PublicKey(poolAddressStr)
+          );
 
-        for (let attempt = 0; attempt < 12 && !poolAddress; attempt++) {
-          try {
-            const allPools = await dbc.state.getPools();
-            const foundPool = allPools.find((p: any) => {
-              const baseMint = p.account?.baseMint || p.baseMint;
-              return baseMint?.toString?.() === mint;
-            });
-
-            if (foundPool) {
-              const pubkey = (foundPool as any).publicKey;
-              if (pubkey?.toString) {
-                const poolAddressStr = pubkey.toString();
-                poolAddress = poolAddressStr;
-                poolState = await dbc.state.getPool(
-                  new PublicKey(poolAddressStr)
-                );
-                console.log("Found pool immediately:", poolAddress);
-                break;
-              }
-            }
-
-            if (!poolAddress && attempt === 0) {
-              try {
-                const parsedTx = await new Connection(
-                  RPC_URL,
-                  "confirmed"
-                ).getTransaction(txSignature, {
-                  maxSupportedTransactionVersion: 0,
-                } as any);
-
-                if (parsedTx?.meta) {
-                  const accountKeys = parsedTx.transaction.message.accountKeys;
-                  for (let i = 0; i < accountKeys.length; i++) {
-                    const preBalance = parsedTx.meta.preBalances[i];
-                    const postBalance = parsedTx.meta.postBalances[i];
-                    if (
-                      preBalance === 0 &&
-                      postBalance > 1000000 &&
-                      postBalance < 10000000
-                    ) {
-                      const potentialPool =
-                        typeof accountKeys[i] === "string"
-                          ? accountKeys[i]
-                          : (accountKeys[i] as any).pubkey;
-                      try {
-                        const testState = await dbc.state.getPool(
-                          new PublicKey(potentialPool)
-                        );
-                        if (testState.baseMint.toString() === mint) {
-                          poolAddress = potentialPool;
-                          poolState = testState;
-                          console.log(
-                            "Found pool via transaction parsing:",
-                            poolAddress
-                          );
-                          break;
-                        }
-                      } catch {}
-                    }
-                  }
-                }
-              } catch (e) {
-                console.log(
-                  "Transaction parsing failed, continuing with polling..."
-                );
-              }
-            }
-
-            if (!poolAddress && attempt < 11) {
-              await new Promise((r) => setTimeout(r, 1000));
-              console.log(`Pool search attempt ${attempt + 1}/12...`);
-            }
-          } catch (e) {
-            console.warn("Pool search attempt failed:", e);
-            if (attempt < 11) await new Promise((r) => setTimeout(r, 1000));
-          }
-        }
-
-        if (poolAddress && poolState) {
           poolData = {
-            poolAddress,
+            poolAddress: poolAddressStr,
             tokenMint: mint,
             creator: userWallet,
-            createdAt: new Date().toISOString(),
-            configKey: process.env.POOL_CONFIG_KEY,
             signature: txSignature,
-            quoteMint: poolState.quoteMint?.toString(),
-            totalSupply: poolState.totalSupply?.toString(),
-            virtualQuoteReserve: poolState.virtualQuoteReserve?.toString(),
-            virtualTokenReserve: poolState.virtualTokenReserve?.toString(),
-            activationTime: poolState.activationTime?.toString
-              ? new Date(
-                  parseInt(poolState.activationTime.toString()) * 1000
-                ).toISOString()
-              : null,
-            migrationQuoteThreshold:
-              poolState.migrationQuoteThreshold?.toString(),
           };
-
-          console.log("Pool data collected:", poolData.poolAddress);
         }
-      } catch (e) {
-        console.warn("Failed to fetch immediate pool data:", e);
       }
     }
 
-    // Mark vanity keypair as used
-    
-    // if (vid) {
-    //   await markVanityPairAsUsed(vid);
-    //   console.log("Marked vanity pair as used for vid:", vid);
-    // }
+    if (vid) {
+      await markVanityPairAsUsed(vid);
+      console.log('Marked vanity pair as used for vid:', vid);
+    }
 
     return NextResponse.json({
       success: true,
       signature: txSignature,
-      poolAddress: poolData?.poolAddress || null,
+      poolData,
     });
-  } catch (error) {
-    console.error("Transaction error:", error);
+  } catch (error: any) {
+    console.error('Transaction error:', error);
+
+    if (error.message?.includes('already been processed')) {
+      return NextResponse.json(
+        { error: 'Transaction already sent. Use a new transaction.' },
+        { status: 409 }
+      );
+    }
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
+      { error: error.message || 'Unknown error' },
       { status: 500 }
     );
   }

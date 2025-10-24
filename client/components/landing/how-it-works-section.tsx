@@ -30,7 +30,7 @@ export function HowItWorksSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="max-w-7xl mx-auto border-x border-t">
+    <section ref={ref} className="mt-7 bg-background relative border-t">
       <div className="px-8 py-16 md:py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

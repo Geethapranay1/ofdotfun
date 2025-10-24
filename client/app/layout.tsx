@@ -29,23 +29,30 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning suppressContentEditableWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}
       >
         <SolanaProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="light"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >
             <Navbar />
-            <main className="mt-20">{children}</main>
-            <Toaster position="top-left" toastOptions={{
-              style:{
-                borderRadius: '24px',
-                border: '0px',
-              }
-            }} richColors />
+            <main className="mt-20 w-full">{children}</main>
+            <Toaster
+              position="top-left"
+              toastOptions={{
+                style: {
+                  borderRadius: "0px",
+                  border: "0px",
+                  top: "-1.5rem",
+                  left: "-1.5rem",
+                  padding: "1.9rem",
+                },
+              }}
+              richColors
+            />
           </ThemeProvider>
         </SolanaProvider>
       </body>

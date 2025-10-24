@@ -1,23 +1,25 @@
 import { HeroSection } from "@/components/landing/hero-section";
-import { FeaturesSection } from "@/components/landing/features-section";
-import { HowItWorksSection } from "@/components/landing/how-it-works-section";
+import { BrandSlider } from "@/components/landing/brand-slider";
+import { AudienceCardsSection } from "@/components/landing/audience-cards-section";
+import { AboutSection } from "@/components/landing/about-section";
 import { FAQSection } from "@/components/landing/faq-section";
-import { CTASection } from "@/components/landing/cta-section";
 import { FooterSection } from "@/components/landing/footer-section";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import Pattern from "@/components/landing/pattern";
 
 export default function Home() {
   return (
-    <>
+    <main className="w-full">
       <SmoothScroll />
-      <div className="min-h-screen">
+      <Pattern />
+      <div className="min-h-screen w-full uppercase mx-auto max-w-7xl md:border">
         <HeroSection />
-        <FeaturesSection />
-        <HowItWorksSection />
+        <BrandSlider />
+        <AudienceCardsSection />
+        <AboutSection />
         <FAQSection />
-        <CTASection />
         <FooterSection />
       </div>
-    </>
+    </main>
   );
 }

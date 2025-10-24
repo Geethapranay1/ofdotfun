@@ -25,7 +25,7 @@ export function TokenCard({ token }: TokenCardProps) {
   return (
     <Link href={`/tokens/${poolKey}`}>
       <Card
-        className="hover:shadow-lg transition-shadow gap-0 cursor-pointer h-full rounded-none border-0 p-0"
+        className="hover:shadow-lg uppercase transition-shadow gap-0 cursor-pointer h-full rounded-none border-0 p-0"
       >
         <CardHeader className="pb-4 px-0">
           <div className="flex items-start gap-4">

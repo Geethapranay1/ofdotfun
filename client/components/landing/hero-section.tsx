@@ -5,77 +5,59 @@ import { Button } from "@/components/ui/button";
 import { IconArrowRight } from "@tabler/icons-react";
 import { motion } from "motion/react";
 
-const stats = [
-  { value: "1000+", label: "Tokens Launched" },
-  { value: "$5M+", label: "Total Volume" },
-  { value: "50K+", label: "Active Users" },
-  { value: "100%", label: "Fair Launch" },
-];
-
 export function HeroSection() {
   return (
-    <section className="max-w-7xl mx-auto border-x min-h-[calc(100vh-5rem)] flex items-center">
-      <div className="w-full px-8 py-16 md:py-24">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-4"
-          >
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-              Launch Your <span className="text-primary">Meme Token</span> in
-              Seconds
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
-              The easiest way to create, launch, and trade meme tokens on
-              Solana. Fair launches powered by bonding curves.
-            </p>
-          </motion.div>
+    <section className="bg-background relative uppercase min-h-[calc(100vh-5rem)] flex items-center">
+      <div className="w-full px-4 md:px-8 py-16 md:py-24">
+        <div className="flex items-center justify-center text-center">
+          <div className="space-y-8 w-full">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-3 max-w-3xl mx-auto"
+            >
+              <h2 className="text-sm md:text-xl font-bold tracking-tight">
+                Powered by <span className="text-primary">Founder</span>{" "}
+                Reputation
+              </h2>
+              <h1 className="text-3xl md:text-7xl font-bold tracking-tight leading-tight">
+                The First Onchain{" "}
+                <span className="text-primary">Launchpad</span>
+              </h1>
+              <p className="text-sm md:text-xl max-w-2xl mx-auto text-muted-foreground">
+                Where conviction, proof and reputation convert into liquid
+                capital. Welcome to the Internet Capital Markets. The new
+                foundation for founder led fundraising.
+              </p>
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4"
-          >
-            <Link href="/create">
-              <Button
-                size="lg"
-                className="border-0 rounded-none py-8 px-12 text-lg"
-              >
-                Create Token
-                <IconArrowRight className="ml-2" />
-              </Button>
-            </Link>
-            <Link href="/tokens">
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-0 rounded-none py-8 px-12 text-lg"
-              >
-                Explore Tokens
-              </Button>
-            </Link>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-12"
-          >
-            {stats.map((stat, index) => (
-              <div key={index} className="space-y-2">
-                <div className="text-3xl md:text-4xl font-bold text-primary">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+            >
+              <Link href="/create" className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="border-0 uppercase rounded-none py-8 px-8 md:text-lg w-full"
+                >
+                  Start Raising
+                  <IconArrowRight className="ml-2 size-6 -rotate-45" />
+                </Button>
+              </Link>
+              <Link href="/tokens" className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-0 rounded-none uppercase py-8 px-8 md:text-lg w-full"
+                >
+                  Explore Markets
+                </Button>
+              </Link>
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>
