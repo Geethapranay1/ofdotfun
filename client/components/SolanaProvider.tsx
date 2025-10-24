@@ -16,13 +16,11 @@ interface SolanaProviderProps {
 }
 
 export const SolanaProvider: FC<SolanaProviderProps> = ({ children }) => {
-  const network = WalletAdapterNetwork.Mainnet;
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   const queryClient = useMemo(() => new QueryClient(), []);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ConnectionProvider endpoint={endpoint}>
+      <ConnectionProvider endpoint={process.env.NEXT_PUBLIC_RPC_URL!}>
         <WalletProvider wallets={[]} autoConnect>
           <WalletModalProvider>{children}</WalletModalProvider>
         </WalletProvider>

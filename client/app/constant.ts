@@ -1,11 +1,11 @@
 import { PublicKey } from "@solana/web3.js";
 
 export const TOKEN_MINT_ADDRESS = new PublicKey(
-  "HjsYt6brRJHP1z5BsCagkbHQA6GPuK5SWXgQ3f4JpV9w"
+  "GxZqVSDBAovEsJagwbLJRJ2FNrq4V2L6GR3j9TfKPTai"
 );
 
 export const TOKEN_POOL_ADDRESS = new PublicKey(
-  "8p2mdcGQDCrxKq5pnnS38rbmdyrakamzv9pawcyomQjP"
+  "Xo8rHPSbxUxBgC4J5bRG57EGPSZe85LCLSDRYsjzFJY"
 );
 
 export const TOKEN_GRADUATION_ADDRESS = new PublicKey(
@@ -13,5 +13,5 @@ export const TOKEN_GRADUATION_ADDRESS = new PublicKey(
 );
 
 export const POOL_CONFIG_KEY = new PublicKey(
-  "28eYKBRnoVjVCHaJUeLKYzZyBJR3c5TG1UMGQccpSZgE"
+  "CUdxMBkGwYVJHmxBHpJcv2PLoYEULcVKFQGbiS8fahew"
 );

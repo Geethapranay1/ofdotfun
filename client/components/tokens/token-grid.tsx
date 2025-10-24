@@ -73,14 +73,14 @@ export function TokenGrid() {
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between border-b">
+      <div className="md:mb-0 mb-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between md:border-b">
         <Input
           placeholder="Search by name, symbol, description, or mint..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="sm:max-w-md border-0 rounded-none focus-visible:outline-0 dark:bg-background focus-visible:ring-0 py-8 sm:text-lg"
+          className="sm:max-w-md md:border-0 border rounded-none focus-visible:outline-0 dark:bg-background focus-visible:ring-0 py-8 text-xs sm:text-lg"
         />
-        <div className="flex items-center gap-2">
+        <div className="md:flex hidden items-center gap-2">
           <span className="text-sm text-muted-foreground">Sort by</span>
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="border-0 rounded-none py-8">

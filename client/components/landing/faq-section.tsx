@@ -48,19 +48,19 @@ export function FAQSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="max-w-7xl mx-auto border-x border-t">
-      <div className="px-8 py-16 md:py-24">
+    <section ref={ref} className="bg-background relative border-y">
+      <div className="">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.5 }}
-          className="text-center space-y-4 mb-16"
+          className="text-center space-y-4 px-8 py-16 md:py-24"
         >
           <h2 className="text-3xl md:text-5xl font-bold">
             Frequently Asked <span className="text-primary">Questions</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to know about launching on Tokun.Lunchpad
+            Everything you need to know about launching on Onlyfounders
           </p>
         </motion.div>
 
@@ -68,16 +68,16 @@ export function FAQSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="max-w-3xl mx-auto"
+          className="mx-auto"
         >
-          <Accordion type="single" collapsible className="w-full space-y-4">
+          <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, index) => (
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className="border-0 bg-card px-6"
+                className="px-6"
               >
-                <AccordionTrigger className="text-lg font-medium hover:no-underline py-6">
+                <AccordionTrigger className="text-lg uppercase font-medium hover:no-underline py-6">
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent className="text-primary pb-6">
