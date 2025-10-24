@@ -18,7 +18,7 @@ export function TokenInfoCard({ tokenId }: TokenInfoCardProps) {
   };
 
   return (
-    <div className="w-full border-b lg:border-b-0 uppercase">
+    <div className="w-full h-fit border-t uppercase">
       <div className="p-4 space-y-4">
         <div>
           <h4 className="text-sm font-bold text-muted-foreground mb-2">

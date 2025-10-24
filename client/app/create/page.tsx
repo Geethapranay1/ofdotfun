@@ -79,8 +79,8 @@ export default function CreateTokenPage() {
         <div className="flex flex-col">
           <h1 className="md:text-3xl font-semibold">Create Token</h1>
           <p className="text-muted-foreground md:text-base text-xs">
-            Launch your own meme token on TokunLunchpad. Drag and drop an image
-            anywhere on this page!
+            Launch your own meme token on OnlyFounders. Fill in the details
+            below to get started.
           </p>
         </div>
         <TokenCreationForm

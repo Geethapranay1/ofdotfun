@@ -3,8 +3,6 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import Link from "next/link";
-import { ExternalLink } from "lucide-react";
 import React from "react";
 
 interface TokenDetailsProps {
@@ -262,20 +260,19 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
   const token = getTokenData(tokenId);
 
   return (
-    <div className="border-b uppercase">
-      <div className="p-6 space-y-6">
-        {/* Header */}
+    <div className="border-y uppercase mt-4">
+      <div className="space-y-4">
         <div className="flex items-start gap-4">
-          <div className="relative w-20 h-20 flex-shrink-0">
+          <div className="relative w-24 h-24 flex-shrink-0">
             <Image
               src={token.image}
               alt={token.name}
               fill
-              className="rounded-full object-cover"
+              className="object-cover"
             />
           </div>
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mt-2">
               <h1 className="text-2xl font-bold">{token.name}</h1>
               <Badge variant="secondary" className="rounded-none">
                 {token.symbol}
@@ -285,79 +282,33 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 border-y divide-x">
+          <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Price</p>
-            <p className="font-bold text-lg">{token.price}</p>
+            <p className="text-3xl">{token.price}</p>
           </div>
-          <div>
+          <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Market Cap</p>
-            <p className="font-bold text-lg">{token.marketCap}</p>
+            <p className="text-3xl">{token.marketCap}</p>
           </div>
-          <div>
+          <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Volume 24h</p>
-            <p className="font-bold text-lg">{token.volume}</p>
+            <p className="text-3xl">{token.volume}</p>
           </div>
-          <div>
+          <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Holders</p>
-            <p className="font-bold text-lg">{token.holders}</p>
+            <p className="text-3xl">{token.holders}</p>
           </div>
         </div>
 
-        {/* Progress */}
         <div className="space-y-2">
           <div className="flex justify-between text-xs">
-            <span className="text-muted-foreground">Bonding Curve Progress</span>
+            <span className="text-muted-foreground">
+              Bonding Curve Progress
+            </span>
             <span className="font-medium">{token.progress}%</span>
           </div>
-          <Progress value={token.progress} className="h-2" />
-        </div>
-
-        {/* Social Links */}
-        <div className="flex flex-wrap gap-4">
-          {token.socialLinks.twitter && (
-            <Link
-              href={token.socialLinks.twitter}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
-            >
-              <span>Twitter</span>
-              <ExternalLink className="w-3 h-3" />
-            </Link>
-          )}
-          {token.socialLinks.telegram && (
-            <Link
-              href={token.socialLinks.telegram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
-            >
-              <span>Telegram</span>
-              <ExternalLink className="w-3 h-3" />
-            </Link>
-          )}
-          {token.socialLinks.website && (
-            <Link
-              href={token.socialLinks.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
-            >
-              <span>Website</span>
-              <ExternalLink className="w-3 h-3" />
-            </Link>
-          )}
-          <Link
-            href={`https://solscan.io/token/${token.mint}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
-          >
-            <span>Contract</span>
-            <ExternalLink className="w-3 h-3" />
-          </Link>
+          <Progress value={token.progress} className="h-4" />
         </div>
       </div>
     </div>

@@ -46,7 +46,7 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
   };
 
   return (
-    <div className="space-y-4 w-full h-full">
+    <div className="space-y-4 w-full h-full md:w-68 ">
       <input
         ref={fileInputRef}
         type="file"

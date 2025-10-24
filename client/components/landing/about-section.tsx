@@ -12,7 +12,8 @@ export function AboutSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="mt-7 bg-background relative border-t uppercase">
+    <section ref={ref} className="bg-background relative uppercase">
+       <div className="top-0 -left-10 w-full h-10 pointer-events-none border-b bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:border-x-[#ffffff1a] dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)]" />
       <div className="px-4 md:px-8 py-16 md:py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

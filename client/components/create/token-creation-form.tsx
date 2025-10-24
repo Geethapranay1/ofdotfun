@@ -177,7 +177,7 @@ export function TokenCreationForm({
                 />
               </div>
               <div className="flex-1 divide-y">
-                <div className="grid grid-cols-1 md:grid-cols-2 md:border-0 border-y md:divide-y-0 divide-y">
+                <div className="grid grid-cols-1 md:grid-cols-2 border-b md:divide-y-0 divide-y">
                   <div>
                     <Input
                       id="name"

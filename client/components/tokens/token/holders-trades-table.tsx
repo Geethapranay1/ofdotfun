@@ -176,8 +176,8 @@ export function HoldersTradesTable({ tokenId }: HoldersTradesTableProps) {
   return (
     <div className="w-full border-t uppercase">
       <Tabs defaultValue="holders" className="w-full">
-        <div className="p-4 border-b flex items-center justify-between">
-          <TabsList>
+        <div className="border-b flex items-center justify-between">
+          <TabsList className="">
             <TabsTrigger value="holders">Top Holders</TabsTrigger>
             <TabsTrigger value="trades">Recent Trades</TabsTrigger>
           </TabsList>

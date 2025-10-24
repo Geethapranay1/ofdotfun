@@ -11,8 +11,8 @@ export default function Home() {
   return (
     <main className="w-full">
       <SmoothScroll />
-      <Pattern />
-      <div className="min-h-screen w-full uppercase mx-auto max-w-7xl md:border">
+      <div className="relative min-h-screen w-full uppercase mx-auto max-w-7xl md:border">
+        <Pattern />
         <HeroSection />
         <BrandSlider />
         <AudienceCardsSection />

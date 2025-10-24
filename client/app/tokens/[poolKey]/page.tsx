@@ -13,15 +13,15 @@ export default async function TokenDetailPage({
   const { poolKey } = await params;
 
   return (
-    <div className="max-w-[90rem] relative border-x mx-auto uppercase">
+    <div className="mx-4 relative uppercase">
       <BackButton />
-      <div className="grid grid-cols-1 lg:grid-cols-3 lg:divide-x lg:items-start">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:divide-x lg:items-start">
+        <div className="lg:col-span-2 gap-4 flex flex-col border">
           <TokenDetails tokenId={poolKey} />
           <TokenChart tokenId={poolKey} />
           <HoldersTradesTable tokenId={poolKey} />
         </div>
-        <div className="lg:col-span-1 sticky top-20 self-start">
+        <div className="lg:col-span-1 sticky top-20 self-start space-y-4 border">
           <SwapContainer poolKey={poolKey} />
           <TokenInfoCard tokenId={poolKey} />
         </div>

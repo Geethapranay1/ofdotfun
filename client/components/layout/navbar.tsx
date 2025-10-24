@@ -12,9 +12,11 @@ import WalletModal from "./wallet-modal";
 import Image from "next/image";
 import { HowItWorksModal } from "../landing/how-it-works-modal";
 import { motion, AnimatePresence } from "motion/react";
-import { IconMenu2, IconX } from "@tabler/icons-react";
+import { usePathname } from "next/navigation";
+import Pattern from "../landing/pattern";
 
 export function Navbar() {
+  const pathname = usePathname();
   const [showWalletModal, setShowWalletModal] = useState<boolean>(false);
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [hasShownInitialModal, setHasShownInitialModal] =
@@ -133,6 +135,8 @@ export function Navbar() {
     { href: "/tokens", label: "Tokens" },
     { href: "/profile", label: "Profile" },
     { href: "/create", label: "Create" },
+    { href: "/migrate", label: "Dev" },
+    { href: "#", label: "How?", onClick: () => setIsModalOpen(true) },
   ];
 
   useEffect(() => {
@@ -150,41 +154,57 @@ export function Navbar() {
     setIsMobileMenuOpen(false);
   };
 
+  const isTerminalPage = pathname.startsWith("/tokens/");
+
   return (
     <>
       <header className="w-full border-b fixed top-0 left-0 right-0 z-50 bg-background uppercase">
-        <div className="md:max-w-7xl mx-auto md:border-x">
+        <div
+          className={`relative transition-all duration-200 ${
+            isTerminalPage ? "max-w-full" : "max-w-7xl"
+          } mx-auto md:border-x`}
+        >
+          {isTerminalPage ? null : <Pattern />}
           <div className="flex items-center justify-between">
             <Link href="/" className="w-30 md:ml-10 md:scale-150">
               <Image src="/logogreen.png" alt="Logo" width={500} height={500} />
             </Link>
 
             <nav className="hidden md:flex items-center divide-x h-full">
-              <div>
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="flex items-center justify-center px-6 text-sm py-7.5 font-medium text-muted-foreground hover:text-primary hover:bg-accent transition-colors cursor-pointer uppercase"
-                >
-                  How?
-                </button>
-              </div>
-              <div>
-                <Link
-                  href={"/migrate"}
-                  className="flex items-center justify-center px-6 text-sm py-7.5 font-medium text-muted-foreground hover:text-primary hover:bg-accent transition-colors cursor-pointer uppercase"
-                >
-                  Dev
-                </Link>
-              </div>
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="flex items-center justify-center px-6 text-sm py-7.5 font-medium text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+
+                if (link.onClick) {
+                  return (
+                    <div key={link.label}>
+                      <button
+                        onClick={link.onClick}
+                        className={`flex items-center justify-center px-6 text-sm py-7.5 font-medium transition-colors cursor-pointer uppercase ${
+                          isActive
+                            ? "text-primary border-b-2 border-r-0 border-primary"
+                            : "text-muted-foreground hover:text-primary hover:bg-accent"
+                        }`}
+                      >
+                        {link.label}
+                      </button>
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`flex items-center justify-center px-6 text-sm py-7.5 font-medium transition-colors ${
+                      isActive
+                        ? "text-primary border-b-2 border-r-0 border-primary"
+                        : "text-muted-foreground hover:text-primary hover:bg-accent"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
               <div className="flex items-center h-full px-4">
                 <ThemeToggle />
               </div>
@@ -242,35 +262,52 @@ export function Navbar() {
               >
                 <nav className="flex flex-col">
                   <div className="flex flex-col divide-y">
-                    <motion.button
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 }}
-                      onClick={() => {
-                        setIsModalOpen(true);
-                        handleMobileMenuClose();
-                      }}
-                      className="flex items-center px-6 py-5 text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent transition-colors text-left"
-                    >
-                      How?
-                    </motion.button>
+                    {navLinks.map((link, index) => {
+                      const isActive = pathname === link.href;
 
-                    {navLinks.map((link, index) => (
-                      <motion.div
-                        key={link.href}
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 + index * 0.05 }}
-                      >
-                        <Link
-                          href={link.href}
-                          onClick={handleMobileMenuClose}
-                          className="flex items-center px-6 py-5 text-base font-medium text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+                      if (link.onClick) {
+                        return (
+                          <motion.button
+                            key={link.label}
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 + index * 0.05 }}
+                            onClick={() => {
+                              link.onClick?.();
+                              handleMobileMenuClose();
+                            }}
+                            className={`flex items-center px-6 py-5 text-base font-medium transition-colors text-left ${
+                              isActive
+                                ? "text-primary bg-accent"
+                                : "text-muted-foreground hover:text-primary hover:bg-accent"
+                            }`}
+                          >
+                            {link.label}
+                          </motion.button>
+                        );
+                      }
+
+                      return (
+                        <motion.div
+                          key={link.href}
+                          initial={{ opacity: 0, y: -20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.1 + index * 0.05 }}
                         >
-                          {link.label}
-                        </Link>
-                      </motion.div>
-                    ))}
+                          <Link
+                            href={link.href}
+                            onClick={handleMobileMenuClose}
+                            className={`flex items-center px-6 py-5 text-base font-medium transition-colors ${
+                              isActive
+                                ? "text-primary bg-accent"
+                                : "text-muted-foreground hover:text-primary hover:bg-accent"
+                            }`}
+                          >
+                            {link.label}
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
                   </div>
 
                   <motion.div
