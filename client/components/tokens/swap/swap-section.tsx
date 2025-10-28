@@ -370,14 +370,14 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
     <Card className="border-b border-x-0 border-t-0 bg-background rounded-none p-0 gap-0">
       <CardContent className="p-0 gap-0">
         <Tabs defaultValue="buy" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 h-20">
+          <TabsList className="grid w-full grid-cols-2 h-20 border-b">
             <TabsTrigger className="" value="buy">
               Buy
             </TabsTrigger>
             <TabsTrigger value="sell">Sell</TabsTrigger>
           </TabsList>
-          <TabsContent value="buy" className="space-y-4 p-6">
-            <div className="flex justify-between items-center">
+          <TabsContent value="buy">
+            <div className="flex justify-between items-center p-6">
               <span className="text-sm text-muted-foreground">balance:</span>
               <span className="text-sm">
                 {balanceLoading
@@ -388,7 +388,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
             <div className="relative">
               <Input
-                className="w-full border rounded-lg pr-20 py-6 text-xl"
+                className="w-full border-y pr-20 py-6 text-xl"
                 id="buy-from"
                 type="number"
                 placeholder="0.0"
@@ -407,11 +407,11 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               </div>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex">
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 rounded-lg"
+                className="flex-1 rounded-none py-8 border-0 border-r"
                 onClick={() => {
                   const amount = (solBalance || 0) * 0.25;
                   handleBuyAmountChange(amount.toString());
@@ -422,7 +422,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 rounded-lg"
+                className="flex-1 rounded-none py-8 border-0 border-r"
                 onClick={() => {
                   const amount = (solBalance || 0) * 0.5;
                   handleBuyAmountChange(amount.toString());
@@ -433,7 +433,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 rounded-lg"
+                className="flex-1 rounded-none py-8 border-0 border-r"
                 onClick={() => {
                   const amount = (solBalance || 0) * 0.75;
                   handleBuyAmountChange(amount.toString());
@@ -444,7 +444,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 rounded-lg"
+                className="flex-1 rounded-none py-8 border-0"
                 onClick={() => {
                   const amount = solBalance || 0;
                   handleBuyAmountChange(amount.toString());
@@ -465,7 +465,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
             <Button
               onClick={handleBuy}
-              className="w-full rounded-lg py-6 text-lg"
+              className="w-full rounded-none py-8 text-lg"
               size="lg"
               disabled={
                 !wallet.connected ||
@@ -481,8 +481,8 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
                 : `Buy ${TOKEN_SYMBOL}`}
             </Button>
           </TabsContent>
-          <TabsContent value="sell" className="space-y-4 p-6">
-            <div className="flex justify-between items-center">
+          <TabsContent value="sell">
+            <div className="flex justify-between items-center p-6">
               <span className="text-sm text-muted-foreground">
                 {TOKEN_SYMBOL} balance:
               </span>
@@ -491,7 +491,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
             <div className="relative">
               <Input
-                className="w-full border rounded-lg pr-20 py-6 text-lg"
+                className="w-full border-y rounded-none pr-20 py-6 text-lg"
                 id="sell-from"
                 type="number"
                 placeholder="0.0"
@@ -506,11 +506,11 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               </div>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex">
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 rounded-lg"
+                className="flex-1 rounded-none py-8 border-0 border-r"
                 onClick={() => handleSellAmountChange("0")}
               >
                 Reset
@@ -518,7 +518,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 rounded-lg"
+                className="flex-1 rounded-none py-8 border-0 border-r"
                 onClick={() => handleSellAmountChange("0")}
               >
                 25%
@@ -526,7 +526,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 rounded-lg"
+                className="flex-1 rounded-none py-8 border-0 border-r"
                 onClick={() => handleSellAmountChange("0")}
               >
                 50%
@@ -534,7 +534,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 rounded-lg"
+                className="flex-1 rounded-none py-8 border-0 border-r"
                 onClick={() => handleSellAmountChange("0")}
               >
                 75%
@@ -542,7 +542,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 rounded-lg"
+                className="flex-1 rounded-none py-8 border-0"
                 onClick={() => handleSellAmountChange("0")}
               >
                 100%
@@ -558,7 +558,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
             <Button
               onClick={handleSell}
-              className="w-full rounded-lg py-6 text-lg"
+              className="w-full rounded-none py-8 text-lg"
               size="lg"
               variant="destructive"
               disabled={!wallet.connected || isLoading || !sellAmount}

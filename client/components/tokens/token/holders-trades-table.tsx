@@ -229,11 +229,11 @@ export function HoldersTradesTable({ tokenId }: HoldersTradesTableProps) {
                       </div>
                     </td>
                     <td className="p-3 text-right">
-                      <div className="space-y-1">
-                        <div className="font-medium">{holder.percentage}</div>
+                      <div className="flex items-center">
                         <div className="text-xs text-muted-foreground">
                           ${holder.percentage.replace("%", "")}
                         </div>
+                        <div className="font-medium text-xs">({holder.percentage})</div>
                       </div>
                     </td>
                     <td className="p-3 text-right font-medium">
@@ -266,20 +266,25 @@ export function HoldersTradesTable({ tokenId }: HoldersTradesTableProps) {
                 {trades.map((trade) => (
                   <tr
                     key={trade.id}
-                    className="border-b hover:bg-accent/50 transition-colors"
+                     className={`text-xs py-1 px-2 border-b rounded capitalize ${
+                          trade.type === "Buy"
+                            ? "text-primary"
+                            : "text-[#F10D11]"
+                        }`}
                   >
                     <td className="p-3">
-                      <span className="text-primary">{trade.age}</span>
+                      <span className="lowercase">{trade.age}</span>
                     </td>
                     <td className="p-3">
-                      <Badge
-                        variant={
-                          trade.type === "Buy" ? "default" : "destructive"
-                        }
-                        className="rounded-none border-0"
+                      <span
+                        className={`text-xs py-1 px-2 rounded capitalize ${
+                          trade.type === "Buy"
+                            ? "bg-primary/10 text-primary"
+                            : "bg-[#F10D11]/10 text-[#F10D11]"
+                        }`}
                       >
                         {trade.type}
-                      </Badge>
+                      </span>
                     </td>
                     <td className="p-3 text-right font-medium">
                       {trade.price}
@@ -288,7 +293,7 @@ export function HoldersTradesTable({ tokenId }: HoldersTradesTableProps) {
                       {trade.volume}
                     </td>
                     <td className="p-3 text-right font-medium">{trade.sol}</td>
-                    <td className="p-3 text-right">
+                    <td className="p-3 text-right normal-case">
                       <Link
                         href={`https://solscan.io/account/${trade.trader}`}
                         target="_blank"

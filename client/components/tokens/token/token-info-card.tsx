@@ -81,7 +81,7 @@ export function TokenInfoCard({ tokenId }: TokenInfoCardProps) {
               <span
                 className={`font-bold ${
                   tokenInfo.priceChange24h.startsWith("+")
-                    ? "text-green-500"
+                    ? "text-primary"
                     : "text-red-500"
                 }`}
               >

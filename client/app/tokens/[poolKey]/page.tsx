@@ -4,6 +4,13 @@ import { TokenChart } from "@/components/tokens/token/token-chart";
 import { HoldersTradesTable } from "@/components/tokens/token/holders-trades-table";
 import { TokenInfoCard } from "@/components/tokens/token/token-info-card";
 import { MobileSwapModal } from "@/components/tokens/swap/mobile-swap-modal";
+import { RecentlyOpened } from "@/components/tokens/token/recently-opened";
+import { TokenPageWrapper } from "@/components/tokens/token/token-page-wrapper";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
 
 export default async function TokenDetailPage({
   params,
@@ -13,34 +20,52 @@ export default async function TokenDetailPage({
   const { poolKey } = await params;
 
   return (
-    <div className="mx-4 relative uppercase md:pb-0 pb-24">
-      {/* <BackButton /> */}
-      <>
-        <div className="absolute top-0 -left-4 w-4 h-full pointer-events-none border-l bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)] border-b" />
-        <div className="absolute top-0 -right-4 w-4 h-full pointer-events-none border-l bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)] border-b" />
-      </>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:divide-x lg:items-start">
-        <div className="lg:col-span-2 flex flex-col md:border border-l border-t">
-          <TokenDetails tokenId={poolKey} />
-          <>
-            <div className="w-full h-4 pointer-events-none border-0 bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)]" />
-          </>
-          <TokenChart tokenId={poolKey} />
-          <HoldersTradesTable tokenId={poolKey} />
-        </div>
-        <div className="lg:col-span-1 sticky top-20 self-start border">
-          <>
-            <div className="absolute top-0 -left-4 w-4 h-full pointer-events-none bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)] border-b" />
-          </>
-          <SwapContainer poolKey={poolKey} />
-          <>
-             <div className="w-full h-4 pointer-events-none border-0 bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)]" />
-          </>
-          <TokenInfoCard tokenId={poolKey} />
-        </div>
-      </div>
+    <TokenPageWrapper tokenId={poolKey}>
+        <RecentlyOpened currentTokenId={poolKey} />
+      <div className="relative uppercase">
 
-      <MobileSwapModal tokenName={"tokenName"} tokenId={poolKey} />
-    </div>
+        <div className="lg:hidden pb-24">
+          <div className="border-b">
+            <TokenDetails tokenId={poolKey} />
+          </div>
+          <div className="border-b">
+            <TokenChart tokenId={poolKey} />
+          </div>
+          <div className="border-b">
+            <HoldersTradesTable tokenId={poolKey} />
+          </div>
+          <div className="border-b">
+            <TokenInfoCard tokenId={poolKey} />
+          </div>
+        </div>
+
+        <div className="hidden lg:grid lg:grid-cols-4 lg:divide-x h-[calc(100vh-7.5rem)] overflow-hidden">
+          <div className="flex col-span-1 flex-col border-l border-t overflow-auto hide-scrollbar">
+            <TokenDetails tokenId={poolKey} />
+            <TokenInfoCard tokenId={poolKey} />
+          </div>
+          <div className="col-span-2 flex flex-col overflow-hidden">
+            <ResizablePanelGroup direction="vertical">
+              <ResizablePanel defaultSize={65} minSize={30}>
+                <div className="h-full overflow-auto hide-scrollbar">
+                  <TokenChart tokenId={poolKey} />
+                </div>
+              </ResizablePanel>
+              <ResizableHandle />
+              <ResizablePanel defaultSize={35} minSize={30}>
+                <div className="h-full overflow-auto hide-scrollbar">
+                  <HoldersTradesTable tokenId={poolKey} />
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </div>
+          <div className="col-span-1 border overflow-auto">
+            <SwapContainer poolKey={poolKey} />
+          </div>
+        </div>
+
+        <MobileSwapModal tokenName={"tokenName"} tokenId={poolKey} />
+      </div>
+    </TokenPageWrapper>
   );
 }

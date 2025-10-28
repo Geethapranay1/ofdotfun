@@ -261,9 +261,8 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
 
   return (
     <div className="border-b uppercase">
-      <div className="w-full h-4 pointer-events-none bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)] border-b" />
       <div className="">
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-4 border-b">
           <div className="relative w-24 h-24 flex-shrink-0">
             <Image
               src={token.image}
@@ -283,22 +282,22 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 md:gap-4 border-y divide-x md:divide-y-0 divide-y mb-4">
+        <div className="grid grid-cols-2 divide-x divide-y mb-4">
           <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Price</p>
-            <p className="text-3xl">{token.price}</p>
+            <p className="text-2xl">{token.price}</p>
           </div>
           <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Market Cap</p>
-            <p className="text-3xl">{token.marketCap}</p>
+            <p className="text-2xl">{token.marketCap}</p>
           </div>
           <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Volume 24h</p>
-            <p className="text-3xl">{token.volume}</p>
+            <p className="text-2xl">{token.volume}</p>
           </div>
           <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Holders</p>
-            <p className="text-3xl">{token.holders}</p>
+            <p className="text-2xl">{token.holders}</p>
           </div>
         </div>
 
