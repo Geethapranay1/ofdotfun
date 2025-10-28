@@ -8,6 +8,7 @@ import {
   CrosshairMode,
   CandlestickSeries,
 } from "lightweight-charts";
+import { useTheme } from "next-themes";
 
 interface TokenChartProps {
   tokenId: string;
@@ -15,6 +16,7 @@ interface TokenChartProps {
 
 export function TokenChart({ tokenId }: TokenChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -60,12 +62,12 @@ export function TokenChart({ tokenId }: TokenChartProps) {
     });
 
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: "#10b981",
-      downColor: "#ef4444",
-      borderUpColor: "#10b981",
-      borderDownColor: "#ef4444",
-      wickUpColor: "#10b981",
-      wickDownColor: "#ef4444",
+      upColor: theme === "dark" ? "#b9ff00" : "#0ea5e9",
+      downColor: "#F10D11",
+      borderUpColor: theme === "dark" ? "#b9ff00" : "#0ea5e9",
+      borderDownColor: "#F10D11",
+      wickUpColor: theme === "dark" ? "#b9ff00" : "#0ea5e9",
+      wickDownColor: "#F10D11",
     });
 
     const generateMockData = () => {
