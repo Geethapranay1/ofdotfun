@@ -1,9 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { TokenCard } from "./token-card";
-import { useQuery } from "@tanstack/react-query";
-import { fetchAllTokens } from "@/lib/actions";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,26 +10,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Token } from "@/types/token";
+import { useTokenStore } from "@/store/tokenStore";
 
 export function TokenGrid() {
-  const { data: tokens, isLoading } = useQuery({
-    queryKey: ["all-tokens"],
-    queryFn: fetchAllTokens,
-    staleTime: 30_000,
-    refetchOnWindowFocus: false,
-  });
-
   const [search, setSearch] = React.useState("");
-  const [sortBy, setSortBy] = React.useState<string>("name-asc");
+  const [sortBy, setSortBy] = React.useState<string>("recent-created");
+
+  const { tokens, isLoadingTokens, fetchTokens } = useTokenStore();
+
+  useEffect(() => {
+    fetchTokens();
+  }, [fetchTokens]);
+
+  useEffect(() => {
+    const pollInterval = setInterval(() => {
+      fetchTokens(true);
+    }, 5000);
+
+    return () => {
+      clearInterval(pollInterval);
+    };
+  }, [fetchTokens]);
 
   const filteredAndSorted = React.useMemo(() => {
-    const list = (tokens ?? []).filter((t) => {
+    const list = (tokens ?? []).filter((t: Token) => {
       const q = search.trim().toLowerCase();
       if (!q) return true;
       const name = (t.name ?? "").toLowerCase();
       const symbol = (t.symbol ?? "").toLowerCase();
       const desc = (t.description ?? "").toLowerCase();
-      const mint = (t.tokenMint?.toString?.() ?? "").toLowerCase();
+      const mint = (t.mintAddress ?? "").toLowerCase();
       return (
         name.includes(q) ||
         symbol.includes(q) ||
@@ -53,6 +62,13 @@ export function TokenGrid() {
 
     const sorted = [...list];
     switch (sortBy) {
+      case "recent-created":
+        sorted.sort((a, b) => {
+          const timeA = new Date(a.createdAt ?? 0).getTime();
+          const timeB = new Date(b.createdAt ?? 0).getTime();
+          return timeB - timeA;
+        });
+        break;
       case "name-asc":
         sorted.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
         break;
@@ -60,20 +76,22 @@ export function TokenGrid() {
         sorted.sort((a, b) => (b.name ?? "").localeCompare(a.name ?? ""));
         break;
       case "progress-desc":
-        sorted.sort((a, b) => byNumber(b.progress) - byNumber(a.progress));
+        sorted.sort(
+          (a, b) =>
+            byNumber(b.bondingCurveProgress) - byNumber(a.bondingCurveProgress)
+        );
         break;
       case "progress-asc":
-        sorted.sort((a, b) => byNumber(a.progress) - byNumber(b.progress));
+        sorted.sort(
+          (a, b) =>
+            byNumber(a.bondingCurveProgress) - byNumber(b.bondingCurveProgress)
+        );
         break;
       case "marketcap-desc":
-        sorted.sort(
-          (a: any, b: any) => byNumber(b.marketCap) - byNumber(a.marketCap)
-        );
+        sorted.sort((a, b) => byNumber(b.marketCap) - byNumber(a.marketCap));
         break;
       case "marketcap-asc":
-        sorted.sort(
-          (a: any, b: any) => byNumber(a.marketCap) - byNumber(b.marketCap)
-        );
+        sorted.sort((a, b) => byNumber(a.marketCap) - byNumber(b.marketCap));
         break;
       default:
         break;
@@ -98,6 +116,7 @@ export function TokenGrid() {
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="recent-created">Recently Created</SelectItem>
               <SelectItem value="name-asc">Name (A → Z)</SelectItem>
               <SelectItem value="name-desc">Name (Z → A)</SelectItem>
               <SelectItem value="progress-desc">
@@ -118,7 +137,7 @@ export function TokenGrid() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-        {isLoading && (
+        {isLoadingTokens && (
           <>
             {[...Array(9)].map((_, i) => (
               <div
@@ -128,11 +147,15 @@ export function TokenGrid() {
             ))}
           </>
         )}
-        {!isLoading &&
+        {!isLoadingTokens &&
           filteredAndSorted.map((token) => (
-            <TokenCard key={token.id} token={token} href={`/tokens/${token.id}`} />
+            <TokenCard
+              key={token.id}
+              token={token}
+              href={`/tokens/${token.mintAddress}`}
+            />
           ))}
-        {!isLoading && filteredAndSorted.length === 0 && (
+        {!isLoadingTokens && filteredAndSorted.length === 0 && (
           <div className="col-span-full text-center text-muted-foreground py-10">
             No tokens found.
           </div>

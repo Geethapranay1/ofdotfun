@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "i.pinimg.com",
       },
+      {
+        hostname: "icm-bucket.sfo3.digitaloceanspaces.com",
+      },
     ],
   },
 };

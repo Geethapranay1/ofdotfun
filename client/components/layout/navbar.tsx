@@ -136,7 +136,7 @@ export function Navbar() {
     { href: "/tokens", label: "Tokens" },
     { href: "/profile", label: "Profile" },
     { href: "/create", label: "Create" },
-    { href: "/migrate", label: "Dev" },
+    // { href: "/migrate", label: "Dev" },
     { href: "#", label: "How?", onClick: () => setIsModalOpen(true) },
   ];
 

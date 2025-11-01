@@ -2,51 +2,46 @@
 
 import React, { useMemo } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchUserTokens, getCreatorTokens } from "@/lib/actions";
-import { TokenCard } from "@/components/tokens/token-card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import BackButton from "@/components/BackButton";
 import Pattern from "@/components/landing/pattern";
-import { PoolAccountData } from "@/lib/pool-utils";
-import { PublicKey } from "@solana/web3.js";
-import Link from "next/link";
+import { Token } from "@/types/token";
+import { TokenCard } from "@/components/tokens/token-card";
 
 export default function ProfilePage() {
   const { publicKey } = useWallet();
   const address = useMemo(
-    () => publicKey?.toString() ?? "F3k...9s2A",
+    () => publicKey?.toString(),
     [publicKey]
   );
-  const [loading, setLoading] = React.useState(false);
-  const [creatorTokens, setCreatorTokens] = React.useState<PoolAccountData[]>();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [creatorTokens, setCreatorTokens] = React.useState<Token[]>();
 
   React.useEffect(() => {
-    if (!address) return;
-    setLoading(true);
-    const ct = getCreatorTokens(address).then((tokens) => {
-      //@ts-ignore
-      setCreatorTokens(tokens);
-      return tokens;
-    });
-    setLoading(false);
-    console.log("Creator Tokens:", ct);
+    const fetchCreatorTokens = async () => {
+      try {
+        if (!address) return;
+        setIsLoading(true);
+        const res = await fetch(`/api/tokens/user/${address}`);
+        const data = await res.json();
+        if (data.success) {
+          setCreatorTokens(data.tokens);
+        }
+      } catch (error) {
+        console.error("Error fetching creator tokens:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchCreatorTokens();
   }, [address]);
-
-  const { data: tokens, isLoading } = useQuery({
-    enabled: !!address,
-    queryKey: ["user-tokens", address],
-    queryFn: () => fetchUserTokens(address),
-    staleTime: 30_000,
-    refetchOnWindowFocus: false,
-  });
 
   return (
     <div className="relative max-w-7xl border-x mx-auto">
       <Pattern />
       <BackButton href="/tokens" />
       <div className="border-b">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center md:flex-row flex-col px-6 gap-4">
           <Avatar className="size-48 rounded-none border-r">
             <AvatarImage
               src={
@@ -57,8 +52,8 @@ export default function ProfilePage() {
             <AvatarFallback>USR</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-2xl font-bold">Your Profile</span>
-            <span className="text-muted-foreground text-sm font-mono">
+            <span className="text-2xl font-bold md:block hidden">Your Profile</span>
+            <span className="text-muted-foreground text-sm break-all md:py-0 py-4">
               {address}
             </span>
           </div>
@@ -66,51 +61,32 @@ export default function ProfilePage() {
       </div>
 
       <div className="border-b">
-        <h2 className="text-xl font-semibold py-4 px-6 border-b">
-          Your Tokens
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y divide-x">
+        <div className="relative">
+          <h2 className="text-sm font-medium absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
+            Your Tokens
+          </h2>
+          <div className="h-10 w-full pointer-events-none bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)] border-b" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y divide-x relative px-4">
           {isLoading && (
-            <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y divide-x">
+            <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="border-0 rounded-none p-4 bg-card animate-pulse h-40"
+                  className="border-0 rounded-none p-4 bg-card animate-pulse h-40 border-r"
                 />
               ))}
             </div>
           )}
           {!isLoading &&
-            tokens?.map((t) => (
+            creatorTokens?.map((t) => (
               <TokenCard
-                key={t.createdAt}
+                key={t.id}
                 token={t}
-                href={`/profile/${t.quoteMint}`}
+                href={`/profile/${t.mintAddress}`}
               />
             ))}
-          {/* {creatorTokens &&
-            !isLoading &&
-            creatorTokens.map((t: PoolAccountData, idx: number) => (
-              <Link
-                href={`/profile/${new PublicKey(t.publicKey)}`}
-                key={idx}
-                className="p-4 space-y-2"
-              >
-                <div>
-                  <p className="text-xs text-muted-foreground">Pool Address</p>
-                  <p className="font-mono text-sm break-all">
-                    {new PublicKey(t.publicKey).toString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Mint Address</p>
-                  <p className="font-mono text-sm break-all">
-                    {new PublicKey(t.account.baseMint).toString()}
-                  </p>
-                </div>
-              </Link>
-            ))} */}
-          {!isLoading && tokens?.length === 0 && (
+          {creatorTokens?.length === 0 && (
             <div className="col-span-full text-center text-muted-foreground py-10">
               No tokens found.
             </div>

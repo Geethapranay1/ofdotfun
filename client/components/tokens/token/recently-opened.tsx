@@ -40,7 +40,6 @@ export function RecentlyOpened({
 
   React.useEffect(() => {
     loadTokens();
-
     const handleStorageChange = () => {
       loadTokens();
     };
@@ -82,7 +81,7 @@ export function RecentlyOpened({
   if (recentTokens.length === 0) return null;
 
   return (
-    <div className="bg-background border-x">
+    <div className="bg-background border-x border-b">
       <div className="flex items-center gap-2 px-2">
         <Button
           variant="ghost"
@@ -108,6 +107,7 @@ export function RecentlyOpened({
                 >
                   <div className="relative w-6 h-6 flex-shrink-0">
                     <Image
+                      unoptimized
                       src={token.image}
                       alt={token.name}
                       fill
@@ -126,7 +126,7 @@ export function RecentlyOpened({
                 {currentTokenId !== token.id && (
                   <button
                     onClick={(e) => removeToken(token.id, e)}
-                    className="absolute -top-0 -right-0 h-full w-9 bg-background border-l items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden group-hover:flex cursor-pointer hover:text-primary"
+                    className="absolute top-0 right-0 h-full w-9 bg-background border-l items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden group-hover:flex cursor-pointer hover:text-primary"
                   >
                     <X className="h-4 w-4" />
                   </button>

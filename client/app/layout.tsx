@@ -17,8 +17,67 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TokunLunchpad - Web3 Meme Token Launchpad",
-  description: "Launch and trade meme tokens on TokunLunchpad",
+  title: {
+    default: "OnlyFounders - Launch Your Token, Build Your Community",
+    template: "%s | OnlyFounders",
+  },
+  description: "OnlyFounders is the ultimate launchpad for founders to create, launch, and grow their tokens on Solana. Fair launch, bonding curves, and instant liquidity.",
+  keywords: [
+    "OnlyFounders",
+    "Solana",
+    "token launch",
+    "launchpad",
+    "bonding curve",
+    "fair launch",
+    "meme coins",
+    "crypto tokens",
+    "DeFi",
+    "Web3",
+  ],
+  authors: [{ name: "OnlyFounders Team" }],
+  creator: "OnlyFounders",
+  publisher: "OnlyFounders",
+  metadataBase: new URL("https://onlyfounders.fun"),
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://onlyfounders.fun",
+    siteName: "OnlyFounders",
+    title: "OnlyFounders - Launch Your Token, Build Your Community",
+    description: "OnlyFounders is the ultimate launchpad for founders to create, launch, and grow their tokens on Solana. Fair launch, bonding curves, and instant liquidity.",
+    images: [
+      {
+        url: "/OnlyFounder.png",
+        width: 1200,
+        height: 630,
+        alt: "OnlyFounders - Token Launchpad",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OnlyFounders - Launch Your Token, Build Your Community",
+    description: "OnlyFounders is the ultimate launchpad for founders to create, launch, and grow their tokens on Solana. Fair launch, bonding curves, and instant liquidity.",
+    images: ["/logo.jpg"],
+    creator: "@onlyfounders",
+    site: "@onlyfounders",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/logo.jpg",
+    shortcut: "/logo.jpg",
+    apple: "/logo.jpg",
+  },
 };
 
 export default function RootLayout({
@@ -41,14 +100,13 @@ export default function RootLayout({
             <Navbar />
             <main className="md:mt-14 mt-11 w-full">{children}</main>
             <Toaster
-              position="top-left"
+              position="bottom-left"
               toastOptions={{
                 style: {
                   borderRadius: "0px",
                   border: "0px",
-                  top: "-1.5rem",
-                  left: "-1.5rem",
-                  padding: "1.9rem",
+                  // left: "-1.5rem",
+                  // top: "-1.5rem",
                 },
               }}
               richColors

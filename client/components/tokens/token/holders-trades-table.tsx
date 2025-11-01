@@ -233,7 +233,9 @@ export function HoldersTradesTable({ tokenId }: HoldersTradesTableProps) {
                         <div className="text-xs text-muted-foreground">
                           ${holder.percentage.replace("%", "")}
                         </div>
-                        <div className="font-medium text-xs">({holder.percentage})</div>
+                        <div className="font-medium text-xs">
+                          ({holder.percentage})
+                        </div>
                       </div>
                     </td>
                     <td className="p-3 text-right font-medium">
@@ -266,11 +268,9 @@ export function HoldersTradesTable({ tokenId }: HoldersTradesTableProps) {
                 {trades.map((trade) => (
                   <tr
                     key={trade.id}
-                     className={`text-xs py-1 px-2 border-b rounded capitalize ${
-                          trade.type === "Buy"
-                            ? "text-primary"
-                            : "text-[#F10D11]"
-                        }`}
+                    className={`text-xs py-1 px-2 border-b rounded capitalize ${
+                      trade.type === "Buy" ? "text-primary" : "text-[#F10D11]"
+                    }`}
                   >
                     <td className="p-3">
                       <span className="lowercase">{trade.age}</span>

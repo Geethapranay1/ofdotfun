@@ -17,10 +17,10 @@ export function FooterSection() {
   const { theme } = useTheme();
 
   return (
-    <footer className="bg-background relative border-b uppercase">
+    <footer className="bg-background relative uppercase">
       <div className="top-0 -left-10 w-full h-10 pointer-events-none bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:border-x-[#ffffff1a] dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)]" />
-      <div className="px-8 py-16 border-t">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+      <div className="border-t">
+        <div className="px-8 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="md:col-span-2 space-y-8">
             <div className="flex items-center gap-4">
               <Image
@@ -184,7 +184,7 @@ export function FooterSection() {
           </div>
         </div>
 
-        <div className="pt-8 border-t">
+        <div className="p-8  border-t">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-muted-foreground text-sm">
               © 2025 OnlyFounders. All rights reserved.

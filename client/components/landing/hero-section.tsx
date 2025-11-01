@@ -12,7 +12,7 @@ export function HeroSection() {
       <div className="absolute inset-0">
         <DotScreenShader />
       </div>
-      <div className="relative w-full px-4 md:px-8 py-16 md:py-24">
+      <div className="relative w-full px-4 md:px-8 py-16 md:py-24 pointer-events-none">
         <div className="flex items-center justify-center text-center">
           <div className="space-y-8 w-full">
             <motion.div
@@ -25,14 +25,14 @@ export function HeroSection() {
                 Powered by <span className="text-primary">Founder</span>{" "}
                 Reputation
               </h2>
-              <h1 className="text-3xl md:text-7xl font-bold tracking-tight leading-none">
-                The First Onchain{" "}
-                <span className="text-primary">Launchpad</span>
+              <h1 className="text-3xl md:text-6xl font-bold tracking-tight leading-none">
+                The Launchpad for{" "}
+                <span className="text-primary">First-Time Builders</span>
               </h1>
               <p className="text-sm md:text-xl max-w-2xl mx-auto text-muted-foreground">
-                Where conviction, proof and reputation convert into liquid
-                capital. Welcome to the Internet Capital Markets. The new
-                foundation for founder led fundraising.
+                Your First Cheque. Your First Supporters. Your First Proof of
+                Progress. Welcome to the Internet Capital Markets — the new
+                foundation for founder-led fundraising.
               </p>
             </motion.div>
 
@@ -40,7 +40,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 pointer-events-auto"
             >
               <Link href="/create" className="w-full sm:w-auto">
                 <Button

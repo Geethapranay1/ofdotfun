@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { markVanityPairAsUsed } from '@/lib/db';
+import { markVanityPairAsUsed, saveToken } from '@/lib/db';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { DynamicBondingCurveClient } from '@meteora-ag/dynamic-bonding-curve-sdk';
 
@@ -9,13 +9,31 @@ type SendTransactionRequest = {
   userWallet?: string;
   tokenName?: string;
   tokenTicker?: string;
+  tokenDescription?: string;
+  imageUrl?: string;
+  metadataUrl?: string;
+  twitter?: string;
+  telegram?: string;
+  website?: string;
   vid?: string;
 };
 
 export async function POST(req: Request) {
   try {
-    const { signedTransaction, mint, userWallet, vid } =
-      (await req.json()) as SendTransactionRequest;
+    const { 
+      signedTransaction, 
+      mint, 
+      userWallet, 
+      tokenName,
+      tokenTicker,
+      tokenDescription,
+      imageUrl,
+      metadataUrl,
+      twitter,
+      telegram,
+      website,
+      vid 
+    } = (await req.json()) as SendTransactionRequest;
 
     if (!signedTransaction) {
       return NextResponse.json(
@@ -34,12 +52,14 @@ export async function POST(req: Request) {
 
     const txSignature = await connection.sendRawTransaction(
       transaction.serialize(),
-      { skipPreflight: true, maxRetries: 3 }
+      { skipPreflight: false, maxRetries: 3 }
     );
 
     await connection.confirmTransaction(txSignature, 'confirmed');
-    console.log('✅ Tx confirmed:', txSignature);
+    console.log('Tx confirmed:', txSignature);
     let poolData: any = null;
+    let poolAddressStr: string = '';
+    
     if (mint && userWallet) {
       const dbc = new DynamicBondingCurveClient(connection, 'confirmed');
       const baseMint = new PublicKey(mint);
@@ -51,7 +71,7 @@ export async function POST(req: Request) {
         );
 
         if (foundPool) {
-          const poolAddressStr = (foundPool as any).publicKey.toString();
+          poolAddressStr = (foundPool as any).publicKey.toString();
           const poolState = await dbc.state.getPool(
             new PublicKey(poolAddressStr)
           );
@@ -62,6 +82,34 @@ export async function POST(req: Request) {
             creator: userWallet,
             signature: txSignature,
           };
+
+          try {
+            await saveToken({
+              name: tokenName || '',
+              symbol: tokenTicker || '',
+              description: tokenDescription || '',
+              mintAddress: mint,
+              poolAddress: poolAddressStr,
+              website: website || '',
+              twitter: twitter || '',
+              telegram: telegram || '',
+              imageUrl: imageUrl || '',
+              metadataUrl: metadataUrl || '',
+              creatorAddress: userWallet,
+              bondingCurveProgress: 0,
+              volume: 0,
+              liquidity: 0,
+              marketCap: 5000,
+              holderCount: 0,
+              stats1h: null,
+              stats5m: null,
+              stats6h: null,
+              stats24h: null,
+            });
+            console.log('Token saved to database');
+          } catch (dbError) {
+            console.error('Error saving token to database:', dbError);
+          }
         }
       }
     }
@@ -74,6 +122,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       signature: txSignature,
+      poolAddress: poolAddressStr,
       poolData,
     });
   } catch (error: any) {

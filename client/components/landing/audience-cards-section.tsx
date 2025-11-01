@@ -13,7 +13,6 @@ interface AudienceCardProps {
   title: string;
   subtitle: string;
   bullets: string[];
-  icon: string;
   href: string;
   buttonText: string;
   buttonIcon: React.ComponentType<{ className?: string }>;
@@ -25,7 +24,6 @@ const AudienceCard = ({
   title,
   subtitle,
   bullets,
-  icon,
   href,
   buttonText,
   buttonIcon: ButtonIcon,
@@ -48,29 +46,62 @@ const AudienceCard = ({
           reverse ? "lg:flex-row-reverse" : ""
         }`}
       >
-        <div className="lg:w-1/2 flex justify-center">
-          <motion.div
-            initial={{ y: 100, x: -100, opacity: 0 }}
-            animate={
-              isInView
-                ? { y: 0, x: 0, opacity: 1 }
-                : { y: 100, x: -100, opacity: 0 }
-            }
-            transition={{ duration: 0.6, delay: delay + 0.2 }}
-            className="relative h-95 w-full flex items-center justify-center"
-          >
-            <Image
-              src={theme === "dark" ? "/greenbg.png" : "/bluebg.png"}
-              alt="icon"
-              className="relative z-10 h-full w-full object-cover rounded-3xl overflow-hidden"
-              height={350}
-              width={350}
-            />
-            <span className="absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 md:text-[2rem] font-bold lowercase text-background">
-              On1yFounders
-            </span>
-            {/* <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full"></div> */}
-          </motion.div>
+        <div className="lg:w-1/2 lg:block hidden">
+          {title === "OnlyFounders" ? (
+            <div className="grid md:grid-cols-3 gap-3">
+              <div className="relative h-[450px] overflow-hidden border">
+                <Image
+                  src="/feat1.jpeg"
+                  alt="OnlyFounders Platform Overview"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="relative h-[450px] overflow-hidden border">
+                <Image
+                  src="/feat2.jpeg"
+                  alt="OnlyFounders Platform Overview"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="relative h-[450px] overflow-hidden border">
+                <Image
+                  src="/feat3.jpeg"
+                  alt="OnlyFounders Platform Overview"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="relative h-[150px] overflow-hidden border">
+                <Image
+                  src="/feat4.jpeg"
+                  alt="OnlyFounders Platform Overview"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="relative h-[150px] overflow-hidden border">
+                <Image
+                  src="/feat5.jpeg"
+                  alt="OnlyFounders Platform Overview"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="relative h-[150px] overflow-hidden border">
+                <Image
+                  src="/feat6.jpeg"
+                  alt="OnlyFounders Platform Overview"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="lg:w-1/2 space-y-6">
@@ -115,14 +146,13 @@ export function AudienceCardsSection() {
 
   const cards = [
     {
-      title:
-        "Founders, investors and creators connect through proof and reputation.",
+      title: "OnlyFounders",
       subtitle:
-        "Reputation becomes capital. Launch tokens. Raise funds. Build in public. Keep control.",
+        "A permissionless network where founders, investors, and creators connect through proof and reputation. Here, reputation becomes capital — launch tokens, raise funds, and build in public while keeping full ownership.",
       bullets: [
-        "Permissionless creation",
-        "Reputation verified access",
-        "Onchain fundraising with ownership intact",
+        "Permissionless Creation — anyone can start, anyone can rise.",
+        "Reputation-Verified Access — credibility replaces gatekeeping.",
+        "Onchain Fundraising — transparent, aligned, and founder-first.",
       ],
       icon: "/rocket.png",
       href: "/create",
@@ -134,7 +164,7 @@ export function AudienceCardsSection() {
     {
       title: "Invest in Founder Capital Markets",
       subtitle:
-        "Gain direct access to tokenized founder raises where reputation is the collateral and proof drives allocation.",
+        "Get early access to tokenized founder raises, where reputation is the collateral and proof drives allocation. Support the next generation of builders — transparently, verifiably, and onchain.",
       bullets: [
         "Reputation verified founders",
         "Tokenized capital opportunities",
@@ -165,8 +195,9 @@ export function AudienceCardsSection() {
             Choose Your <span className="text-primary">Path</span>
           </h2>
           <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-            Whether you&apos;re building, investing, or creating — we have the
-            right tools for you
+            Whether you&apos;re building, investing, or creating, we give you
+            the tools to grow, fund, and scale — transparently and on your
+            terms.
           </p>
         </motion.div>
 
