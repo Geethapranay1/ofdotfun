@@ -97,7 +97,7 @@ export function TokenCreationForm({
         poolAddress: responsePoolAddress,
         metadataUrl,
         imageUrl,
-        // vid,
+        vid,
       } = response.data;
       const transaction = Transaction.from(Buffer.from(poolTx, "base64"));
       if (!transaction.feePayer) {
@@ -124,7 +124,7 @@ export function TokenCreationForm({
       const finalResponse = await axios.post("/api/launch", {
         signedTransaction: signedBase64,
         mint: tokenMint,
-        // vid,
+        vid,
         userWallet: wallet.publicKey?.toString(),
         tokenName: formData.name,
         tokenTicker: formData.symbol,

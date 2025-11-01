@@ -3,41 +3,15 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import React, { useEffect, useState } from "react";
-import { Token } from "@/types/token";
+import React from "react";
+import { useTokenStore } from "@/store/tokenStore";
 
 interface TokenDetailsProps {
-  tokenId: string;
+  tokenMint: string;
 }
 
-export function TokenDetails({ tokenId }: TokenDetailsProps) {
-  const [token, setToken] = useState<Token | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        setIsLoading(true);
-        const res = await fetch(`/api/tokens/${tokenId}`);
-        const data = await res.json();
-
-        if (!data.success) {
-          setError(data.error || "Failed to fetch token");
-          return;
-        }
-
-        setToken(data.token);
-      } catch (err) {
-        console.error("Error fetching token:", err);
-        setError("Failed to load token data");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchToken();
-  }, [tokenId]);
+export function TokenDetails({ tokenMint }: TokenDetailsProps) {
+  const { currentToken, isLoadingCurrentToken } = useTokenStore();
 
   const formatNumber = (num: number | null) => {
     if (num === null || num === undefined) return "$0";
@@ -49,28 +23,31 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
     return `$${num.toFixed(2)}`;
   };
 
-  const formatPrice = (marketCap: number | null, supply: number = 1000000000) => {
+  const formatPrice = (
+    marketCap: number | null,
+    supply: number = 1000000000
+  ) => {
     if (marketCap === null || marketCap === undefined) return "$0.000000";
     return `$${(marketCap / supply).toFixed(6)}`;
   };
 
-  if (isLoading) {
+  if (isLoadingCurrentToken) {
     return (
-      <div className="border-b uppercase p-8 animate-pulse">
-        <div className="h-24 bg-muted rounded"></div>
+      <div className="border-b p-2 uppercase animate-pulse">
+        <div className="h-84 bg-muted"></div>
       </div>
     );
   }
 
-  if (error || !token) {
+  if (!currentToken) {
     return (
       <div className="border-b uppercase p-8">
-        <p className="text-destructive">{error || "Token not found"}</p>
+        <p className="text-destructive">Token not found</p>
       </div>
     );
   }
 
-  const progress = token.bondingCurveProgress ?? 0;
+  const progress = currentToken.bondingCurveProgress ?? 0;
 
   return (
     <div className="border-b uppercase">
@@ -79,41 +56,44 @@ export function TokenDetails({ tokenId }: TokenDetailsProps) {
           <div className="relative w-24 h-24 flex-shrink-0">
             <Image
               src={
-                token.imageUrl ||
+                currentToken.imageUrl ||
                 "https://i.pinimg.com/1200x/b7/8f/02/b78f023aa1bca7bdada28db1c30d1fe5.jpg"
               }
-              alt={token.name}
+              alt={currentToken.name}
               fill
+              unoptimized
               className="object-cover"
             />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mt-2">
-              <h1 className="text-2xl font-bold">{token.name}</h1>
+              <h1 className="text-2xl font-bold">{currentToken.name}</h1>
               <Badge variant="secondary" className="rounded-none">
-                {token.symbol}
+                {currentToken.symbol}
               </Badge>
             </div>
-            <p className="text-sm text-muted-foreground">{token.description}</p>
+            <p className="text-sm text-muted-foreground">
+              {currentToken.description}
+            </p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 divide-x divide-y mb-4">
           <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Price</p>
-            <p className="text-2xl">{formatPrice(token.marketCap)}</p>
+            <p className="text-xl">{formatPrice(currentToken.marketCap)}</p>
           </div>
           <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Market Cap</p>
-            <p className="text-2xl">{formatNumber(token.marketCap)}</p>
+            <p className="text-xl">{formatNumber(currentToken.marketCap)}</p>
           </div>
           <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Volume 24h</p>
-            <p className="text-2xl">{formatNumber(token.volume)}</p>
+            <p className="text-xl">{formatNumber(currentToken.volume)}</p>
           </div>
           <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Liquidity</p>
-            <p className="text-2xl">{formatNumber(token.liquidity)}</p>
+            <p className="text-xl">{formatNumber(currentToken.liquidity)}</p>
           </div>
         </div>
 

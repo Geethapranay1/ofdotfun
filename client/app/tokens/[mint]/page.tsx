@@ -11,6 +11,7 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
+import TokenStats from "@/components/tokens/token/token-stats";
 
 export default async function TokenDetailPage({
   params,
@@ -19,26 +20,26 @@ export default async function TokenDetailPage({
 }) {
   const { mint } = await params;
   return (
-    <TokenPageWrapper tokenId={mint}>
+    <TokenPageWrapper tokenMint={mint}>
       <RecentlyOpened currentTokenId={mint} />
       <div className="relative uppercase">
         <div className="lg:hidden pb-24">
           <div className="border-b">
-            <TokenDetails tokenId={mint} />
+            <TokenDetails tokenMint={mint} />
           </div>
           <div className="relative">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
               <span className="text-white text-2xl font-semibold mb-4">
                 COMING SOON
               </span>
-              <button
+              <a
                 className="px-8 py-6 bg-primary text-background font-medium"
-                onClick={() =>
-                  window.open("https://jup.ag/tokens/" + mint, "_blank")
-                }
+                href={"https://jup.ag/tokens/" + mint}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Trade on Jupiter
-              </button>
+              </a>
             </div>
             <div className="border-b relative">
               <TokenChart tokenId={mint} />
@@ -47,14 +48,14 @@ export default async function TokenDetailPage({
               <HoldersTradesTable tokenId={mint} />
             </div>
             <div className="border-b">
-              <TokenInfoCard tokenId={mint} />
+              <TokenInfoCard />
             </div>
           </div>
         </div>
         <div className="hidden lg:grid lg:grid-cols-4 lg:divide-x h-[calc(100vh-7.5rem)] overflow-hidden">
           <div className="flex col-span-1 flex-col border-l border-t overflow-auto hide-scrollbar">
-            <TokenDetails tokenId={mint} />
-            <TokenInfoCard tokenId={mint} />
+            <TokenDetails tokenMint={mint} />
+            <TokenInfoCard />
           </div>
           <div className="col-span-2 flex flex-col overflow-hidden relative">
             <ResizablePanelGroup direction="vertical">
@@ -74,31 +75,20 @@ export default async function TokenDetailPage({
               <span className="text-white text-2xl font-semibold mb-4">
                 COMING SOON
               </span>
-              <button
+              <a
                 className="px-8 py-6 bg-primary text-background font-medium"
-                onClick={() =>
-                  window.open("https://jup.ag/tokens/" + mint, "_blank")
-                }
+                href={"https://jup.ag/tokens/" + mint}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Trade on Jupiter
-              </button>
+              </a>
             </div>
           </div>
-          <div className="col-span-1 border overflow-auto relative">
+          <div className="col-span-1 overflow-auto relative hide-scrollbar">
             <SwapContainer mint={mint} />
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
-              <span className="text-white text-2xl font-semibold mb-4">
-                COMING SOON
-              </span>
-              <button
-                className="px-8 py-6 bg-primary text-background font-medium"
-                onClick={() =>
-                  window.open("https://jup.ag/tokens/" + mint, "_blank")
-                }
-              >
-                Trade on Jupiter
-              </button>
-            </div>
+            <TokenStats />
+            {/* <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10"></div> */}
           </div>
         </div>
         {/* <MobileSwapModal tokenName={"tokenName"} tokenId={mint} /> */}

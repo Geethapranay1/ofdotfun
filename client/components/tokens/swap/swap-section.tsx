@@ -17,7 +17,7 @@ import BN from "bn.js";
 import { toast } from "sonner";
 import { TOKEN_POOL_ADDRESS } from "@/app/constant";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSolBalance } from "@/lib/actions";
+// import { fetchSolBalance } from "@/lib/actions";
 import Image from "next/image";
 
 interface SwapSectionProps {
@@ -93,7 +93,7 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
     queryKey: ["sol-balance", wallet.publicKey?.toString()],
     queryFn: async () => {
       if (!wallet.publicKey) return 0;
-      return await fetchSolBalance(connection, wallet.publicKey);
+      // return await fetchSolBalance(connection, wallet.publicKey);
     },
     staleTime: 15_000,
     refetchInterval: 30_000,
@@ -368,7 +368,8 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
   return (
     <Card className="border-b border-x-0 border-t-0 bg-background rounded-none p-0 gap-0">
-      <CardContent className="p-0 gap-0">
+      <CardContent className="p-0 gap-0 relative">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10"></div>
         <Tabs defaultValue="buy" className="w-full">
           <TabsList className="grid w-full grid-cols-2 h-20 border-b">
             <TabsTrigger className="" value="buy">

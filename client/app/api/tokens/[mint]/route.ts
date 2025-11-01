@@ -20,16 +20,33 @@ export async function GET(
       `https://lite-api.jup.ag/tokens/v2/search?query=${mint}`
     );
 
+    // console.log(res.data);
+    
+
     let token;
     if (res.data.length) {
+      const jupData = res.data[0];
+      const volume24h = jupData.stats24h 
+        ? (jupData.stats24h.buyVolume || 0) + (jupData.stats24h.sellVolume || 0)
+        : null;
+
       token = await prisma.token.update({
         where: { mintAddress: mint },
         data: {
-          bondingCurveProgress: res.data[0].bondingCurve,
-          volume: res.data[0].volume,
-          liquidity: res.data[0].liquidity,
-          marketCap: res.data[0].mcap,
+          bondingCurveProgress: jupData.bondingCurve || null,
+          volume: volume24h,
+          liquidity: jupData.liquidity || null,
+          marketCap: jupData.mcap || null,
+          holderCount: jupData.holderCount || 0,
+          stats5m: jupData.stats5m || null,
+          stats1h: jupData.stats1h || null,
+          stats6h: jupData.stats6h || null,
+          stats24h: jupData.stats24h || null,
         },
+      });
+    } else {
+      token = await prisma.token.findUnique({
+        where: { mintAddress: mint },
       });
     }
 

@@ -107,25 +107,25 @@ export async function POST(req: Request) {
 
     // Vanity keypair generation code disabled for now
 
-    // const vanityKeypair = await getVanityPair();
-    // if (!vanityKeypair) {
-    //   return NextResponse.json(
-    //     {
-    //       success: false,
-    //       error: "No available vanity keypairs. Please try again later.",
-    //     },
-    //     { status: 500 }
-    //   );
-    // }
+    const vanityKeypair = await getVanityPair();
+    if (!vanityKeypair) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No available vanity keypairs. Please try again later.",
+        },
+        { status: 500 }
+      );
+    }
 
-    // const secretKey = bs58.decode(vanityKeypair.secret_key_base58);
-    // const generatedKeypair = Keypair.fromSecretKey(secretKey);
-    // const mintPublicKey = generatedKeypair.publicKey;
-    // console.log("Using vanity mint address:", mintPublicKey.toString());
-
-    const generatedKeypair = Keypair.generate();
+    const secretKey = bs58.decode(vanityKeypair.secret_key_base58);
+    const generatedKeypair = Keypair.fromSecretKey(secretKey);
     const mintPublicKey = generatedKeypair.publicKey;
-    console.log("Using generated mint address:", mintPublicKey.toString());
+    console.log("Using vanity mint address:", mintPublicKey.toString());
+
+    // const generatedKeypair = Keypair.generate();
+    // const mintPublicKey = generatedKeypair.publicKey;
+    // console.log("Using generated mint address:", mintPublicKey.toString());
 
     const poolTx = await dbcClient.pool.createPool({
       config: new PublicKey(POOL_CONFIG_KEY as string),
@@ -142,7 +142,6 @@ export async function POST(req: Request) {
     poolTx.recentBlockhash = blockhash;
 
     poolTx.sign(generatedKeypair);
-
     const tokenMint = mintPublicKey.toString();
 
     const poolAddress = deriveDbcPoolAddress(
@@ -154,7 +153,7 @@ export async function POST(req: Request) {
     console.log("Derived pool address:", poolAddress);
 
     const response = {
-      // vid: vanityKeypair.id,
+      vid: vanityKeypair.id,
       success: true,
       tokenMint: tokenMint,
       poolAddress: poolAddress,
@@ -166,7 +165,7 @@ export async function POST(req: Request) {
         .toString("base64"),
       metadataUrl,
       imageUrl,
-      message: `✅DBC token launch ready! ${tokenName} (${tokenTicker}) will start with $${initialMarketCap.toLocaleString()} market cap and migrate at $${migrationMarketCap.toLocaleString()}. DBC will create the token mint automatically.`,
+      message: `DBC token launch ready! ${tokenName} (${tokenTicker}) will start with $${initialMarketCap.toLocaleString()} market cap and migrate at $${migrationMarketCap.toLocaleString()}. DBC will create the token mint automatically.`,
     };
 
     return NextResponse.json(response);

@@ -11,35 +11,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Token } from "@/types/token";
-
-async function fetchAllTokens(): Promise<Token[]> {
-  const res = await fetch("/api/tokens");
-  const data = await res.json();
-  if (!data.success) {
-    throw new Error(data.error || "Failed to fetch tokens");
-  }
-  return data.tokens;
-}
+import { useTokenStore } from "@/store/tokenStore";
 
 export function TokenGrid() {
   const [search, setSearch] = React.useState("");
   const [sortBy, setSortBy] = React.useState<string>("recent-created");
-  const [tokens, setTokens] = React.useState<Token[]>([]);
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+
+  const { tokens, isLoadingTokens, fetchTokens } = useTokenStore();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const tokens = await fetchAllTokens();
-        setTokens(tokens);
-      } catch (error) {
-        console.error("Error fetching tokens:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    fetchTokens();
+  }, [fetchTokens]);
+
+  useEffect(() => {
+    const pollInterval = setInterval(() => {
+      fetchTokens(true);
+    }, 5000);
+
+    return () => {
+      clearInterval(pollInterval);
     };
-    fetchData();
-  }, []);
+  }, [fetchTokens]);
 
   const filteredAndSorted = React.useMemo(() => {
     const list = (tokens ?? []).filter((t: Token) => {
@@ -145,7 +137,7 @@ export function TokenGrid() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-        {isLoading && (
+        {isLoadingTokens && (
           <>
             {[...Array(9)].map((_, i) => (
               <div
@@ -155,7 +147,7 @@ export function TokenGrid() {
             ))}
           </>
         )}
-        {!isLoading &&
+        {!isLoadingTokens &&
           filteredAndSorted.map((token) => (
             <TokenCard
               key={token.id}
@@ -163,7 +155,7 @@ export function TokenGrid() {
               href={`/tokens/${token.mintAddress}`}
             />
           ))}
-        {!isLoading && filteredAndSorted.length === 0 && (
+        {!isLoadingTokens && filteredAndSorted.length === 0 && (
           <div className="col-span-full text-center text-muted-foreground py-10">
             No tokens found.
           </div>

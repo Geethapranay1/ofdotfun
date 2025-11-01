@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     );
 
     await connection.confirmTransaction(txSignature, 'confirmed');
-    console.log('✅ Tx confirmed:', txSignature);
+    console.log('Tx confirmed:', txSignature);
     let poolData: any = null;
     let poolAddressStr: string = '';
     
@@ -100,6 +100,11 @@ export async function POST(req: Request) {
               volume: 0,
               liquidity: 0,
               marketCap: 5000,
+              holderCount: 0,
+              stats1h: null,
+              stats5m: null,
+              stats6h: null,
+              stats24h: null,
             });
             console.log('Token saved to database');
           } catch (dbError) {

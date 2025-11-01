@@ -3,7 +3,7 @@ import { prisma } from "./prisma";
 import axios from "axios";
 import { Token } from "@/types/token";
 
-const DATABASE_URL = process.env.DATABASE_URL?.toString();
+const DATABASE_URL = process.env.VANITY_DATABASE_URL?.toString();
 
 const pool = new pg.Pool({
   connectionString: DATABASE_URL,

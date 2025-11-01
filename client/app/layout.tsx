@@ -105,7 +105,8 @@ export default function RootLayout({
                 style: {
                   borderRadius: "0px",
                   border: "0px",
-                  left: "-1.5rem",
+                  // left: "-1.5rem",
+                  // top: "-1.5rem",
                 },
               }}
               richColors

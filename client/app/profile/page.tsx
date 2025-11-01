@@ -41,7 +41,7 @@ export default function ProfilePage() {
       <Pattern />
       <BackButton href="/tokens" />
       <div className="border-b">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center md:flex-row flex-col px-6 gap-4">
           <Avatar className="size-48 rounded-none border-r">
             <AvatarImage
               src={
@@ -52,8 +52,8 @@ export default function ProfilePage() {
             <AvatarFallback>USR</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-2xl font-bold">Your Profile</span>
-            <span className="text-muted-foreground text-sm font-mono">
+            <span className="text-2xl font-bold md:block hidden">Your Profile</span>
+            <span className="text-muted-foreground text-sm break-all md:py-0 py-4">
               {address}
             </span>
           </div>
@@ -67,7 +67,7 @@ export default function ProfilePage() {
           </h2>
           <div className="h-10 w-full pointer-events-none bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)] border-b" />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y divide-x">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y divide-x relative px-4">
           {isLoading && (
             <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {[...Array(6)].map((_, i) => (

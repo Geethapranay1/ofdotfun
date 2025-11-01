@@ -1,5 +1,7 @@
 "use client";
 
+//TODO: SOL balance
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +15,6 @@ import { toast } from "sonner";
 import { TOKEN_GRADUATION_ADDRESS } from "@/app/constant";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSolBalance } from "@/lib/actions";
 
 interface GraduatedSwapSectionProps {
   activeTab?: "buy" | "sell";
@@ -38,17 +39,6 @@ export function GraduatedSwapSection({
     process.env.NEXT_PUBLIC_RPC_URL!,
     "confirmed"
   );
-
-  const { data: solBalance, isLoading: balanceLoading } = useQuery({
-    enabled: !!wallet.publicKey,
-    queryKey: ["sol-balance", wallet.publicKey?.toString()],
-    queryFn: async () => {
-      if (!wallet.publicKey) return 0;
-      return await fetchSolBalance(connection, wallet.publicKey);
-    },
-    staleTime: 15_000,
-    refetchInterval: 30_000,
-  });
 
   const cpAmm = new CpAmm(connection);
   async function performCpAmmSwap(amountIn: BN, swapAToB: boolean) {
@@ -208,11 +198,11 @@ export function GraduatedSwapSection({
           <TabsContent value="buy" className="space-y-4 p-6">
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">balance:</span>
-              <span className="text-sm">
+              {/* <span className="text-sm">
                 {balanceLoading
                   ? "Loading..."
                   : `${solBalance?.toFixed(6) || "0"} SOL`}
-              </span>
+              </span> */}
             </div>
 
             <div className="relative">
@@ -236,10 +226,10 @@ export function GraduatedSwapSection({
                 variant="outline"
                 size="sm"
                 className="flex-1 rounded-lg"
-                onClick={() => {
-                  const amount = (solBalance || 0) * 0.25;
-                  setBuyAmount(amount.toString());
-                }}
+                // onClick={() => {
+                //   const amount = (solBalance || 0) * 0.25;
+                //   setBuyAmount(amount.toString());
+                // }}
               >
                 25%
               </Button>
@@ -247,10 +237,10 @@ export function GraduatedSwapSection({
                 variant="outline"
                 size="sm"
                 className="flex-1 rounded-lg"
-                onClick={() => {
-                  const amount = (solBalance || 0) * 0.5;
-                  setBuyAmount(amount.toString());
-                }}
+                // onClick={() => {
+                //   const amount = (solBalance || 0) * 0.5;
+                //   setBuyAmount(amount.toString());
+                // }}
               >
                 50%
               </Button>
@@ -258,10 +248,10 @@ export function GraduatedSwapSection({
                 variant="outline"
                 size="sm"
                 className="flex-1 rounded-lg"
-                onClick={() => {
-                  const amount = (solBalance || 0) * 0.75;
-                  setBuyAmount(amount.toString());
-                }}
+                // onClick={() => {
+                //   const amount = (solBalance || 0) * 0.75;
+                //   setBuyAmount(amount.toString());
+                // }}
               >
                 75%
               </Button>
@@ -269,10 +259,10 @@ export function GraduatedSwapSection({
                 variant="outline"
                 size="sm"
                 className="flex-1 rounded-lg"
-                onClick={() => {
-                  const amount = solBalance || 0;
-                  setBuyAmount(amount.toString());
-                }}
+                // onClick={() => {
+                //   const amount = solBalance || 0;
+                //   setBuyAmount(amount.toString());
+                // }}
               >
                 100%
               </Button>

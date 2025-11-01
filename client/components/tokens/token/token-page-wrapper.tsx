@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { addRecentToken } from "./recently-opened";
+import { useTokenStore } from "@/store/tokenStore";
 
 interface TokenPageWrapperProps {
-  tokenId: string;
+  tokenMint: string;
   children: React.ReactNode;
 }
 
@@ -13,29 +14,39 @@ const formatPrice = (marketCap: number | null, supply: number = 1000000000) => {
   return `$${(marketCap / supply).toFixed(6)}`;
 };
 
-export function TokenPageWrapper({ tokenId, children }: TokenPageWrapperProps) {
-  React.useEffect(() => {
-    const fetchTokenData = async () => {
-      try {
-        const res = await fetch(`/api/tokens/${tokenId}`);
-        const data = await res.json();
+export function TokenPageWrapper({
+  tokenMint,
+  children,
+}: TokenPageWrapperProps) {
+  const { currentToken, fetchTokenDetails } = useTokenStore();
 
-        if (data.success && data.token) {
-          addRecentToken({
-            id: tokenId,
-            name: data.token.name || "Unknown Token",
-            symbol: data.token.symbol || "???",
-            image: data.token.imageUrl || "https://i.pinimg.com/1200x/b7/8f/02/b78f023aa1bca7bdada28db1c30d1fe5.jpg",
-            price: formatPrice(data.token.marketCap),
-          });
-        }
-      } catch (error) {
-        console.error("Failed to fetch token data for recent tokens:", error);
-      }
+  useEffect(() => {
+    fetchTokenDetails(tokenMint);
+  }, [tokenMint, fetchTokenDetails]);
+
+  useEffect(() => {
+    const pollInterval = setInterval(() => {
+      fetchTokenDetails(tokenMint, true); // isBackgroundRefresh = true
+    }, 10000);
+
+    return () => {
+      clearInterval(pollInterval);
     };
+  }, [tokenMint, fetchTokenDetails]);
 
-    fetchTokenData();
-  }, [tokenId]);
+  useEffect(() => {
+    if (currentToken) {
+      addRecentToken({
+        id: tokenMint,
+        name: currentToken.name || "Unknown Token",
+        symbol: currentToken.symbol || "???",
+        image:
+          currentToken.imageUrl ||
+          "https://i.pinimg.com/1200x/b7/8f/02/b78f023aa1bca7bdada28db1c30d1fe5.jpg",
+        price: formatPrice(currentToken.marketCap),
+      });
+    }
+  }, [currentToken, tokenMint]);
 
   return <>{children}</>;
 }

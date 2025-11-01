@@ -11,8 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Copy, ExternalLink, LogOut } from "lucide-react";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
-import { fetchSolBalance } from "@/lib/actions";
+import { useTokenStore } from "@/store/tokenStore";
+import React from "react";
+import { Connection } from "@solana/web3.js";
 
 interface WalletModalProps {
   open: boolean;
@@ -26,18 +27,23 @@ export default function WalletModal({
   disconnect,
 }: WalletModalProps) {
   const { publicKey, wallet } = useWallet();
-  const { connection } = useConnection();
+  const [solanaBalance, setSolanaBalance] = React.useState<number | null>(null);
+  const [loadingBalance, setLoadingBalance] = React.useState(false);
 
-  const { data: solBalance, isLoading: balanceLoading } = useQuery({
-    enabled: !!publicKey,
-    queryKey: ["sol-balance", publicKey?.toString()],
-    queryFn: async () => {
-      if (!publicKey) return 0;
-      return await fetchSolBalance(connection, publicKey);
-    },
-    staleTime: 15_000,
-    refetchInterval: 30_000,
-  });
+  const connection = new Connection(
+    process.env.NEXT_PUBLIC_RPC_URL!,
+    "confirmed"
+  );
+  React.useEffect(() => {
+    if (!publicKey) return;
+    const fetchBalance = async () => {
+      setLoadingBalance(true);
+      const lamports = await connection.getBalance(publicKey!);
+      setSolanaBalance(lamports / 1e9);
+      setLoadingBalance(false);
+    };
+    fetchBalance();
+  }, [publicKey]);
 
   const handleCopyAddress = () => {
     if (publicKey) {
@@ -89,7 +95,9 @@ export default function WalletModal({
                 <p className="text-sm text-muted-foreground">Address</p>
                 <div className="flex items-center gap-2 p-3 bg-muted rounded-lg font-mono text-sm">
                   <span className="flex-1 truncate text-center">
-                    {publicKey.toString().slice(0, 12) + "..." + publicKey.toString().slice(-12)}
+                    {publicKey.toString().slice(0, 12) +
+                      "..." +
+                      publicKey.toString().slice(-12)}
                   </span>
                 </div>
               </div>
@@ -99,11 +107,11 @@ export default function WalletModal({
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Balance</p>
                 <div className="flex items-center gap-2 p-3 bg-muted rounded-lg text-sm">
-                  {balanceLoading ? (
+                  {loadingBalance ? (
                     <span className="text-muted-foreground">Loading...</span>
                   ) : (
                     <span className="font-medium">
-                      {solBalance?.toFixed(4)} SOL
+                      {solanaBalance?.toFixed(4)} SOL
                     </span>
                   )}
                 </div>

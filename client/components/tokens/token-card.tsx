@@ -26,6 +26,31 @@ export function TokenCard({ token, href }: TokenCardProps) {
     return `$${num.toFixed(2)}`;
   };
 
+  const formatTimeAgo = (date: Date | string) => {
+    const now = new Date();
+    const past = new Date(date);
+    const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
+
+    const intervals: { [key: string]: number } = {
+      year: 31536000,
+      month: 2592000,
+      week: 604800,
+      day: 86400,
+      hour: 3600,
+      minute: 60,
+      second: 1,
+    };
+
+    for (const interval in intervals) {
+      const intervalSeconds = intervals[interval];
+      if (diffInSeconds >= intervalSeconds) {
+        const count = Math.floor(diffInSeconds / intervalSeconds);
+        return `${count} ${interval}${count !== 1 ? "s" : ""} ago`;
+      }
+    }
+    return "just now";
+  };
+
   const progress = token.bondingCurveProgress ?? 0;
 
   return (
@@ -69,7 +94,7 @@ export function TokenCard({ token, href }: TokenCardProps) {
             <div>
               <p className="text-xs text-muted-foreground mb-1">Created At</p>
               <p className="font-semibold text-xs">
-                {new Date(token.createdAt!).toLocaleDateString()}
+                {formatTimeAgo(token.createdAt!)}
               </p>
             </div>
           </div>
@@ -82,7 +107,7 @@ export function TokenCard({ token, href }: TokenCardProps) {
             </div>
             <div>
               <p className="text-xs text-muted-foreground mb-1">Mint Address</p>
-              <p className="font-semibold text-xs font-mono">
+              <p className="font-semibold text-xs font-mono normal-case">
                 {formatAddress(token.mintAddress)}
               </p>
             </div>

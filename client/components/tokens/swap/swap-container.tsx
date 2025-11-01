@@ -6,7 +6,6 @@ import { SwapSection } from "@/components/tokens/swap/swap-section";
 import { Connection } from "@solana/web3.js";
 import { CpAmm } from "@meteora-ag/cp-amm-sdk";
 import { TOKEN_POOL_ADDRESS } from "@/app/constant";
-import { toast } from "sonner";
 import { DynamicBondingCurveClient } from "@meteora-ag/dynamic-bonding-curve-sdk";
 
 interface SwapContainerProps {

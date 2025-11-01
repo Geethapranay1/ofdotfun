@@ -6,15 +6,17 @@ import { FAQSection } from "@/components/landing/faq-section";
 import { FooterSection } from "@/components/landing/footer-section";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import Pattern from "@/components/landing/pattern";
+import { TrendingTokens } from "@/components/tokens/trending-tokens";
 
 export default function Home() {
   return (
     <main className="w-full">
       <SmoothScroll />
-      <div className="relative min-h-screen w-full uppercase mx-auto max-w-7xl md:border">
+      <div className="relative min-h-screen w-full uppercase mx-auto max-w-7xl md:border md:overflow-visible overflow-hidden">
         <Pattern />
         <HeroSection />
         <BrandSlider />
+        <TrendingTokens limit={3} showViewAllButton={true} />
         <AudienceCardsSection />
         <AboutSection />
         <FAQSection />

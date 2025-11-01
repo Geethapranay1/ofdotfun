@@ -73,15 +73,15 @@ export default function ProfileDetailPage({
         // let sum = 0;
         // console.log(
         //   "fees",
-        //   fees.map(
-        //     (fee) => {
-        //       if (fee.partnerQuoteFee.toNumber() > 0) {
-        //         sum += fee.partnerQuoteFee.toNumber() / LAMPORTS_PER_SOL;
-        //         return fee.partnerQuoteFee.toNumber() / LAMPORTS_PER_SOL;
-        //       }
+        //   fees.map((fee) => {
+        //     if (fee.partnerQuoteFee.toNumber() > 0) {
+        //       sum += fee.partnerQuoteFee.toNumber() / LAMPORTS_PER_SOL;
+        //       return fee.partnerQuoteFee.toNumber() / LAMPORTS_PER_SOL;
         //     }
-        //   )
+        //   })
         // );
+
+        // console.log("sum", sum);
 
         const metricRes = await client.state.getPoolFeeMetrics(
           new PublicKey(data.token.poolAddress)
@@ -233,13 +233,14 @@ export default function ProfileDetailPage({
   }
 
   return (
-    <div className="relative max-w-7xl border-x border-b mx-auto">
+    <div className="relative max-w-7xl border-x border-b mx-auto md:px-0 px-4">
       <Pattern />
       <BackButton />
       <div className="border-b p-8">
         <div className="flex items-start gap-6">
           <div className="relative w-24 h-24 flex-shrink-0">
             <Image
+              unoptimized
               src={
                 token.imageUrl ||
                 "https://i.pinimg.com/1200x/b7/8f/02/b78f023aa1bca7bdada28db1c30d1fe5.jpg"
@@ -344,8 +345,10 @@ export default function ProfileDetailPage({
 
           <div className="relative">
             <div className="relative">
-               <div className="w-full h-10 pointer-events-none md:border-l border-r bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)] border-b" />
-              <h2 className="absolute text-sm font-medium top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">Social Links</h2>
+              <div className="w-full h-10 pointer-events-none md:border-l border-r bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)] border-b" />
+              <h2 className="absolute text-sm font-medium top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                Social Links
+              </h2>
             </div>
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3">
