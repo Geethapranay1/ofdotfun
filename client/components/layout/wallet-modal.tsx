@@ -1,6 +1,6 @@
 "use client";
 
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@/hooks/use-wallet";
 import {
   Dialog,
   DialogContent,
@@ -11,9 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Copy, ExternalLink, LogOut } from "lucide-react";
 import { toast } from "sonner";
-import { useTokenStore } from "@/store/tokenStore";
 import React from "react";
 import { Connection } from "@solana/web3.js";
+import Image from "next/image";
 
 interface WalletModalProps {
   open: boolean;
@@ -79,14 +79,18 @@ export default function WalletModal({
           <div className="space-y-4">
             {wallet && (
               <div className="flex items-center gap-3 p-3 bg-muted rounded-full">
-                {wallet.adapter.icon && (
-                  <img
-                    src={wallet.adapter.icon}
-                    alt={wallet.adapter.name}
-                    className="size-14 rounded-full"
+                <div className="overflow-hidden flex items-center justify-center">
+                  <Image
+                    src={wallet.icon || "/placeholder.png"}
+                    alt={wallet.name || "Solana Wallet"}
+                    height={60}
+                    width={60}
+                    className="rounded-full"
                   />
-                )}
-                <span className="font-medium">{wallet.adapter.name}</span>
+                </div>
+                <span className="font-medium">
+                  {wallet.name || "Solana Wallet"}
+                </span>
               </div>
             )}
 

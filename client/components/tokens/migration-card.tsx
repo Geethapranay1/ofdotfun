@@ -19,14 +19,18 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Rocket, AlertTriangle, CheckCircle2 } from "lucide-react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@/hooks/use-wallet";
 import { toast } from "sonner";
 import {
   Connection,
   PublicKey,
-  sendAndConfirmTransaction,
   Transaction,
 } from "@solana/web3.js";
+import {
+  useSignTransaction as useSignTransactionSolana,
+  useSignAndSendTransaction as useSendTransactionSolana,
+  useWallets as useWalletsSolana,
+} from "@privy-io/react-auth/solana";
 import {
   DynamicBondingCurveClient,
   DAMM_V2_MIGRATION_FEE_ADDRESS,
@@ -58,11 +62,19 @@ export function MigrationCard({
   const [migrationComplete, setMigrationComplete] = useState(false);
   const [migrationStep, setMigrationStep] = useState("");
   const wallet = useWallet();
+  const { wallets: walletsSolana } = useWalletsSolana();
+  const { signTransaction: signTransactionSolana } = useSignTransactionSolana();
+  const { signAndSendTransaction: sendTransactionSolana } = useSendTransactionSolana();
 
   const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL!;
 
   const connection = new Connection(RPC_URL, "confirmed");
   const client = new DynamicBondingCurveClient(connection, "confirmed");
+
+  const getPrivyWallet = () => {
+    if (!wallet.wallet?.address) return null;
+    return walletsSolana.find((w) => w.address === wallet.wallet?.address);
+  };
 
   React.useEffect(() => {
     let isMounted = true;
@@ -88,8 +100,9 @@ export function MigrationCard({
       return;
     }
 
-    if (!wallet.signTransaction) {
-      toast.error("Wallet does not support transaction signing");
+    const privyWallet = getPrivyWallet();
+    if (!privyWallet) {
+      toast.error("Could not find the selected Solana wallet");
       return;
     }
 
@@ -140,17 +153,12 @@ export function MigrationCard({
         createMetadataTx.recentBlockhash = blockhash;
         createMetadataTx.feePayer = wallet.publicKey;
 
-        const signedMetadataTx = await wallet.signTransaction(createMetadataTx);
-        const metadataSignature = await connection.sendRawTransaction(
-          signedMetadataTx.serialize(),
-          {
-            maxRetries: 5,
-            skipPreflight: true,
-            preflightCommitment: "confirmed",
-          }
-        );
-
-        await connection.confirmTransaction(metadataSignature, "confirmed");
+        const signedTxBase64 = createMetadataTx.serialize({ requireAllSignatures: false, verifySignatures: false }).toString("base64");
+        const signedMetadataTxResult = await sendTransactionSolana({
+          transaction: Buffer.from(signedTxBase64, "base64"),
+          wallet: privyWallet,
+        });
+        const metadataSignature = signedMetadataTxResult.signature;
 
         toast.success("Migration metadata created!", {
           description: `Transaction: ${metadataSignature.slice(0, 8)}...`,
@@ -181,17 +189,12 @@ export function MigrationCard({
           createLockerTx.recentBlockhash = lockerBlockhash;
           createLockerTx.feePayer = wallet.publicKey;
 
-          const signedLockerTx = await wallet.signTransaction(createLockerTx);
-          const lockerSignature = await connection.sendRawTransaction(
-            signedLockerTx.serialize(),
-            {
-              maxRetries: 5,
-              skipPreflight: true,
-              preflightCommitment: "confirmed",
-            }
-          );
-
-          await connection.confirmTransaction(lockerSignature, "confirmed");
+          const lockerTxBase64 = createLockerTx.serialize({ requireAllSignatures: false, verifySignatures: false }).toString("base64");
+          const signedLockerTxResult = await sendTransactionSolana({
+            transaction: Buffer.from(lockerTxBase64, "base64"),
+            wallet: privyWallet,
+          });
+          const lockerSignature = signedLockerTxResult.signature;
 
           toast.success("Locker created!", {
             description: `Transaction: ${lockerSignature.slice(0, 8)}...`,
@@ -228,38 +231,17 @@ export function MigrationCard({
       console.log("NFT keypairs signed successfully");
 
       console.log("Requesting wallet signature...");
-      const signedMigrateTx = await wallet.signTransaction(
-        migrateTx.transaction
-      );
+      const migrateTxBase64 = migrateTx.transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString("base64");
+      const signedMigrateTxResult = await sendTransactionSolana({
+        transaction: Buffer.from(migrateTxBase64, "base64"),
+        wallet: privyWallet,
+      });
+      const migrateSignature = signedMigrateTxResult.signature;
       console.log("Wallet signed successfully");
-
-      console.log("Submitting migration transaction...");
-      const migrateSignature = await connection.sendRawTransaction(
-        signedMigrateTx.serialize(),
-        {
-          maxRetries: 5,
-          skipPreflight: true,
-          preflightCommitment: "confirmed",
-        }
-      );
 
       toast.success("Migration transaction submitted!", {
         description: `Transaction: ${migrateSignature.slice(0, 8)}...`,
       });
-
-      console.log("Confirming transaction...");
-      const confirmation = await connection.confirmTransaction(
-        {
-          signature: migrateSignature,
-          blockhash: migrateBlockhash,
-          lastValidBlockHeight: lastValidBlockHeight,
-        },
-        "confirmed"
-      );
-
-      if (confirmation.value.err) {
-        throw new Error("Transaction confirmation failed");
-      }
 
       setMigrationComplete(true);
       setMigrationStep("Migration complete!");

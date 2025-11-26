@@ -12,6 +12,7 @@ import {
   ResizableHandle,
 } from "@/components/ui/resizable";
 import TokenStats from "@/components/tokens/token/token-stats";
+import { ChartLiveWrapper } from "@/components/live/chart-live-wrapper";
 
 export default async function TokenDetailPage({
   params,
@@ -28,7 +29,7 @@ export default async function TokenDetailPage({
             <TokenDetails tokenMint={mint} />
           </div>
           <div className="relative">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
+            {/* <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
               <span className="text-white text-2xl font-semibold mb-4">
                 COMING SOON
               </span>
@@ -40,9 +41,9 @@ export default async function TokenDetailPage({
               >
                 Trade on Jupiter
               </a>
-            </div>
+            </div> */}
             <div className="border-b relative">
-              <TokenChart tokenId={mint} />
+              <TokenChart mintAddress={mint} />
             </div>
             <div className="border-b">
               <HoldersTradesTable tokenId={mint} />
@@ -61,7 +62,8 @@ export default async function TokenDetailPage({
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={65} minSize={30}>
                 <div className="h-full overflow-auto hide-scrollbar">
-                  <TokenChart tokenId={mint} />
+                  {/* <TokenChart mintAddress={mint} /> */}
+                  <ChartLiveWrapper mintAddress={mint} />
                 </div>
               </ResizablePanel>
               <ResizableHandle />
@@ -71,7 +73,7 @@ export default async function TokenDetailPage({
                 </div>
               </ResizablePanel>
             </ResizablePanelGroup>
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
+            {/* <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
               <span className="text-white text-2xl font-semibold mb-4">
                 COMING SOON
               </span>
@@ -83,7 +85,7 @@ export default async function TokenDetailPage({
               >
                 Trade on Jupiter
               </a>
-            </div>
+            </div> */}
           </div>
           <div className="col-span-1 overflow-auto relative hide-scrollbar">
             <SwapContainer mint={mint} />

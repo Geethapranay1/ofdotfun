@@ -2,12 +2,17 @@
 
 import Image from "next/image";
 import React, { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import BackButton from "@/components/BackButton";
 import Pattern from "@/components/landing/pattern";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@/hooks/use-wallet";
+import {
+  useSignAndSendTransaction as useSendTransactionSolana,
+  useWallets as useWalletsSolana,
+} from "@privy-io/react-auth/solana";
 import { Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import {
   ClaimCreatorTradingFee2Param,
@@ -37,6 +42,7 @@ export default function ProfileDetailPage({
   mint: string;
   poolAddress?: string;
 }) {
+  const router = useRouter();
   const [token, setToken] = useState<Token | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [description, setDescription] = useState("");
@@ -48,12 +54,36 @@ export default function ProfileDetailPage({
   const [feeMetrics, setFeeMetrics] = useState<FeeMetrics | null>(null);
 
   const wallet = useWallet();
+  const { wallets: walletsSolana } = useWalletsSolana();
+  const { signAndSendTransaction: sendTransactionSolana } =
+    useSendTransactionSolana();
   const connection = new Connection(
     process.env.NEXT_PUBLIC_RPC_URL!,
     "confirmed"
   );
 
   const client = new DynamicBondingCurveClient(connection, "confirmed");
+
+  const getPrivyWallet = () => {
+    if (!wallet.wallet?.address) return null;
+    return walletsSolana.find((w) => w.address === wallet.wallet?.address);
+  };
+
+  // useEffect(() => {
+  //   if (!wallet.connected) {
+  //     toast.error("Please connect your wallet to access this page");
+  //     router.push("/profile");
+  //   }
+  // }, [wallet.connected, router]);
+
+  // useEffect(() => {
+  //   if (token && wallet.wallet?.address) {
+  //     if (token.creatorAddress !== wallet.wallet.address) {
+  //       toast.error("You are not the creator of this token");
+  //       router.push("/profile");
+  //     }
+  //   }
+  // }, [token, wallet.wallet?.address, router]);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -191,8 +221,25 @@ export default function ProfileDetailPage({
         receiver: wallet.publicKey,
       };
       const tx = await client.creator.claimCreatorTradingFee2(params);
-      const txSig = await wallet.sendTransaction(tx, connection);
-      await connection.confirmTransaction(txSig, "confirmed");
+
+      const privyWallet = getPrivyWallet();
+      if (!privyWallet) {
+        toast.error("Could not find the selected Solana wallet");
+        return;
+      }
+
+      const { blockhash } = await connection.getLatestBlockhash("confirmed");
+      tx.recentBlockhash = blockhash;
+      tx.feePayer = wallet.publicKey;
+
+      const txBase64 = tx
+        .serialize({ requireAllSignatures: false, verifySignatures: false })
+        .toString("base64");
+      const result = await sendTransactionSolana({
+        transaction: Buffer.from(txBase64, "base64"),
+        wallet: privyWallet,
+      });
+      const txSig = result.signature;
       toast.success(`Fees claimed! Tx: ${txSig}`);
     } catch (err) {
       console.error("Claim fees error:", err);

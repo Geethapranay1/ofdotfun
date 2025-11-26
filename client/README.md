@@ -1,1 +1,0 @@
-You are gay if you are not using BUN

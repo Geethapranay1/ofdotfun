@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
+    // console.log(process.env.DATABASE_URL);
     const tokens = await prisma.token.findMany({
       orderBy: {
         createdAt: "desc",

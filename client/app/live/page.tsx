@@ -8,5 +8,5 @@ const LiveStreamComponent = dynamic(
 );
 
 export default function LivePage() {
-  return <LiveStreamComponent />;
+  return <LiveStreamComponent channelId="1223" isCreator={true} key={""} />;
 }

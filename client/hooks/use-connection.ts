@@ -3,10 +3,6 @@
 import { useMemo } from "react";
 import { Connection, clusterApiUrl } from "@solana/web3.js";
 
-/**
- * Custom hook to access Solana connection
- * This provides a consistent interface similar to @solana/wallet-adapter-react
- */
 export function useConnection() {
   const connection = useMemo(() => {
     const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL || clusterApiUrl("mainnet-beta");

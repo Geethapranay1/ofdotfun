@@ -121,7 +121,7 @@ export async function POST(req: Request) {
     const secretKey = bs58.decode(vanityKeypair.secret_key_base58);
     const generatedKeypair = Keypair.fromSecretKey(secretKey);
     const mintPublicKey = generatedKeypair.publicKey;
-    console.log("Using vanity mint address:", mintPublicKey.toString());
+    // console.log("Using vanity mint address:", mintPublicKey.toString());
 
     // const generatedKeypair = Keypair.generate();
     // const mintPublicKey = generatedKeypair.publicKey;

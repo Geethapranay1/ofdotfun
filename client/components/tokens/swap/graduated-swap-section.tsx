@@ -7,7 +7,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@/hooks/use-wallet";
+import {
+  useSignAndSendTransaction as useSendTransactionSolana,
+  useWallets as useWalletsSolana,
+} from "@privy-io/react-auth/solana";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { CpAmm } from "@meteora-ag/cp-amm-sdk";
 import BN from "bn.js";
@@ -35,20 +39,28 @@ export function GraduatedSwapSection({
   const SLIPPAGE = 0.5;
 
   const wallet = useWallet();
+  const { wallets: walletsSolana } = useWalletsSolana();
+  const { signAndSendTransaction: sendTransactionSolana } = useSendTransactionSolana();
   const connection = new Connection(
     process.env.NEXT_PUBLIC_RPC_URL!,
     "confirmed"
   );
 
   const cpAmm = new CpAmm(connection);
+
+  const getPrivyWallet = () => {
+    if (!wallet.wallet?.address) return null;
+    return walletsSolana.find((w) => w.address === wallet.wallet?.address);
+  };
   async function performCpAmmSwap(amountIn: BN, swapAToB: boolean) {
     if (!wallet.connected || !wallet.publicKey) {
       toast.error("Please connect your wallet first");
       return;
     }
 
-    if (!wallet.signTransaction) {
-      toast.error("Wallet does not support transaction signing");
+    const privyWallet = getPrivyWallet();
+    if (!privyWallet) {
+      toast.error("Could not find the selected Solana wallet");
       return;
     }
 
@@ -113,26 +125,12 @@ export function GraduatedSwapSection({
       id: toastId,
     });
 
-    const signedTx = await wallet.signTransaction(swapTx);
-    toast.loading("Sending transaction...", { id: toastId });
-    const signature = await connection.sendRawTransaction(
-      signedTx.serialize(),
-      {
-        maxRetries: 5,
-        skipPreflight: true,
-        preflightCommitment: "confirmed",
-      }
-    );
-
-    toast.loading("Confirming transaction...", { id: toastId });
-    const confirmation = await connection.confirmTransaction(
-      { signature, blockhash, lastValidBlockHeight },
-      "confirmed"
-    );
-
-    if (confirmation.value.err) {
-      throw new Error("Transaction confirmation failed");
-    }
+    const txBase64 = swapTx.serialize({ requireAllSignatures: false, verifySignatures: false }).toString("base64");
+    const result = await sendTransactionSolana({
+      transaction: Buffer.from(txBase64, "base64"),
+      wallet: privyWallet,
+    });
+    const signature = result.signature;
 
     toast.success("Swap completed successfully!", {
       id: toastId,

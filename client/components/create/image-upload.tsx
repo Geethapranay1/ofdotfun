@@ -76,7 +76,7 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
       ) : (
         <div
           onClick={handleBoxClick}
-          className="w-full h-full min-h-[300px] md:min-h-[400px] border-2 border-dashed border-muted rounded-none flex items-center justify-center cursor-pointer hover:border-primary transition-colors"
+          className="w-full h-full min-h-[300px] md:min-h-[400px] border-2 border-dashed rounded-none flex items-center justify-center cursor-pointer border-primary transition-colors"
         >
           <Upload className="w-12 h-12 text-muted-foreground" />
         </div>

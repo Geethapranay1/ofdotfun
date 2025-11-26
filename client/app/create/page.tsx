@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { TokenCreationForm } from "@/components/create/token-creation-form";
+import Pattern from "@/components/landing/pattern";
 
 export default function CreateTokenPage() {
   const [isDragging, setIsDragging] = useState(false);
@@ -52,12 +53,13 @@ export default function CreateTokenPage() {
 
   return (
     <div
-      className="max-w-7xl mx-auto py-8 uppercase"
+      className="relative max-w-7xl mx-auto pt-8 uppercase"
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
+      <Pattern/>
       {isDragging && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm pointer-events-none"
@@ -76,8 +78,8 @@ export default function CreateTokenPage() {
       )}
 
       <div className="flex flex-col gap-6 md:px-0 px-4">
-        <div className="flex flex-col">
-          <h1 className="md:text-3xl font-semibold">Create Token</h1>
+        <div className="flex flex-col px-4">
+          <h1 className="md:text-2xl font-semibold">Create Token</h1>
           <p className="text-muted-foreground md:text-base text-xs">
             Launch your own meme token on OnlyFounders. Fill in the details
             below to get started.

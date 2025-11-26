@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
-import { SolanaProvider } from "@/components/SolanaProvider";
+import PrivyProvider from "@/components/providers/PrivyProvider";
 import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
@@ -21,7 +21,8 @@ export const metadata: Metadata = {
     default: "OnlyFounders - Launch Your Token, Build Your Community",
     template: "%s | OnlyFounders",
   },
-  description: "OnlyFounders is the ultimate launchpad for founders to create, launch, and grow their tokens on Solana. Fair launch, bonding curves, and instant liquidity.",
+  description:
+    "OnlyFounders is the ultimate launchpad for founders to create, launch, and grow their tokens on Solana. Fair launch, bonding curves, and instant liquidity.",
   keywords: [
     "OnlyFounders",
     "Solana",
@@ -44,10 +45,11 @@ export const metadata: Metadata = {
     url: "https://onlyfounders.fun",
     siteName: "OnlyFounders",
     title: "OnlyFounders - Launch Your Token, Build Your Community",
-    description: "OnlyFounders is the ultimate launchpad for founders to create, launch, and grow their tokens on Solana. Fair launch, bonding curves, and instant liquidity.",
+    description:
+      "OnlyFounders is the ultimate launchpad for founders to create, launch, and grow their tokens on Solana. Fair launch, bonding curves, and instant liquidity.",
     images: [
       {
-        url: "/OnlyFounder.png",
+        url: "/fullLogo.jpg",
         width: 1200,
         height: 630,
         alt: "OnlyFounders - Token Launchpad",
@@ -57,8 +59,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "OnlyFounders - Launch Your Token, Build Your Community",
-    description: "OnlyFounders is the ultimate launchpad for founders to create, launch, and grow their tokens on Solana. Fair launch, bonding curves, and instant liquidity.",
-    images: ["/logo.jpg"],
+    description:
+      "OnlyFounders is the ultimate launchpad for founders to create, launch, and grow their tokens on Solana. Fair launch, bonding curves, and instant liquidity.",
+    images: ["/fullLogo.jpg"],
     creator: "@onlyfounders",
     site: "@onlyfounders",
   },
@@ -90,7 +93,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background selection:text-background selection:bg-primary`}
       >
-        <SolanaProvider>
+        <PrivyProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -112,7 +115,7 @@ export default function RootLayout({
               richColors
             />
           </ThemeProvider>
-        </SolanaProvider>
+        </PrivyProvider>
       </body>
     </html>
   );

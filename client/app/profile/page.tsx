@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@/hooks/use-wallet";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import BackButton from "@/components/BackButton";
 import Pattern from "@/components/landing/pattern";
@@ -67,7 +67,7 @@ export default function ProfilePage() {
           </h2>
           <div className="h-10 w-full pointer-events-none bg-[image:repeating-linear-gradient(315deg,_#0000000d_0,_#0000000d_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed dark:bg-[image:repeating-linear-gradient(315deg,_#ffffff1a_0,_#ffffff0a_1px,_transparent_0,_transparent_50%)] border-b" />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y divide-x relative px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y divide-x relative md:px-0 px-4">
           {isLoading && (
             <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {[...Array(6)].map((_, i) => (

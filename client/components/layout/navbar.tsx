@@ -4,9 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { WalletError } from "@solana/wallet-adapter-base";
+import { useWallet } from "@/hooks/use-wallet";
+import { usePrivy } from "@privy-io/react-auth";
 import { toast } from "sonner";
 import WalletModal from "./wallet-modal";
 import Image from "next/image";
@@ -26,9 +25,9 @@ export function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const { theme } = useTheme();
-  const { connected, publicKey, connect, disconnect, connecting, wallet } =
+  const { connected, publicKey, connect, disconnect, connecting } =
     useWallet();
-  const { setVisible } = useWalletModal();
+  const { ready, login } = usePrivy();
   useEffect(() => {
     const fetchWalletAddress = async () => {
       let addressStr: string | undefined;
@@ -69,7 +68,7 @@ export function Navbar() {
     } else {
       setIsManualConnection(true);
       try {
-        setVisible(true);
+        await login();
       } catch (error) {
         console.error("Wallet connection error:", error);
         toast.error("Failed to open wallet selection", {
@@ -80,40 +79,6 @@ export function Navbar() {
       }
     }
   };
-
-  useEffect(() => {
-    if (wallet && wallet.adapter) {
-      const handleError = (error: WalletError) => {
-        console.error("Wallet error:", error);
-
-        if (error.name === "WalletNotSelectedError") {
-          setIsManualConnection(false);
-          return;
-        }
-
-        if (error.name === "WalletNotConnectedError") {
-          toast.error("Wallet connection was rejected", {
-            description: "Please try connecting again",
-            duration: 4000,
-          });
-          setIsManualConnection(false);
-          return;
-        }
-
-        toast.error("Wallet connection failed", {
-          description: error.message || "Please try again",
-          duration: 4000,
-        });
-        setIsManualConnection(false);
-      };
-
-      wallet.adapter.on("error", handleError);
-
-      return () => {
-        wallet.adapter.off("error", handleError);
-      };
-    }
-  }, [wallet]);
 
   const formatAddress = (address: string) => {
     if (!address) return "";

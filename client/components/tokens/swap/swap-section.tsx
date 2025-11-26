@@ -11,7 +11,11 @@ import {
   DynamicBondingCurveClient,
   getCurrentPoint,
 } from "@meteora-ag/dynamic-bonding-curve-sdk";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@/hooks/use-wallet";
+import {
+  useSignAndSendTransaction as useSendTransactionSolana,
+  useWallets as useWalletsSolana,
+} from "@privy-io/react-auth/solana";
 import { Connection } from "@solana/web3.js";
 import BN from "bn.js";
 import { toast } from "sonner";
@@ -83,10 +87,17 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   const SLIPPAGE_BPS = 100;
 
   const wallet = useWallet();
+  const { wallets: walletsSolana } = useWalletsSolana();
+  const { signAndSendTransaction: sendTransactionSolana } = useSendTransactionSolana();
   const connection = new Connection(
     process.env.NEXT_PUBLIC_RPC_URL!,
     "confirmed"
   );
+
+  const getPrivyWallet = () => {
+    if (!wallet.wallet?.address) return null;
+    return walletsSolana.find((w) => w.address === wallet.wallet?.address);
+  };
 
   const { data: solBalance, isLoading: balanceLoading } = useQuery({
     enabled: !!wallet.publicKey,
@@ -220,6 +231,12 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
       return;
     }
 
+    const privyWallet = getPrivyWallet();
+    if (!privyWallet) {
+      toast.error("Could not find the selected Solana wallet");
+      return;
+    }
+
     if (!buyAmount || parseFloat(buyAmount) <= 0) {
       toast.error("Please enter a valid amount");
       return;
@@ -252,20 +269,12 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
       toast.loading("Awaiting confirmation...", { id: toastId });
 
-      if (!wallet.signTransaction) {
-        throw new Error("Wallet does not support transaction signing");
-      }
-
-      const signedTx = await wallet.signTransaction(swapTransaction);
-      const signature = await connection.sendRawTransaction(
-        signedTx.serialize(),
-        {
-          skipPreflight: true,
-          maxRetries: 5,
-        }
-      );
-
-      await connection.confirmTransaction(signature, "confirmed");
+      const txBase64 = swapTransaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString("base64");
+      const result = await sendTransactionSolana({
+        transaction: Buffer.from(txBase64, "base64"),
+        wallet: privyWallet,
+      });
+      const signature = result.signature;
 
       toast.success(
         <div className="flex flex-col gap-1">
@@ -294,6 +303,12 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
   const handleSell = async () => {
     if (!wallet.connected || !wallet.publicKey) {
       toast.error("Please connect your wallet first");
+      return;
+    }
+
+    const privyWallet = getPrivyWallet();
+    if (!privyWallet) {
+      toast.error("Could not find the selected Solana wallet");
       return;
     }
 
@@ -327,20 +342,12 @@ export function SwapSection({ tokenId }: SwapSectionProps) {
 
       toast.loading("Awaiting confirmation...", { id: toastId });
 
-      if (!wallet.signTransaction) {
-        throw new Error("Wallet does not support transaction signing");
-      }
-
-      const signedTx = await wallet.signTransaction(swapTransaction);
-      const signature = await connection.sendRawTransaction(
-        signedTx.serialize(),
-        {
-          skipPreflight: true,
-          maxRetries: 5,
-        }
-      );
-
-      await connection.confirmTransaction(signature, "confirmed");
+      const txBase64 = swapTransaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString("base64");
+      const result = await sendTransactionSolana({
+        transaction: Buffer.from(txBase64, "base64"),
+        wallet: privyWallet,
+      });
+      const signature = result.signature;
 
       toast.success(
         <div className="flex flex-col gap-1">

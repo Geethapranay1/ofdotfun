@@ -11,10 +11,10 @@ import {
 import { useTheme } from "next-themes";
 
 interface TokenChartProps {
-  tokenId: string;
+  mintAddress: string;
 }
 
-export function TokenChart({ tokenId }: TokenChartProps) {
+export function TokenChart({ mintAddress }: TokenChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
 
@@ -112,7 +112,7 @@ export function TokenChart({ tokenId }: TokenChartProps) {
       window.removeEventListener("resize", handleResize);
       chart.remove();
     };
-  }, [tokenId]);
+  }, [mintAddress]);
 
   return (
     <div className="w-full border-t uppercase">
